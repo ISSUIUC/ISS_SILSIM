@@ -9,22 +9,14 @@
 
 void ForwardEuler::march_step(double tStamp, double tStep)
 {
-	Vector3 f_net;
-	Vector3 r_vect;
-	Vector3 r_dot;
-	Vector3 r_ddot;
-	Vector3 thrust;
-	double Cd;
-	double mass;
+	Vector3 f_net = _rocket.get_f_net();
+	Vector3 r_vect = _rocket.get_r_vect();
+	Vector3 r_dot = _rocket.get_r_dot();
+	Vector3 r_ddot = _rocket.get_r_ddot();
+	double Cd = _rocket.get_Cd();
+	double mass = _rocket.get_mass();
 
-	_rocket.get_f_net(f_net);
-	_rocket.get_r_vect(r_vect);
-	_rocket.get_r_dot(r_dot);
-	_rocket.get_r_ddot(r_ddot);
-	_rocket.get_Cd(Cd);
-	_rocket.get_mass(mass);
-	_motor.get_thrust(tStamp, thrust);
-	_rocket.rocket2inertial(thrust);
+  Vector3 thrust = _motor.get_thrust(tStamp);
 
 	// printf("\nThrust: <%f, %f, %f>\n\n", thrust[0], thrust[1], thrust[2]);
 

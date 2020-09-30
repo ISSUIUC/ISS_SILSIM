@@ -23,3 +23,20 @@ void SolidMotor::get_thrust(double tStamp, Vector3& vector) {
 	vector.y = 0.0;
 	vector.z = 0.0;
 }
+
+Vector3 SolidMotor::get_thrust(double tStamp) {
+  Vector3 vector;
+  if (_ignition == true) {
+		if ((tStamp - _ignition_tStamp) <= _max_burn_duration) {
+			vector.x = 0.0;
+			vector.y = 0.0;
+			vector.z = _current_thrust;
+			return vector;
+		}
+	}
+	vector.x = 0.0;
+	vector.y = 0.0;
+	vector.z = 0.0;
+
+  return vector;
+}

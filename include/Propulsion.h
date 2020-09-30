@@ -15,6 +15,7 @@ public:
 
 	void ignite(double tStamp);
 	void get_thrust(double tStamp, Vector3& vector);
+  Vector3 get_thrust(double tStamp);
 
 private:
 	bool _ignition;
