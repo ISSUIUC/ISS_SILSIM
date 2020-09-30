@@ -1,4 +1,5 @@
 main
 sim_data/*.csv
+build/*
 *.gch
 */*.gch
