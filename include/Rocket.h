@@ -19,6 +19,8 @@ class Rocket {
 
 	    void get_q_ornt(Quaternion<double>& quatrn) const;
 
+		void get_I(double (&array)[9]) const;
+
 	    void get_w_vect(Vector3& vector) const;
 	    void get_w_dot(Vector3& vector) const;
 
@@ -32,6 +34,8 @@ class Rocket {
 	    void get_Cd(double& Cd) const;
 		void get_nose_to_cg(double& nose_to_cg) const;
 		void get_nose_to_cp(double& nose_to_cp) const;
+
+		void get_Cp_vect(Vector3& vector) const;
 
 	    // Get parameters by value (return by value)
 	    Vector3 get_r_vect() const  {return _r_vect;};
@@ -54,12 +58,16 @@ class Rocket {
 		double get_nose_to_cg() const	{return _nose_to_cg;};
 		double get_nose_to_cp() const	{return _nose_to_cp;};
 
+		Vector3 get_Cp_vect() const	{return _Cp_vect;};
+
 	    // Set parameters (all passed by reference)
 		void set_r_vect(Vector3& vector);
 		void set_r_dot(Vector3& vector);
 		void set_r_ddot(Vector3& vector);
 
 		void set_q_ornt(Quaternion<double>& quatrn);
+
+		void set_I(double (&array)[9]);
 
 		void set_w_vect(Vector3& vector);
 		void set_w_dot(Vector3& vector);
@@ -97,6 +105,8 @@ class Rocket {
 
 		// The following are in rocket frame
 		Vector3 _Cp_vect;	// CG to Cp vector
+
+		double _I[9];		// Rocket moment of inertia tensor
 
 		// Default scalar parameters from OpenRocket
 		double _mass = 41.034;		// in Kg

@@ -59,6 +59,14 @@ void Rocket::set_q_ornt(Quaternion<double>& quatrn) {
 	_q_ornt = quatrn;
 }
 
+void Rocket::get_I(double (&array)[9]) const {
+	for (int i = 0; i < 9; ++i) {array[i] = _I[i];}
+}
+
+void Rocket::set_I(double (&array)[9]) {
+	for (int i = 0; i < 9; ++i) {_I[i] = array[i];}
+}
+
 void Rocket::get_w_vect(Vector3& vector) const {
 	vector = _w_vect;
 }
@@ -151,6 +159,10 @@ void Rocket::set_nose_to_cp(double& nose_to_cp) {
 	_Cp_vect.x = 0;
 	_Cp_vect.y = 0;
 	_Cp_vect.z = -(_nose_to_cp - _nose_to_cg);
+}
+
+void Rocket::get_Cp_vect(Vector3& vector) const {
+	vector = _Cp_vect;
 }
 
 void Rocket::inertial2rocket(Vector3& vector) {

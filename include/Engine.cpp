@@ -9,16 +9,35 @@
 
 void ForwardEuler::march_step(double tStamp, double tStep)
 {
-	static Vector3 f_net = _rocket.get_f_net();
+
+	// Rocket frame dynamics parameters
 	static Vector3 r_vect = _rocket.get_r_vect();
 	static Vector3 r_dot = _rocket.get_r_dot();
 	static Vector3 r_ddot = _rocket.get_r_ddot();
-	static double Cd = _rocket.get_Cd();
+	static Vector3 w_vect = _rocket.get_w_vect();
+	static Vector3 w_dot = _rocket.get_w_dot();
+	static Vector3 f_net = _rocket.get_f_net();
+	static Vector3 t_net = _rocket.get_t_net();
+
+	// Quaternion from inertial to rocket frame
+	static Quaternion<double> q_ornt = _rocket.get_q_ornt();
+
+	// CG to Cp vector
+	static Vector3 _Cp_vect = _rocket.get_Cp_vect();
+
+	// Get moment of inertia tenspr
+	static double I_tens[9];
+	_rocket.get_I(I_tens);
+
+	// Static parameters
 	static double mass = _rocket.get_mass();
+	static double d_ref = _rocket.get_d_ref();
+	static double A_ref = _rocket.get_A_ref();
+	static double Cna = _rocket.get_Cna();
+	static double Cd = _rocket.get_Cd();
 
+	// Motor thrust vector
 	static Vector3 thrust = _motor.get_thrust(tStamp);
-
-	// printf("\nThrust: <%f, %f, %f>\n\n", thrust[0], thrust[1], thrust[2]);
 
 	f_net = (Cd * r_dot.normalized() * -r_dot.magnitude2()) + thrust;
 	f_net.z -= mass * 9.81;
