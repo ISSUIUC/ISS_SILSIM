@@ -22,6 +22,7 @@ Rocket::Rocket() {
 
 	_f_net = Vector3();
 	_t_net = Vector3();
+	
 }
 
 void Rocket::get_r_vect(Vector3& vector) const {
@@ -96,12 +97,52 @@ void Rocket::set_mass(double& mass) {
 	_mass = mass;
 }
 
+void Rocket::get_d_ref(double& d_ref) const {
+	d_ref = _d_ref;
+}
+
+void Rocket::set_d_ref(double& d_ref) {
+	_d_ref = d_ref;
+}
+
+void Rocket::get_A_ref(double& A_ref) const {
+	A_ref = _A_ref;
+}
+
+void Rocket::set_A_ref(double& A_ref) {
+	_A_ref = A_ref;
+}
+
+void Rocket::get_Cna(double& Cna) const {
+	Cna = _Cna;
+}
+
+void Rocket::set_Cna(double& Cna) {
+	_Cna = Cna;
+}
+
 void Rocket::get_Cd(double& Cd) const {
 	Cd = _Cd;
 }
 
 void Rocket::set_Cd(double& Cd) {
 	_Cd = Cd;
+}
+
+void Rocket::get_nose_to_cg(double& nose_to_cg) const {
+	nose_to_cg = _nose_to_cg;
+}
+
+void Rocket::set_nose_to_cg(double& nose_to_cg) {
+	_nose_to_cg = nose_to_cg;
+}
+
+void Rocket::get_nose_to_cp(double& nose_to_cp) const {
+	nose_to_cp = _nose_to_cp;
+}
+
+void Rocket::set_nose_to_cp(double& nose_to_cp) {
+	_nose_to_cp = nose_to_cp;
 }
 
 void Rocket::inertial2rocket(Vector3& vector) {

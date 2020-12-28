@@ -12,39 +12,49 @@ class Rocket {
 	public:
 		Rocket();
 
-    // Get parameters by referece
+	    // Get parameters by referece
 		void get_r_vect(Vector3& vector) const;
 		void get_r_dot(Vector3& vector) const;
 		void get_r_ddot(Vector3& vector) const;
 
-    void get_q_ornt(Quaternion<double>& quatrn) const;
+	    void get_q_ornt(Quaternion<double>& quatrn) const;
 
-    void get_w_vect(Vector3& vector) const;
-    void get_w_dot(Vector3& vector) const;
+	    void get_w_vect(Vector3& vector) const;
+	    void get_w_dot(Vector3& vector) const;
 
-    void get_f_net(Vector3& vector) const;
-    void get_t_net(Vector3& vector) const;
+	    void get_f_net(Vector3& vector) const;
+	    void get_t_net(Vector3& vector) const;
 
-    void get_mass(double& mass) const;
-    void get_Cd(double& Cd) const;
+	    void get_mass(double& mass) const;
+		void get_d_ref(double& d_ref) const;
+		void get_A_ref(double& A_ref) const;
+		void get_Cna(double& Cna) const;
+	    void get_Cd(double& Cd) const;
+		void get_nose_to_cg(double& nose_to_cg) const;
+		void get_nose_to_cp(double& nose_to_cp) const;
 
-    // Get parameters by value (return by value)
-    Vector3 get_r_vect() const  {return _r_vect;};
+	    // Get parameters by value (return by value)
+	    Vector3 get_r_vect() const  {return _r_vect;};
 		Vector3 get_r_dot() const   {return _r_dot;};
 		Vector3 get_r_ddot() const  {return _r_ddot;};
 
-    Quaternion<double> get_q_ornt() const {return _q_ornt;};
+	    Quaternion<double> get_q_ornt() const {return _q_ornt;};
 
-    Vector3 get_w_vect() const  {return _w_vect;};
-    Vector3 get_w_dot() const   {return _w_dot;};
+	    Vector3 get_w_vect() const  {return _w_vect;};
+	    Vector3 get_w_dot() const   {return _w_dot;};
 
-    Vector3 get_f_net() const   {return _f_net;};
-    Vector3 get_t_net() const   {return _t_net;};
+	    Vector3 get_f_net() const   {return _f_net;};
+	    Vector3 get_t_net() const   {return _t_net;};
 
-    double get_mass() const     {return _mass;};
-    double get_Cd() const       {return _Cd;};
+	    double get_mass() const     {return _mass;};
+		double get_d_ref() const	{return _d_ref;};
+		double get_A_ref() const	{return _A_ref;};
+		double get_Cna() const		{return _Cna;};
+	    double get_Cd() const       {return _Cd;};
+		double get_nose_to_cg() const	{return _nose_to_cg;};
+		double get_nose_to_cp() const	{return _nose_to_cp;};
 
-    // Set parameters (all passed by reference)
+	    // Set parameters (all passed by reference)
 		void set_r_vect(Vector3& vector);
 		void set_r_dot(Vector3& vector);
 		void set_r_ddot(Vector3& vector);
@@ -57,8 +67,13 @@ class Rocket {
 		void set_f_net(Vector3& vector);
 		void set_t_net(Vector3& vector);
 
-    void set_mass(double& mass);
+	    void set_mass(double& mass);
+		void set_d_ref(double& d_ref);
+		void set_A_ref(double& A_ref);
+		void set_Cna(double& Cna);
 		void set_Cd(double& Cd);
+		void set_nose_to_cg(double& nose_to_cg);
+		void set_nose_to_cp(double& nose_to_cp);
 
 		// Converts vector from inertial frame to rocket reference frame
 		void inertial2rocket(Vector3& vector);
@@ -80,8 +95,19 @@ class Rocket {
 
 		Quaternion<double> _q_ornt;		// inertial -> rocket frame quaternion
 
-		double _mass = 20.0;			// in Kg
-		double _Cd = 0.0168;			// drag coefficient
+		// The following are in rocket frame
+		Vector3 _Cp_vect;	// CG to Cp vector
+
+		// Default scalar parameters from OpenRocket
+		double _mass = 41.034;		// in Kg
+		double _d_ref = 0.0157;		// ref length in m
+		double _A_ref = 0.0194;		// ref area in m^2
+		double _Cna = 9.65;			// normal force coefficient derivative
+									// wrt angle-of-attack
+		double _Cd = 0.630;			// drag coefficient
+		double _nose_to_cg = 3.59;	// nosecone tip to CG distance in m
+		double _nose_to_cp = 4.03;	// nosecone tip to Cp distance in m
+
 
 };
 
