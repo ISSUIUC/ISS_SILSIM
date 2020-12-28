@@ -22,7 +22,9 @@ Rocket::Rocket() {
 
 	_f_net = Vector3();
 	_t_net = Vector3();
-	
+
+	_Cp_vect = Vector3(0, 0, -(_nose_to_cp - _nose_to_cg));
+
 }
 
 void Rocket::get_r_vect(Vector3& vector) const {
@@ -135,6 +137,9 @@ void Rocket::get_nose_to_cg(double& nose_to_cg) const {
 
 void Rocket::set_nose_to_cg(double& nose_to_cg) {
 	_nose_to_cg = nose_to_cg;
+	_Cp_vect.x = 0;
+	_Cp_vect.y = 0;
+	_Cp_vect.z = -(_nose_to_cp - _nose_to_cg);
 }
 
 void Rocket::get_nose_to_cp(double& nose_to_cp) const {
@@ -143,6 +148,9 @@ void Rocket::get_nose_to_cp(double& nose_to_cp) const {
 
 void Rocket::set_nose_to_cp(double& nose_to_cp) {
 	_nose_to_cp = nose_to_cp;
+	_Cp_vect.x = 0;
+	_Cp_vect.y = 0;
+	_Cp_vect.z = -(_nose_to_cp - _nose_to_cg);
 }
 
 void Rocket::inertial2rocket(Vector3& vector) {
