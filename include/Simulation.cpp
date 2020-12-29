@@ -18,6 +18,7 @@ void Simulation::run(int steps) {
 	Vector3 r_dot;
 	Vector3 r_ddot;
 	Vector3 f_net;
+	Vector3 w_net;
 
 	_motor.ignite(_tStamp);
 
@@ -36,6 +37,9 @@ void Simulation::run(int steps) {
 
 		_rocket.get_f_net(f_net);
 		printf("\tF-Net: <%f, %f, %f>\n", f_net.x, f_net.y, f_net.z);
+
+		_rocket.get_w_vect(w_net);
+		printf("\tW-Net: <%f, %f, %f>\n", w_net.x, w_net.y, w_net.z);
 
 		_engine.march_step(_tStamp, _tStep);
 

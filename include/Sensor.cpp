@@ -12,7 +12,7 @@ Gyroscope::Gyroscope(Rocket& rocket, double refresh_rate) :
 void Gyroscope::update_data(double tStep) {
 	if ((tStep - _last_update_tStep) >= (1 / _refresh_rate)) {
 		_rocket.get_w_vect(_data);
-		_rocket.inertial2rocket(_data);
+		_rocket.i2r(_data);
 		_new_data = true;
 	}
 }
@@ -30,7 +30,7 @@ Accelerometer::Accelerometer(Rocket& rocket, double refresh_rate) :
 void Accelerometer::update_data(double tStep) {
 	if ((tStep - _last_update_tStep) >= (1 / _refresh_rate)) {
 		_rocket.get_r_ddot(_data);
-		_rocket.inertial2rocket(_data);
+		_rocket.i2r(_data);
 		_new_data = true;
 	}
 }

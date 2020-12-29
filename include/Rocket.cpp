@@ -165,18 +165,38 @@ void Rocket::get_Cp_vect(Vector3& vector) const {
 	vector = _Cp_vect;
 }
 
-void Rocket::inertial2rocket(Vector3& vector) {
+// void Rocket::i2r(Vector3& vector) {
+// 	Quaternion<double> p(0, vector.x, vector.y, vector.z);
+// 	p = (_q_ornt.conj() * p) * _q_ornt;
+// 	vector.x = p.Getx();
+// 	vector.y = p.Gety();
+// 	vector.z = p.Getz();
+// }
+
+Vector3 Rocket::i2r(Vector3 vector) {
 	Quaternion<double> p(0, vector.x, vector.y, vector.z);
 	p = (_q_ornt.conj() * p) * _q_ornt;
-	vector.x = p.Getx();
-	vector.y = p.Gety();
-	vector.z = p.Getz();
+	Vector3 newVector;
+	newVector.x = p.Getx();
+	newVector.y = p.Gety();
+	newVector.z = p.Getz();
+	return newVector;
 }
 
-void Rocket::rocket2inertial(Vector3& vector) {
+// void Rocket::r2i(Vector3& vector) {
+// 	Quaternion<double> p(0, vector.x, vector.y, vector.z);
+// 	p = (_q_ornt * p) * _q_ornt.conj();
+// 	vector.x = p.Getx();
+// 	vector.y = p.Gety();
+// 	vector.z = p.Getz();
+// }
+
+Vector3 Rocket::r2i(Vector3 vector) {
 	Quaternion<double> p(0, vector.x, vector.y, vector.z);
 	p = (_q_ornt * p) * _q_ornt.conj();
-	vector.x = p.Getx();
-	vector.y = p.Gety();
-	vector.z = p.Getz();
+	Vector3 newVector;
+	newVector.x = p.Getx();
+	newVector.y = p.Gety();
+	newVector.z = p.Getz();
+	return newVector;
 }

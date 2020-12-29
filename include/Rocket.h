@@ -84,10 +84,12 @@ class Rocket {
 		void set_nose_to_cp(double& nose_to_cp);
 
 		// Converts vector from inertial frame to rocket reference frame
-		void inertial2rocket(Vector3& vector);
+		// void i2r(Vector3& vector);
+		Vector3 i2r(Vector3 vector);
 
 		// Converts vector from rocket frame to inertial reference frame
-		void rocket2inertial(Vector3& vector);
+		// void r2i(Vector3& vector);
+		Vector3 r2i(Vector3 vector);
 
 	private:
 		// The following are in inertial frame

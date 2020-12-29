@@ -74,7 +74,7 @@ Vector3 Vector3::cross(const Vector3& rhs) const {
 }
 
 double Vector3::dot(const Vector3& rhs) const {
-	return x*rhs.x + y+rhs.y + z+rhs.z;
+	return x*rhs.x + y*rhs.y + z*rhs.z;
 }
 
 double Vector3::magnitude() const {
@@ -86,7 +86,10 @@ double Vector3::magnitude2() const {
 }
 
 void Vector3::normalize() {
-	(*this) /= magnitude();
+	double mag = magnitude();
+	if (mag > 0.0) {
+		(*this) /= magnitude();
+	}
 }
 
 Vector3 Vector3::normalized() {
