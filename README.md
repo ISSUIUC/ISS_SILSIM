@@ -2,6 +2,8 @@
 
 ISS Software-In-The-Loop Simulator
 
+Non-linear 6DOF rocket trajectory simulation utility
+
 ## Dependencies
 - Linux Operating System
 	- Tested on Ubuntu 20.04 (Recommended)
