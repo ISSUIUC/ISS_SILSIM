@@ -16,17 +16,17 @@ int main() {
 
 	double mass = rocket.get_mass();
 	double I_tensor[9];
-	I_tensor[0] = (1.0/12.0) * mass * 5.182 * 5.182 * 20;
+	I_tensor[0] = (1.0/12.0) * mass * 5.182 * 5.182 * 30;
 	I_tensor[4] = I_tensor[0];
 	I_tensor[8] = 0.5 * mass * 0.0762 * 0.0762;
 	rocket.set_I(I_tensor);
 
-	double angle = 1.5 * deg2rad;
+	double angle = 3.0 * deg2rad;
 	Quaternion<double> start_ornt(cos(angle/2.0), sin(angle/2.0)*0.707, sin(angle/2.0)*0.707, 0);
 	rocket.set_q_ornt(start_ornt);
 
 	// 3.5 second burn time @ 1500 Newton constant thrust (L ish motor I think)
-	SolidMotor motor(3.5, 3000.0);
+	SolidMotor motor(3.5, 4000.0);
 
 	ForwardEuler engine(rocket, motor);
 
@@ -37,7 +37,7 @@ int main() {
 	std::cout << "Running Sim!" << std::endl;
 
 	// run 3000 steps
-	sim.run(3500);
+	sim.run(10000);
 
 	return 0;
 }

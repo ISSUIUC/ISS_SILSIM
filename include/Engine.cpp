@@ -55,7 +55,8 @@ void ForwardEuler::march_step(double tStamp, double tStep)
 	static Vector3 f_net_rf;
 	static Vector3 t_net_rf;
 
-	if (r_dot_if.magnitude() > 0.1) {
+	if (r_dot_if.magnitude() > 0.01) {
+	// if (true) {
 
 		Vector3 rocket_axis_rf(0,0,1);
 
@@ -134,6 +135,16 @@ void ForwardEuler::march_step(double tStamp, double tStep)
 	w_dot_if.x = t_net_if.x / I_tens[0];
 	w_dot_if.y = t_net_if.y / I_tens[4];
 	w_dot_if.z = t_net_if.z / I_tens[8];
+
+	// Naively accounting for launch rail
+	if (r_vect_if.magnitude() < 4.50) {
+		w_dot_if.x = 0;
+		w_dot_if.y = 0;
+		w_dot_if.z = 0;
+		w_vect_if.x = 0;
+		w_vect_if.y = 0;
+		w_vect_if.z = 0;
+	}
 
 	_rocket.set_f_net(f_net_if);
 	_rocket.set_t_net(t_net_if);

@@ -76,6 +76,10 @@ void Simulation::run(int steps) {
 		dataFile << rocket_axis.x << "," << rocket_axis.y << "," << rocket_axis.z << "\n";
 
 		_tStamp += _tStep;
+
+		if (r_dot.z < -3.0) {
+			break;
+		}
 	}
 
 	dataFile.close();
