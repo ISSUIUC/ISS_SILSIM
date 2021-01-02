@@ -10,7 +10,7 @@
 #include "quaternion.h"
 #include "Vector3.h"
 
-static double rad2deg = 180 / 3.14159265;
+static double rad2deg = 180.0 / 3.14159265;
 
 void Simulation::run(int steps) {
 
@@ -62,6 +62,9 @@ void Simulation::run(int steps) {
 
 		printf("ROLL: %f\tPITCH: %f\tYAW: %f", roll, pitch, yaw);
 
+		Vector3 rocket_axis(0, 0, 1);
+		rocket_axis = _rocket.r2i(rocket_axis);
+
 		_engine.march_step(_tStamp, _tStep);
 
 		dataFile << _tStamp << ",";
@@ -69,7 +72,8 @@ void Simulation::run(int steps) {
 		dataFile << r_dot.x << "," << r_dot.y << "," << r_dot.z << ",";
 		dataFile << r_ddot.x << "," << r_ddot.y << "," << r_ddot.z << ",";
 		dataFile << f_net.x << "," << f_net.y << "," << f_net.z << ",";
-		dataFile << roll << "," << pitch << "," << yaw << "\n";
+		dataFile << roll << "," << pitch << "," << yaw << ",";
+		dataFile << rocket_axis.x << "," << rocket_axis.y << "," << rocket_axis.z << "\n";
 
 		_tStamp += _tStep;
 	}

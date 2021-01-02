@@ -45,7 +45,7 @@ void ForwardEuler::march_step(double tStamp, double tStep)
 
 	/* ##### Calculate forces and torques ##### */
 
-	printf("\n\n");
+	// printf("\n\n");
 
 	static Vector3 f_aero_rf;	// Aerodynamic forces, rocket frame
 	static Vector3 t_aero_rf;	// Aerodynamic torques, rocket frame
@@ -55,7 +55,7 @@ void ForwardEuler::march_step(double tStamp, double tStep)
 	static Vector3 f_net_rf;
 	static Vector3 t_net_rf;
 
-	if (r_dot_if.magnitude() > 1) {
+	if (r_dot_if.magnitude() > 0.1) {
 
 		Vector3 rocket_axis_rf(0,0,1);
 
@@ -65,19 +65,24 @@ void ForwardEuler::march_step(double tStamp, double tStep)
 		// printf("v_rf: <%f, %f, %f>\n", v_rf.x, v_rf.y, v_rf.z);
 
 		double alpha = acos((rocket_axis_rf.dot(v_rf)) / (v_rf.magnitude()));
-		alpha *= rad2deg;
+		// alpha *= rad2deg;
 
-		printf("alpha: %f\n", alpha);
+		printf("\nalpha: %f\n\n", alpha*rad2deg);
 
-		double f_N_mag = Cna * 0.5 * 1.225 * v_rf.magnitude2() * A_ref;
-		Vector3 f_N_rf(-v_rf.x, -v_rf.y, 0);
+		Vector3 f_N_rf;
+
+		double f_N_mag = Cna * alpha * 0.5 * 1.225 * v_rf.magnitude2() * A_ref;
+		f_N_rf.x = -v_rf.x;
+		f_N_rf.y = -v_rf.y;
+		f_N_rf.z = 0;
 		f_N_rf.normalize();
 		f_N_rf = f_N_rf * f_N_mag;
 
 		// printf("f_N_mag: %f\n", f_N_mag);
 		// printf("f_N_rf: <%f, %f, %f>\n", f_N_rf.x, f_N_rf.y, f_N_rf.z);
 
-		Vector3 f_D_rf = Cd * 0.5 * 1.225 * v_rf.magnitude2() * -v_rf.normalized();
+		double f_D_mag = Cd * 0.5 * 1.225 * v_rf.magnitude2();
+		Vector3 f_D_rf(0, 0, -f_D_mag);
 
 		// printf("f_D_rf: <%f, %f, %f>\n", f_D_rf.x, f_D_rf.y, f_D_rf.z);
 
@@ -85,7 +90,8 @@ void ForwardEuler::march_step(double tStamp, double tStep)
 
 		// printf("f_aero_rf: <%f, %f, %f>\n\n", f_aero_rf.x, f_aero_rf.y, f_aero_rf.z);
 
-		t_aero_rf = f_aero_rf.cross(Cp_vect_rf);
+		// t_aero_rf = f_aero_rf.cross(Cp_vect_rf);
+		t_aero_rf = Cp_vect_rf.cross(f_aero_rf);
 
 	}
 	else {
@@ -111,7 +117,7 @@ void ForwardEuler::march_step(double tStamp, double tStep)
 
 	// Assemble instantaneous rotation quaternion
     double w_mag = w_vect_if.magnitude();
-	if (w_mag > 0.001) {
+	if (w_mag > 0.000001) {
 		Quaternion<double> q_rot;
 	    q_rot.Set(cos(w_mag/2.0),
 				  (w_vect_if.x/w_mag)*sin(w_mag/2.0),
@@ -120,6 +126,7 @@ void ForwardEuler::march_step(double tStamp, double tStep)
 
 		// Apply instantaneous rotation
 		q_ornt = q_ornt * q_rot;
+		q_ornt.Normalize();
 	}
 
 	w_vect_if += w_dot_if * tStep;
