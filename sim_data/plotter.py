@@ -22,6 +22,11 @@ fx = []
 fy = []
 fz = []
 
+q0 = []
+q1 = []
+q2 = []
+q3 = []
+
 roll = []
 pitch = []
 yaw = []
@@ -30,7 +35,8 @@ rocketX = []
 rocketY = []
 rocketZ = []
 
-data_lists = [timestamps, rx, ry, rz, vx, vy, vz, ax, ay, az, fx, fy, fz, roll, pitch, yaw, rocketX, rocketY, rocketZ]
+data_lists = [timestamps, rx, ry, rz, vx, vy, vz, ax, ay, az, fx, fy, fz,
+              q0, q1, q2, q3, roll, pitch, yaw, rocketX, rocketY, rocketZ]
 
 with open("sim_data/data.csv") as csvfile:
     csvreader = csv.reader(csvfile, delimiter=",")

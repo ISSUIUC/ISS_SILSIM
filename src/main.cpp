@@ -21,7 +21,7 @@ int main() {
 	I_tensor[8] = 0.5 * mass * 0.0762 * 0.0762;
 	rocket.set_I(I_tensor);
 
-	double angle = 3.0 * deg2rad;
+	double angle = 5.0 * deg2rad;
 	Quaternion<double> start_ornt(cos(angle/2.0), sin(angle/2.0)*0.707, sin(angle/2.0)*0.707, 0);
 	rocket.set_q_ornt(start_ornt);
 

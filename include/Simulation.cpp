@@ -72,6 +72,7 @@ void Simulation::run(int steps) {
 		dataFile << r_dot.x << "," << r_dot.y << "," << r_dot.z << ",";
 		dataFile << r_ddot.x << "," << r_ddot.y << "," << r_ddot.z << ",";
 		dataFile << f_net.x << "," << f_net.y << "," << f_net.z << ",";
+		dataFile << s << "," << x << "," << y << "," << z  << ",";
 		dataFile << roll << "," << pitch << "," << yaw << ",";
 		dataFile << rocket_axis.x << "," << rocket_axis.y << "," << rocket_axis.z << "\n";
 
