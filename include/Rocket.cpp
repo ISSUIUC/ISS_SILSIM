@@ -27,122 +27,23 @@ Rocket::Rocket() {
 
 }
 
-void Rocket::get_r_vect(Vector3& vector) const {
-	vector = _r_vect;
-}
-
-void Rocket::set_r_vect(Vector3& vector) {
-	_r_vect = vector;
-}
-
-void Rocket::get_r_dot(Vector3& vector) const {
-	vector = _r_dot;
-}
-
-void Rocket::set_r_dot(Vector3& vector) {
-	_r_dot = vector;
-}
-
-void Rocket::get_r_ddot(Vector3& vector) const {
-	vector = _r_ddot;
-}
-
-void Rocket::set_r_ddot(Vector3& vector) {
-	_r_ddot = vector;
-}
-
-void Rocket::get_q_ornt(Quaternion<double>& quatrn) const {
-	quatrn = _q_ornt;
-}
-
-void Rocket::set_q_ornt(Quaternion<double>& quatrn) {
-	_q_ornt = quatrn;
-}
-
-void Rocket::get_I(double (&array)[9]) const {
-	for (int i = 0; i < 9; ++i) {array[i] = _I[i];}
-}
-
-void Rocket::set_I(double (&array)[9]) {
-	for (int i = 0; i < 9; ++i) {_I[i] = array[i];}
-}
-
-void Rocket::get_w_vect(Vector3& vector) const {
-	vector = _w_vect;
-}
-
-void Rocket::set_w_vect(Vector3& vector) {
-	_w_vect = vector;
-}
-
-void Rocket::get_w_dot(Vector3& vector) const {
-	vector = _w_dot;
-}
-
-void Rocket::set_w_dot(Vector3& vector) {
-	_w_dot = vector;
-}
-
-void Rocket::get_f_net(Vector3& vector) const {
-	vector = _f_net;
-}
-
-void Rocket::set_f_net(Vector3& vector) {
-	_f_net = vector;
-}
-
-void Rocket::get_t_net(Vector3& vector) const {
-	vector = _t_net;
-}
-
-void Rocket::set_t_net(Vector3& vector) {
-	_t_net = vector;
-}
-
-void Rocket::get_mass(double& mass) const {
-	mass = _mass;
-}
-
-void Rocket::set_mass(double& mass) {
-	_mass = mass;
-}
-
-void Rocket::get_d_ref(double& d_ref) const {
-	d_ref = _d_ref;
-}
-
-void Rocket::set_d_ref(double& d_ref) {
-	_d_ref = d_ref;
-}
-
-void Rocket::get_A_ref(double& A_ref) const {
-	A_ref = _A_ref;
-}
-
-void Rocket::set_A_ref(double& A_ref) {
-	_A_ref = A_ref;
-}
-
-void Rocket::get_Cna(double& Cna) const {
-	Cna = _Cna;
-}
-
-void Rocket::set_Cna(double& Cna) {
-	_Cna = Cna;
-}
-
-void Rocket::get_Cd(double& Cd) const {
-	Cd = _Cd;
-}
-
-void Rocket::set_Cd(double& Cd) {
-	_Cd = Cd;
-}
-
+/**
+ * @brief Obtain distance between tip of nose and the center of gravity
+ *
+ * @param nose_to_cg Reference to double to overwrite with calculated distance
+ */
 void Rocket::get_nose_to_cg(double& nose_to_cg) const {
 	nose_to_cg = _nose_to_cg;
 }
 
+/**
+ * @brief Set the distance between tip of nose and the center of gravity
+ *
+ * Currently assumes the CG is perfectly aligned with the axis of the rocket.
+ * i.e. the x and y position of the CG is zero in the body frame
+ *
+ * @param nose_to_cg Distance between tip of nosecone and CG
+ */
 void Rocket::set_nose_to_cg(double& nose_to_cg) {
 	_nose_to_cg = nose_to_cg;
 	_Cp_vect.x = 0;
@@ -150,10 +51,23 @@ void Rocket::set_nose_to_cg(double& nose_to_cg) {
 	_Cp_vect.z = -(_nose_to_cp - _nose_to_cg);
 }
 
+/**
+ * @brief Obtain distance between tip of nose and the center of pressure
+ *
+ * @param nose_to_cp Reference to double to overwrite with calculated distance
+ */
 void Rocket::get_nose_to_cp(double& nose_to_cp) const {
 	nose_to_cp = _nose_to_cp;
 }
 
+/**
+ * @brief Set the distance between tip of nose and the center of pressure
+ *
+ * Currently assumes the CP is perfectly aligned with the axis of the rocket.
+ * i.e. the x and y position of the CP is zero in the body frame
+ *
+ * @param nose_to_cg Distance between tip of nosecone and CG
+ */
 void Rocket::set_nose_to_cp(double& nose_to_cp) {
 	_nose_to_cp = nose_to_cp;
 	_Cp_vect.x = 0;
@@ -161,6 +75,11 @@ void Rocket::set_nose_to_cp(double& nose_to_cp) {
 	_Cp_vect.z = -(_nose_to_cp - _nose_to_cg);
 }
 
+/**
+ * @brief Obtain vector pointing from CG -> CP
+ *
+ * @param vector Reference to a vector to overwrite with CG-to-CP vector
+ */
 void Rocket::get_Cp_vect(Vector3& vector) const {
 	vector = _Cp_vect;
 }
@@ -173,6 +92,13 @@ void Rocket::get_Cp_vect(Vector3& vector) const {
 // 	vector.z = p.Getz();
 // }
 
+/**
+ * @brief Performs a quaternion rotation to translate a vector from the inertial
+ * frame to the rocket body frame.
+ *
+ * @param vector Input vector in intertial frame to be rotated
+ * @return Vector3 The rotated vector represented in the rocket body frame
+ */
 Vector3 Rocket::i2r(Vector3 vector) {
 	Quaternion<double> p(0, vector.x, vector.y, vector.z);
 	p = (_q_ornt.conj() * p) * _q_ornt;
@@ -191,6 +117,13 @@ Vector3 Rocket::i2r(Vector3 vector) {
 // 	vector.z = p.Getz();
 // }
 
+/**
+ * @brief Performs a quaternion rotation to translate a vector from the rocket
+ * frame to the inertial reference frame.
+ *
+ * @param vector Input vector in rocket frame to be rotated
+ * @return Vector3 The rotated vector represented in the inertial frame
+ */
 Vector3 Rocket::r2i(Vector3 vector) {
 	Quaternion<double> p(0, vector.x, vector.y, vector.z);
 	p = (_q_ornt * p) * _q_ornt.conj();

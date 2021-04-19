@@ -9,6 +9,12 @@
 
 static double rad2deg = 180.0 / 3.14159265;
 
+/**
+ * @brief Calculates forces and moments and integrates with a simple euler step
+ *
+ * @param tStamp Current simulation timestamp
+ * @param tStep Simulation time step size
+ */
 void ForwardEuler::march_step(double tStamp, double tStep)
 {
 

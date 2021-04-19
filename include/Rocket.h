@@ -12,32 +12,32 @@ class Rocket {
 	public:
 		Rocket();
 
-	    // Get parameters by referece
-		void get_r_vect(Vector3& vector) const;
-		void get_r_dot(Vector3& vector) const;
-		void get_r_ddot(Vector3& vector) const;
+	    /****************** Get parameters by referece ************************/
+		void get_r_vect(Vector3& vector) const	{vector = _r_vect;};
+		void get_r_dot(Vector3& vector) const	{vector = _r_dot;};
+		void get_r_ddot(Vector3& vector) const	{vector = _r_ddot;};
 
-	    void get_q_ornt(Quaternion<double>& quatrn) const;
+	    void get_q_ornt(Quaternion<double>& quatrn) const	{quatrn = _q_ornt;};
 
-		void get_I(double (&array)[9]) const;
+		void get_I(double (&array)[9]) const {for (int i=0;i<9;++i){array[i]=_I[i];}};
 
-	    void get_w_vect(Vector3& vector) const;
-	    void get_w_dot(Vector3& vector) const;
+	    void get_w_vect(Vector3& vector) const	{vector = _w_vect;};
+	    void get_w_dot(Vector3& vector) const	{vector = _w_dot;};
 
-	    void get_f_net(Vector3& vector) const;
-	    void get_t_net(Vector3& vector) const;
+	    void get_f_net(Vector3& vector) const	{vector = _f_net;};
+	    void get_t_net(Vector3& vector) const	{vector = _t_net;};
 
-	    void get_mass(double& mass) const;
-		void get_d_ref(double& d_ref) const;
-		void get_A_ref(double& A_ref) const;
-		void get_Cna(double& Cna) const;
-	    void get_Cd(double& Cd) const;
+	    void get_mass(double& mass) const		{mass = _mass;};
+		void get_d_ref(double& d_ref) const		{d_ref = _d_ref;};
+		void get_A_ref(double& A_ref) const		{A_ref = _A_ref;};
+		void get_Cna(double& Cna) const			{Cna = _Cna;};
+	    void get_Cd(double& Cd) const			{Cd = _Cd;};
 		void get_nose_to_cg(double& nose_to_cg) const;
 		void get_nose_to_cp(double& nose_to_cp) const;
 
 		void get_Cp_vect(Vector3& vector) const;
 
-	    // Get parameters by value (return by value)
+		/************ Get parameters by value (return by value) ***************/
 	    Vector3 get_r_vect() const  {return _r_vect;};
 		Vector3 get_r_dot() const   {return _r_dot;};
 		Vector3 get_r_ddot() const  {return _r_ddot;};
@@ -60,26 +60,26 @@ class Rocket {
 
 		Vector3 get_Cp_vect() const	{return _Cp_vect;};
 
-	    // Set parameters (all passed by reference)
-		void set_r_vect(Vector3& vector);
-		void set_r_dot(Vector3& vector);
-		void set_r_ddot(Vector3& vector);
+		/************* Set parameters (all passed by reference) ***************/
+		void set_r_vect(Vector3& vector)	{_r_vect = vector;};
+		void set_r_dot(Vector3& vector)		{_r_dot = vector;};
+		void set_r_ddot(Vector3& vector)	{_r_ddot = vector;};
 
-		void set_q_ornt(Quaternion<double>& quatrn);
+		void set_q_ornt(Quaternion<double>& quatrn)	{_q_ornt = quatrn;};
 
-		void set_I(double (&array)[9]);
+		void set_I(double (&array)[9]) {for (int i=0;i<9;++i){_I[i]=array[i];}};
 
-		void set_w_vect(Vector3& vector);
-		void set_w_dot(Vector3& vector);
+		void set_w_vect(Vector3& vector)	{_w_vect = vector;};
+		void set_w_dot(Vector3& vector)		{_w_dot = vector;};
 
-		void set_f_net(Vector3& vector);
-		void set_t_net(Vector3& vector);
+		void set_f_net(Vector3& vector)		{_f_net = vector;};
+		void set_t_net(Vector3& vector)		{_t_net = vector;};
 
-	    void set_mass(double& mass);
-		void set_d_ref(double& d_ref);
-		void set_A_ref(double& A_ref);
-		void set_Cna(double& Cna);
-		void set_Cd(double& Cd);
+	    void set_mass(double& mass)			{_mass = mass;};
+		void set_d_ref(double& d_ref)		{_d_ref = d_ref;};
+		void set_A_ref(double& A_ref)		{_A_ref = A_ref;};
+		void set_Cna(double& Cna)			{_Cna = Cna;};
+		void set_Cd(double& Cd)				{_Cd = Cd;};
 		void set_nose_to_cg(double& nose_to_cg);
 		void set_nose_to_cp(double& nose_to_cp);
 

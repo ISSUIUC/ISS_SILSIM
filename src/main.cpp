@@ -16,7 +16,7 @@ int main() {
 
 	double mass = rocket.get_mass();
 	double I_tensor[9];
-	I_tensor[0] = (1.0/12.0) * mass * 5.182 * 5.182 * 30;
+	I_tensor[0] = (1.0/12.0) * mass * 5.182 * 5.182 * 25;
 	I_tensor[4] = I_tensor[0];
 	I_tensor[8] = 0.5 * mass * 0.0762 * 0.0762;
 	rocket.set_I(I_tensor);
