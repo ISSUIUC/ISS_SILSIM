@@ -9,8 +9,6 @@
 
 Rocket::Rocket() {
 
-	std::cout << "Rocket custom constructor" << std::endl;
-
 	_r_vect = Vector3();
 	_r_dot = Vector3();
 	_r_ddot = Vector3();
@@ -84,13 +82,13 @@ void Rocket::get_Cp_vect(Vector3& vector) const {
 	vector = _Cp_vect;
 }
 
-// void Rocket::i2r(Vector3& vector) {
-// 	Quaternion<double> p(0, vector.x, vector.y, vector.z);
-// 	p = (_q_ornt.conj() * p) * _q_ornt;
-// 	vector.x = p.Getx();
-// 	vector.y = p.Gety();
-// 	vector.z = p.Getz();
-// }
+void Rocket::i2r(Vector3& vector) {
+	Quaternion<double> p(0, vector.x, vector.y, vector.z);
+	p = (_q_ornt.conj() * p) * _q_ornt;
+	vector.x = p.Getx();
+	vector.y = p.Gety();
+	vector.z = p.Getz();
+}
 
 /**
  * @brief Performs a quaternion rotation to translate a vector from the inertial
@@ -109,13 +107,13 @@ Vector3 Rocket::i2r(Vector3 vector) {
 	return newVector;
 }
 
-// void Rocket::r2i(Vector3& vector) {
-// 	Quaternion<double> p(0, vector.x, vector.y, vector.z);
-// 	p = (_q_ornt * p) * _q_ornt.conj();
-// 	vector.x = p.Getx();
-// 	vector.y = p.Gety();
-// 	vector.z = p.Getz();
-// }
+void Rocket::r2i(Vector3& vector) {
+	Quaternion<double> p(0, vector.x, vector.y, vector.z);
+	p = (_q_ornt * p) * _q_ornt.conj();
+	vector.x = p.Getx();
+	vector.y = p.Gety();
+	vector.z = p.Getz();
+}
 
 /**
  * @brief Performs a quaternion rotation to translate a vector from the rocket
