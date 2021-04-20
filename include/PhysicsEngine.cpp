@@ -2,12 +2,12 @@
 #include <vector>
 #include <math.h>
 
-#include "Engine.h"
+#include "PhysicsEngine.h"
 #include "Rocket.h"
 #include "quaternion.h"
 #include "Vector3.h"
 
-static double rad2deg = 180.0 / 3.14159265;
+#define RAD2DEG (180.0 / 3.14159265);
 
 /**
  * @brief Calculates forces and moments and integrates with a simple euler step
@@ -18,7 +18,7 @@ static double rad2deg = 180.0 / 3.14159265;
 void ForwardEuler::march_step(double tStamp, double tStep)
 {
 
-	/* ##### Retrieve instantaneous rocket parameters ##### */
+	/*************** Retrieve instantaneous rocket parameters *****************/
 
 	// Inertial frame dynamics parameters
 	static Vector3 r_vect_if = _rocket.get_r_vect();
@@ -49,9 +49,7 @@ void ForwardEuler::march_step(double tStamp, double tStep)
 	// Motor thrust vector, rocket frame
 	static Vector3 thrust_rf = _motor.get_thrust(tStamp);
 
-	/* ##### Calculate forces and torques ##### */
-
-	// printf("\n\n");
+	/********************* Calculate forces and torques ***********************/
 
 	static Vector3 f_aero_rf;	// Aerodynamic forces, rocket frame
 	static Vector3 t_aero_rf;	// Aerodynamic torques, rocket frame
@@ -71,10 +69,7 @@ void ForwardEuler::march_step(double tStamp, double tStep)
 
 		// printf("v_rf: <%f, %f, %f>\n", v_rf.x, v_rf.y, v_rf.z);
 
-		double alpha = acos((rocket_axis_rf.dot(v_rf)) / (v_rf.magnitude()));
-		// alpha *= rad2deg;
-
-		printf("\nalpha: %f\n\n", alpha*rad2deg);
+		double alpha = acos(v_rf.z / v_rf.magnitude());
 
 		Vector3 f_N_rf;
 
@@ -116,7 +111,7 @@ void ForwardEuler::march_step(double tStamp, double tStep)
 
 	t_net_if = _rocket.r2i(t_aero_rf);
 
-	/* ##### Perform euler step ##### */
+	/************************** Perform euler step ****************************/
 
 	r_vect_if += r_dot_if * tStep;
 	r_dot_if += r_ddot_if * tStep;

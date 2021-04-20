@@ -1,6 +1,6 @@
 
-#ifndef _ENGINE_H_
-#define _ENGINE_H_
+#ifndef _PHYSICS_ENGINE_H_
+#define _PHYSICS_ENGINE_H_
 
 #include <string>
 #include <vector>
