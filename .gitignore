@@ -3,3 +3,6 @@ sim_data/*.csv
 build/*
 *.gch
 */*.gch
+*.swp
+.cache
+compile_commands.json
