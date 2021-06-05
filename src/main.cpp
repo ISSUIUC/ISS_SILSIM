@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "Vector3.h"
+
 #include "Simulation.h"
 #include "Rocket.h"
 #include "Sensor.h"
