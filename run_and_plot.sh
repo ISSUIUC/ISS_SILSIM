@@ -1,5 +1,5 @@
 rm sim_data/data.csv
 make clean
-make
+make -j8
 ./main
 python sim_data/plotter.py
