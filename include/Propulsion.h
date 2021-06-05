@@ -1,3 +1,17 @@
+/**
+ * @file 		Propulsion.h	
+ * @authors 	Ayberk Yaraneri
+ *
+ * @brief 		Class definitions for rocket propulsion components
+ *
+ * The classes defined here represent rocket propulsion components. While these
+ * objects will usually represent rocket motors, they can also be defined to 
+ * represent components like gas thrusters or other force enducing mechanisms.
+ *
+ */
+
+#pragma once
+
 #ifndef _PROPULSION_H_
 #define _PROPULSION_H_
 

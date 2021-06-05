@@ -1,3 +1,18 @@
+/**
+ * @file 		Simulation.cpp
+ * @authors 	Ayberk Yaraneri
+ *
+ * @brief 		Simulation class member function implementations 
+ *
+ * The Simulation class encapsulates meta information about the simulation.
+ * It also contains references to relevant components of the simulation to
+ * be performed, like a PhysicsEngine object and a Rocket object.
+ *
+ * In the hierearchy of SILSIM, the Simulation class sits at the top of the
+ * tree and "governs" the simulation itself. 
+ *
+ */
+
 #include <iostream>
 #include <string>
 #include <fstream>

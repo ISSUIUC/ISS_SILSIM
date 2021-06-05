@@ -1,3 +1,16 @@
+/**
+ * @file 		Rocket.cpp
+ * @authors 	Ayberk Yaraneri
+ *
+ * @brief 		Rocket class member function implementations 
+ *
+ * The rocket class encapsulates all physical quantities and parameters of the 
+ * Rocket. The class also contains references to child objects representing 
+ * components like sensors and rocket motors along with mechanisms to extract
+ * useful information about the rocket's state/trajectory. 
+ *
+ */
+
 #include <string>
 #include <vector>
 #include <iostream>

@@ -1,3 +1,19 @@
+/**
+ * @file 		Sensor.h	
+ * @authors 	Ayberk Yaraneri
+ *
+ * @brief 		Class definition for sensor components
+ *
+ * These Sensor classes encapsulate typical sensors found on Rocket avionics 
+ * like accelerometers and gyroscopes. This is the mechanism through which 
+ * the flight software being tested can obtain information of the simulated rocket.
+ * The classes provide a modular a means of injecting noise and bias along with
+ * other inaccuracies to make sensor measurements behave closer to real hardware
+ * rather than simply proving gorund truth. 
+ *
+ */
+
+#pragma once
 
 #ifndef _SENSOR_H_
 #define _SENSOR_H_

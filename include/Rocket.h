@@ -1,3 +1,17 @@
+/**
+ * @file 		Rocket.h
+ * @authors 	Ayberk Yaraneri
+ *
+ * @brief 		Rocket class definition 
+ *
+ * The rocket class encapsulates all physical quantities and parameters of the 
+ * Rocket. The class also contains references to child objects representing 
+ * components like sensors and rocket motors along with mechanisms to extract
+ * useful information about the rocket's state/trajectory. 
+ *
+ */
+
+#pragma once
 
 #ifndef _ROCKET_H_
 #define _ROCKET_H_

@@ -1,3 +1,15 @@
+/**
+ * @file 		Propulsion.cpp	
+ * @authors 	Ayberk Yaraneri
+ *
+ * @brief 		Member function implementations of propulsion component classes 
+ *
+ * The classes defined here represent rocket propulsion components. While these
+ * objects will usually represent rocket motors, they can also be defined to 
+ * represent components like gas thrusters or other force enducing mechanisms.
+ *
+ */
+
 #include <string>
 #include <vector>
 #include <iostream>

@@ -1,3 +1,16 @@
+/**
+ * @file 		PhysicsEngine.cpp
+ * @authors 	Ayberk Yaraneri
+ *
+ * @brief 		PhysicsEngine class member function implementations 
+ *
+ * The PhysicsEngine class encapsulates a particular algorithm that is used
+ * to advance the state of the simulation in time. These algorithms are 
+ * commonly responsible for calculating time varying quantities that govern
+ * the trajectory of the rocket, such as angular and axial acceleration.
+ *
+ */
+
 #include <string>
 #include <vector>
 #include <math.h>
