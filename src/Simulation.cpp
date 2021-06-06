@@ -101,3 +101,23 @@ void Simulation::run(int steps) {
 
 	dataFile.close();
 }
+
+/**
+ * @brief Adds a new sensor on the rocket to the simulation 
+ *
+ * @param sensor A pointer to the new Sensor object to be added
+ */
+void Simulation::add_sensor(Sensor* sensor) {
+		_sensors.push_back(sensor);
+}
+
+/**
+ * @brief Updates all sensors' internal data 
+ *
+ */
+void Simulation::update_sensors() {
+		for (std::vector<Sensor*>::iterator it = _sensors.begin(); it != _sensors.end(); ++it) {
+				(*it)->update_data(_tStamp);
+		}
+
+}
