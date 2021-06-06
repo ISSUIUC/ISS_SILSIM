@@ -24,3 +24,18 @@ or
 ```
 ./run_and_plot.sh
 ```
+## Feature ToDo List
+
+- [ ] Incorporate sensors into Rocket object
+	- Create a list of sensors
+	- Enumerate sensors and update their data
+- [ ] Create an "Atmosphere" class that governs air pressure/density properties
+	- Parameters could vary by altitude
+	- How to propogate atmospheric variables to other classes?
+	- Use existing atmospheric databases and interpolate
+- [ ] Look into a better method of trajectory visualtization
+	- Possibly PyBullet?
+- [ ] Create a "FlightSoftware" class that encapsulates flight software being tested.
+	- Could have containers that sort-of emulate threads
+	- Some sort of way of injecting faults or halting threads would be cool
+- [ ] Add graphical arrows in simulation playback to illustrate in-flight forces
