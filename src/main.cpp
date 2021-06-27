@@ -26,6 +26,10 @@ int main() {
 	Quaternion<double> start_ornt(cos(angle/2.0), sin(angle/2.0)*0.707, sin(angle/2.0)*0.707, 0);
 	rocket.set_q_ornt(start_ornt);
 
+	// Construct some sensors
+	Accelerometer accel1("LSM9_accel", rocket, 100);
+	Gyroscope gyro1("LSM9_gyro", rocket, 100);
+
 	// 3.5 second burn time @ 1500 Newton constant thrust (L ish motor I think)
 	SolidMotor motor(3.5, 4000.0);
 
