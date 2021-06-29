@@ -20,23 +20,32 @@
 
 #include <string>
 #include <vector>
+#include <random>
 
 #include "Rocket.h"
 #include "Vector3.h"
 
 class Sensor {
 	public:
-		Sensor(std::string name, Rocket& rocket, double refresh_rate) :
+		Sensor(std::string name, Rocket& rocket, double refresh_rate,
+			   double noise_mean=0.0f, double noise_stddev=1.0f) :
 														_name(name),
 														_rocket(rocket),
 														_refresh_rate(refresh_rate),
-														_last_update_tStep(0) {};
+														_last_update_tStep(0),
+														_normal_dist(noise_mean, noise_stddev) {};
 
 		bool is_new_data() {return _new_data;};
 
 		virtual void update_data(double tStep) = 0;
 		virtual void get_data(Vector3& data) = 0;
 		// virtual void get_data(double& data) = 0;
+
+		// Noise/bias injection control
+		void enable_noise_injection() 	{_inject_noise = true;};
+		void disable_noise_injection() 	{_inject_noise = false;};
+		void enable_bias_injection() 	{_inject_bias = true;};
+		void disable_bias_injection() 	{_inject_bias = false;};
 
 	protected:
 
@@ -48,60 +57,62 @@ class Sensor {
 		double _last_update_tStep;
 		bool _new_data;
 
+		// Normal distribution noise generation
+		std::default_random_engine _generator;
+		std::normal_distribution<double> _normal_dist;
+		bool _inject_bias = false; 			// Whether to inject constant bias to measurement
+		bool _inject_noise = false; 		// Whether to inject random noise to measurement
 };
 
 class Gyroscope : public Sensor {
 	public:
-		Gyroscope(std::string name, Rocket& rocket, double refresh_rate);
+		Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
+				  double noise_mean=0.0f, double noise_stddev=1.0f);
 		void update_data(double tStep);
 		void get_data(Vector3& data);
 
+		void set_constant_bias(Vector3 bias) {_bias = bias;};
+
 	private:
-		Vector3 _data; // The sensor's current reading
+		Vector3 _data; 		// The sensor's current reading
 
-		bool _inject_noise; 		// Whether to inject random noise to measurement
-		double _noise_magnitude; 	// Maximum magnitude of the noise
-		double _noise_std_dev; 		// Standard deviation of the noise
-		Vector3 _noise; 			// Noise vector to be added to measurement
-
-		bool _inject_bias; 	// Whether to inject constant bias to measurement
+		Vector3 _noise; 	// Noise vector to be added to measurement
+				
 		Vector3 _bias; 		// Constant bias vector to be added to measurement	
 };
 
 class Accelerometer : public Sensor {
 	public:
-		Accelerometer(std::string name, Rocket& rocket, double refresh_rate);
+		Accelerometer(std::string name, Rocket& rocket, double refresh_rate,
+					  double noise_mean=0.0f, double noise_stddev=1.0f);
 		void update_data(double tStep);
 		void get_data(Vector3& data);
+
+		void set_constant_bias(Vector3 bias) {_bias = bias;};
 
  	private:
 		Vector3 _data; // The sensor's current reading
 
-		bool _inject_noise; 		// Whether to inject random noise to measurement
-		double _noise_magnitude; 	// Maximum magnitude of the noise
-		double _noise_std_dev; 		// Standard deviation of the noise
 		Vector3 _noise; 			// Noise vector to be added to measurement
 
-		bool _inject_bias; 	// Whether to inject constant bias to measurement
 		Vector3 _bias; 		// Constant bias vector to be added to measurement	
 };
 
 // TODO: Implement functions for both altitude and pressure measurements (and specify units)
 class Barometer : public Sensor {
 	public:
-		Barometer(std::string name, Rocket& rocket, double refresh_rate);
+		Barometer(std::string name, Rocket& rocket, double refresh_rate,
+				  double noise_mean=0.0f, double noise_stddev=1.0f);
 		void update_data(double tStep);
 		void get_data(double& data);
+
+		void set_constant_bias(double bias) {_bias = bias;};
 	
 	private:
 		double _data; 	// The sensor's current reading
 
-		bool _inject_noise; 		// Whether to inject random noise to measurement
-		double _noise_magnitude; 	// Maximum magnitude of the noise
-		double _noise_std_dev; 		// Standard deviation of the noise
 		double _noise; 				// Noise value to be added to measurement
 
-		bool _inject_bias; 	// Whether to inject constant bias to measurement
 		double _bias; 		// Constant bias value to be added to measurement	
 };
 

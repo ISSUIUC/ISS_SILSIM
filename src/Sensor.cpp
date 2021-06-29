@@ -19,8 +19,9 @@
 #include "Rocket.h"
 #include "Sensor.h"
 
-Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate) :
-								Sensor(name, rocket, refresh_rate) {
+Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
+				     double noise_mean, double noise_stddev) :
+	Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
 	_data = Vector3();
 }
 
@@ -29,6 +30,15 @@ void Gyroscope::update_data(double tStep) {
 		_rocket.get_w_vect(_data);
 		_rocket.i2r(_data);
 		_new_data = true;
+
+		if (_inject_noise) {
+			_noise.randomize(_generator, _normal_dist);
+			_data += _noise;
+		}
+
+		if (_inject_bias) {
+			_data += _bias;
+		}
 	}
 }
 
@@ -37,8 +47,9 @@ void Gyroscope::get_data(Vector3& data) {
 	_new_data = false;
 }
 
-Accelerometer::Accelerometer(std::string name, Rocket& rocket, double refresh_rate) :
-								Sensor(name, rocket, refresh_rate) {
+Accelerometer::Accelerometer(std::string name, Rocket& rocket, double refresh_rate,
+							 double noise_mean, double noise_stddev) :
+	Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
 	_data = Vector3();
 }
 
@@ -47,6 +58,15 @@ void Accelerometer::update_data(double tStep) {
 		_rocket.get_r_ddot(_data);
 		_rocket.i2r(_data);
 		_new_data = true;
+
+		if (_inject_noise) {
+			_noise.randomize(_generator, _normal_dist);
+			_data += _noise;
+		}
+
+		if (_inject_bias) {
+			_data += _bias;
+		}
 	}
 }
 
@@ -55,10 +75,25 @@ void Accelerometer::get_data(Vector3& data) {
 	_new_data = false;
 }
 
+Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
+					 double noise_mean, double noise_stddev) :
+	Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
+	_data = _rocket.get_r_vect().x;	
+}
+
 void Barometer::update_data(double tStep) {
 	if ((tStep - _last_update_tStep) >= (1 / _refresh_rate)) {
 		_data = _rocket.get_r_vect().x;
 		_new_data = true;
+
+		if (_inject_noise) {
+			_noise = _normal_dist(_generator);
+			_data += _noise;
+		}
+
+		if (_inject_bias) {
+			_data += _bias;
+		}
 	}
 }
 
