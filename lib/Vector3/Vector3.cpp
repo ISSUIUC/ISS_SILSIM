@@ -100,3 +100,10 @@ Vector3 Vector3::normalized() {
 		return Vector3();
 	}
 }
+
+void Vector3::randomize(std::default_random_engine& generator,
+						std::normal_distribution<double>& dist) {
+		x = dist(generator);
+		y = dist(generator);
+		z = dist(generator);
+}
