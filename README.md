@@ -39,3 +39,14 @@ or
 	- Could have containers that sort-of emulate threads
 	- Some sort of way of injecting faults or halting threads would be cool
 - [ ] Add graphical arrows in simulation playback to illustrate in-flight forces
+- [ ] Make a logging library that is modular and accepts data from configurable sources
+	- [ ] Decide on mechanism and architecture of logging system
+		- Single file or multiple files?
+		- Human readable format? - need a parser if not human readable
+	- [ ] Implement a LogAggregator class that collects logs from all sources
+	- [ ] Implement a LogSource class that supplies LogAggregator with data 
+	- [ ] Perhaps some phython to parse the logged data?
+
+## Improvements/Fixes ToDo List
+
+- [ ] Added functions to Barometer sensor class to either read altitude or air pressure of various units
