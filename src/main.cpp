@@ -28,6 +28,7 @@ int main() {
 
 	// Construct some sensors
 	Accelerometer accel1("LSM9_accel", rocket, 100);
+	accel1.enable_noise_injection();
 	Gyroscope gyro1("LSM9_gyro", rocket, 100);
 
 	// 3.5 second burn time @ 1500 Newton constant thrust (L ish motor I think)
@@ -38,6 +39,9 @@ int main() {
 	// std::vector<Sensor&> sensors;
 
 	Simulation sim(0.01, engine, rocket, motor, "sim_data/data.csv");
+	
+	sim.add_sensor(&accel1);
+	// sim.add_sensor(&gyro1);
 
 	std::cout << "Running Sim!" << std::endl;
 

@@ -28,7 +28,7 @@
 class Sensor {
 	public:
 		Sensor(std::string name, Rocket& rocket, double refresh_rate,
-			   double noise_mean=0.0f, double noise_stddev=1.0f) :
+			   double noise_mean=0.0f, double noise_stddev=0.1f) :
 														_name(name),
 														_rocket(rocket),
 														_refresh_rate(refresh_rate),
@@ -36,6 +36,7 @@ class Sensor {
 														_normal_dist(noise_mean, noise_stddev) {};
 
 		bool is_new_data() {return _new_data;};
+		std::string get_name() {return _name;};
 
 		virtual void update_data(double tStep) = 0;
 		virtual void get_data(Vector3& data) = 0;
@@ -67,7 +68,7 @@ class Sensor {
 class Gyroscope : public Sensor {
 	public:
 		Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
-				  double noise_mean=0.0f, double noise_stddev=1.0f);
+				  double noise_mean=0.0f, double noise_stddev=0.1f);
 		void update_data(double tStep);
 		void get_data(Vector3& data);
 
@@ -84,16 +85,16 @@ class Gyroscope : public Sensor {
 class Accelerometer : public Sensor {
 	public:
 		Accelerometer(std::string name, Rocket& rocket, double refresh_rate,
-					  double noise_mean=0.0f, double noise_stddev=1.0f);
+					  double noise_mean=0.0f, double noise_stddev=0.1f);
 		void update_data(double tStep);
 		void get_data(Vector3& data);
 
 		void set_constant_bias(Vector3 bias) {_bias = bias;};
 
  	private:
-		Vector3 _data; // The sensor's current reading
+		Vector3 _data; 		// The sensor's current reading
 
-		Vector3 _noise; 			// Noise vector to be added to measurement
+		Vector3 _noise; 	// Noise vector to be added to measurement
 
 		Vector3 _bias; 		// Constant bias vector to be added to measurement	
 };
@@ -102,16 +103,16 @@ class Accelerometer : public Sensor {
 class Barometer : public Sensor {
 	public:
 		Barometer(std::string name, Rocket& rocket, double refresh_rate,
-				  double noise_mean=0.0f, double noise_stddev=1.0f);
+				  double noise_mean=0.0f, double noise_stddev=0.1f);
 		void update_data(double tStep);
 		void get_data(double& data);
 
 		void set_constant_bias(double bias) {_bias = bias;};
 	
 	private:
-		double _data; 	// The sensor's current reading
+		double _data; 		// The sensor's current reading
 
-		double _noise; 				// Noise value to be added to measurement
+		double _noise; 		// Noise value to be added to measurement
 
 		double _bias; 		// Constant bias value to be added to measurement	
 };

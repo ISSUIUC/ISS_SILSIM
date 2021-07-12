@@ -83,6 +83,8 @@ void Simulation::run(int steps) {
 
 		_engine.march_step(_tStamp, _tStep);
 
+		update_sensors();
+
 		dataFile << _tStamp << ",";
 		dataFile << r_vect.x << "," << r_vect.y << "," << r_vect.z << ",";
 		dataFile << r_dot.x << "," << r_dot.y << "," << r_dot.z << ",";
@@ -90,7 +92,13 @@ void Simulation::run(int steps) {
 		dataFile << f_net.x << "," << f_net.y << "," << f_net.z << ",";
 		dataFile << s << "," << x << "," << y << "," << z  << ",";
 		dataFile << roll << "," << pitch << "," << yaw << ",";
-		dataFile << rocket_axis.x << "," << rocket_axis.y << "," << rocket_axis.z << "\n";
+		dataFile << rocket_axis.x << "," << rocket_axis.y << "," << rocket_axis.z << ",";
+		
+		Vector3 sensor_data;
+		_sensors[0]->get_data(sensor_data);
+		dataFile << sensor_data.x << "," << sensor_data.y << "," << sensor_data.z;
+
+		dataFile << "\n";
 
 		_tStamp += _tStep;
 
