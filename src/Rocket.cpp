@@ -16,7 +16,6 @@
 #include <iostream>
 
 #include "Rocket.h"
-#include "Sensor.h"
 #include "quaternion.h"
 #include "Vector3.h"
 
@@ -128,3 +127,4 @@ Vector3 Rocket::r2i(Vector3 vector) {
 	newVector.z = p.Getz();
 	return newVector;
 }
+

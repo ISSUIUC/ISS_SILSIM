@@ -2,6 +2,7 @@
 #ifndef _VECTOR3_H_
 #define _VECTOR3_H_
 
+#include <random>
 
 class Vector3 {
 public:
@@ -31,6 +32,9 @@ public:
 	double magnitude2() const;
 	void normalize();
 	Vector3 normalized();
+
+	void randomize(std::default_random_engine& generator,
+				   std::normal_distribution<double>& dist);
 
 };
 
