@@ -14,7 +14,7 @@ vx = []
 vy = []
 vz = []
 
-ax = []
+aX = []
 ay = []
 az = []
 
@@ -35,8 +35,13 @@ rocketX = []
 rocketY = []
 rocketZ = []
 
-data_lists = [timestamps, rx, ry, rz, vx, vy, vz, ax, ay, az, fx, fy, fz,
-              q0, q1, q2, q3, roll, pitch, yaw, rocketX, rocketY, rocketZ]
+sensorX = []
+sensorY = []
+sensorZ = []
+
+data_lists = [timestamps, rx, ry, rz, vx, vy, vz, aX, ay, az, fx, fy, fz,
+              q0, q1, q2, q3, roll, pitch, yaw, rocketX, rocketY, rocketZ,
+              sensorX, sensorY, sensorZ]
 
 with open("sim_data/data.csv") as csvfile:
     csvreader = csv.reader(csvfile, delimiter=",")
@@ -92,5 +97,22 @@ ax = fig.add_subplot(339)
 ax.plot(timestamps, yaw, 'b', label="Yaw")
 ax.grid()
 ax.legend()
+
+fig = plt.figure()
+ax = fig.add_subplot(311)
+plt.plot(timestamps, aX, color='r', linewidth=2.0, label="X Accel Truth")
+plt.plot(timestamps, sensorX, color='g', label="X Accel Sensor Output")
+plt.grid()
+plt.legend()
+ax = fig.add_subplot(312)
+plt.plot(timestamps, ay, color='r', linewidth=2.0, label="Y Accel Truth")
+plt.plot(timestamps, sensorY, color='g', label="Y Accel Sensor Output")
+plt.grid()
+plt.legend()
+ax = fig.add_subplot(313)
+plt.plot(timestamps, az, color='r', linewidth=2.0, label="Z Accel Truth")
+plt.plot(timestamps, sensorZ, color='g', label="Z Accel Sensor Output")
+plt.grid()
+plt.legend()
 
 plt.show()

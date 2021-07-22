@@ -83,6 +83,8 @@ void Simulation::run(int steps) {
 
 		_engine.march_step(_tStamp, _tStep);
 
+		update_sensors();
+
 		dataFile << _tStamp << ",";
 		dataFile << r_vect.x << "," << r_vect.y << "," << r_vect.z << ",";
 		dataFile << r_dot.x << "," << r_dot.y << "," << r_dot.z << ",";
@@ -90,7 +92,13 @@ void Simulation::run(int steps) {
 		dataFile << f_net.x << "," << f_net.y << "," << f_net.z << ",";
 		dataFile << s << "," << x << "," << y << "," << z  << ",";
 		dataFile << roll << "," << pitch << "," << yaw << ",";
-		dataFile << rocket_axis.x << "," << rocket_axis.y << "," << rocket_axis.z << "\n";
+		dataFile << rocket_axis.x << "," << rocket_axis.y << "," << rocket_axis.z << ",";
+		
+		Vector3 sensor_data;
+		_sensors[0]->get_data(sensor_data);
+		dataFile << sensor_data.x << "," << sensor_data.y << "," << sensor_data.z;
+
+		dataFile << "\n";
 
 		_tStamp += _tStep;
 
@@ -100,4 +108,24 @@ void Simulation::run(int steps) {
 	}
 
 	dataFile.close();
+}
+
+/**
+ * @brief Adds a new sensor on the rocket to the simulation 
+ *
+ * @param sensor A pointer to the new Sensor object to be added
+ */
+void Simulation::add_sensor(Sensor* sensor) {
+		_sensors.push_back(sensor);
+}
+
+/**
+ * @brief Updates all sensors' internal data 
+ *
+ */
+void Simulation::update_sensors() {
+		for (std::vector<Sensor*>::iterator it = _sensors.begin(); it != _sensors.end(); ++it) {
+				(*it)->update_data(_tStamp);
+		}
+
 }

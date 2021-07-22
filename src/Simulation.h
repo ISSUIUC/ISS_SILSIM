@@ -43,6 +43,10 @@ public:
 
 	void run(int steps);
 
+	/************************* Sensor interface ***************************/
+	void add_sensor(Sensor* sensor);
+	void update_sensors();
+
 
 private:
 	double _tStamp;
@@ -52,7 +56,9 @@ private:
 
 	Rocket& _rocket;
 	SolidMotor& _motor;
-	// std::vector<Sensor&>& _sensors;
+	
+	// Sensors
+	std::vector<Sensor*> _sensors; 	// array of sensors on the rocket
 
 	std::string _filename;
 };
