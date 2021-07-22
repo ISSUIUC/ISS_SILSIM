@@ -9,7 +9,7 @@
  * the flight software being tested can obtain information of the simulated rocket.
  * The classes provide a modular a means of injecting noise and bias along with
  * other inaccuracies to make sensor measurements behave closer to real hardware
- * rather than simply providing gorund truth. 
+ * rather than simply providing ground truth. 
  *
  */
 
