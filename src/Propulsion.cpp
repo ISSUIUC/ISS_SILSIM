@@ -24,9 +24,9 @@
  */
 
 void SolidMotor::ignite(double tStamp) {
-    _ignition = true;
-    _ignition_tStamp = tStamp;
-    _current_thrust = _thrust_value;
+    ignition_ = true;
+    ignition_tStamp_ = tStamp;
+    current_thrust_ = thrust_value_;
 }
 
 /**
@@ -36,11 +36,11 @@ void SolidMotor::ignite(double tStamp) {
  * @param vector Vector reference to overwrite with motor's thrust vector
  */
 void SolidMotor::get_thrust(double tStamp, Vector3& vector) {
-    if (_ignition == true) {
-        if ((tStamp - _ignition_tStamp) <= _max_burn_duration) {
+    if (ignition_ == true) {
+        if ((tStamp - ignition_tStamp_) <= max_burn_duration_) {
             vector.x = 0.0;
             vector.y = 0.0;
-            vector.z = _current_thrust;
+            vector.z = current_thrust_;
             return;
         }
     }
@@ -57,11 +57,11 @@ void SolidMotor::get_thrust(double tStamp, Vector3& vector) {
  */
 Vector3 SolidMotor::get_thrust(double tStamp) {
     Vector3 vector;
-    if (_ignition == true) {
-        if ((tStamp - _ignition_tStamp) <= _max_burn_duration) {
+    if (ignition_ == true) {
+        if ((tStamp - ignition_tStamp_) <= max_burn_duration_) {
             vector.x = 0.0;
             vector.y = 0.0;
-            vector.z = _current_thrust;
+            vector.z = current_thrust_;
             return vector;
         }
     }

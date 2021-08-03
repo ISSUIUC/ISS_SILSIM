@@ -34,33 +34,33 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     /*************** Retrieve instantaneous rocket parameters *****************/
 
     // Inertial frame dynamics parameters
-    static Vector3 r_vect_if = _rocket.get_r_vect();
-    static Vector3 r_dot_if = _rocket.get_r_dot();
-    static Vector3 r_ddot_if = _rocket.get_r_ddot();
-    static Vector3 w_vect_if = _rocket.get_w_vect();
-    static Vector3 w_dot_if = _rocket.get_w_dot();
-    static Vector3 f_net_if = _rocket.get_f_net();
-    static Vector3 t_net_if = _rocket.get_t_net();
+    static Vector3 r_vect_if = rocket_.get_r_vect();
+    static Vector3 r_dot_if = rocket_.get_r_dot();
+    static Vector3 r_ddot_if = rocket_.get_r_ddot();
+    static Vector3 w_vect_if = rocket_.get_w_vect();
+    static Vector3 w_dot_if = rocket_.get_w_dot();
+    static Vector3 f_net_if = rocket_.get_f_net();
+    static Vector3 t_net_if = rocket_.get_t_net();
 
     // Quaternion from inertial to rocket frame
-    static Quaternion<double> q_ornt = _rocket.get_q_ornt();
+    static Quaternion<double> q_ornt = rocket_.get_q_ornt();
 
     // CG to Cp vector
-    static Vector3 Cp_vect_rf = _rocket.get_Cp_vect();
+    static Vector3 Cp_vect_rf = rocket_.get_Cp_vect();
 
     // Get moment of inertia tenspr
     static double I_tens[9];
-    _rocket.get_I(I_tens);
+    rocket_.get_I(I_tens);
 
     // Static parameters
-    static double mass = _rocket.get_mass();
-    // static double d_ref = _rocket.get_d_ref();
-    static double A_ref = _rocket.get_A_ref();
-    static double Cna = _rocket.get_Cna();
-    static double Cd = _rocket.get_Cd();
+    static double mass = rocket_.get_mass();
+    // static double d_ref = rocket_.get_d_ref();
+    static double A_ref = rocket_.get_A_ref();
+    static double Cna = rocket_.get_Cna();
+    static double Cd = rocket_.get_Cd();
 
     // Motor thrust vector, rocket frame
-    static Vector3 thrust_rf = _motor.get_thrust(tStamp);
+    static Vector3 thrust_rf = motor_.get_thrust(tStamp);
 
     /********************* Calculate forces and torques ***********************/
 
@@ -78,7 +78,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         Vector3 rocket_axis_rf(0, 0, 1);
 
         Vector3 v_rf;
-        v_rf = _rocket.i2r(r_dot_if);
+        v_rf = rocket_.i2r(r_dot_if);
 
         // printf("v_rf: <%f, %f, %f>\n", v_rf.x, v_rf.y, v_rf.z);
 
@@ -119,10 +119,10 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         t_aero_rf.z = 0;
     }
 
-    f_net_if = _rocket.r2i(f_aero_rf + thrust_rf);
+    f_net_if = rocket_.r2i(f_aero_rf + thrust_rf);
     f_net_if.z -= mass * 9.81;
 
-    t_net_if = _rocket.r2i(t_aero_rf);
+    t_net_if = rocket_.r2i(t_aero_rf);
 
     /************************** Perform euler step ****************************/
 
@@ -159,15 +159,15 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         w_vect_if.z = 0;
     }
 
-    _rocket.set_f_net(f_net_if);
-    _rocket.set_t_net(t_net_if);
+    rocket_.set_f_net(f_net_if);
+    rocket_.set_t_net(t_net_if);
 
-    _rocket.set_r_vect(r_vect_if);
-    _rocket.set_r_dot(r_dot_if);
-    _rocket.set_r_ddot(r_ddot_if);
+    rocket_.set_r_vect(r_vect_if);
+    rocket_.set_r_dot(r_dot_if);
+    rocket_.set_r_ddot(r_ddot_if);
 
-    _rocket.set_q_ornt(q_ornt);
+    rocket_.set_q_ornt(q_ornt);
 
-    _rocket.set_w_vect(w_vect_if);
-    _rocket.set_w_dot(w_dot_if);
+    rocket_.set_w_vect(w_vect_if);
+    rocket_.set_w_dot(w_dot_if);
 }

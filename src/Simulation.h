@@ -34,12 +34,12 @@ class Simulation {
                SolidMotor& motor, std::string filename
                // std::vector<Sensor&>& sensors
                )
-        : _tStamp(0),
-          _tStep(tStep),
-          _engine(engine),
-          _rocket(rocket),
-          _motor(motor),
-          _filename(filename){};
+        : tStamp_(0),
+          tStep_(tStep),
+          engine_(engine),
+          rocket_(rocket),
+          motor_(motor),
+          filename_(filename){};
 
     void run(int steps);
 
@@ -48,18 +48,18 @@ class Simulation {
     void update_sensors();
 
    private:
-    double _tStamp;
-    double _tStep;
+    double tStamp_;
+    double tStep_;
 
-    PhysicsEngine& _engine;
+    PhysicsEngine& engine_;
 
-    Rocket& _rocket;
-    SolidMotor& _motor;
+    Rocket& rocket_;
+    SolidMotor& motor_;
 
     // Sensors
-    std::vector<Sensor*> _sensors;  // array of sensors on the rocket
+    std::vector<Sensor*> sensors_;  // array of sensors on the rocket
 
-    std::string _filename;
+    std::string filename_;
 };
 
 #endif

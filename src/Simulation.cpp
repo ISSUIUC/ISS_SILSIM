@@ -33,7 +33,7 @@
 // #define SIM_DEBUG
 
 void Simulation::run(int steps) {
-    std::ofstream dataFile(_filename);
+    std::ofstream dataFile(filename_);
 
     Vector3 r_vect;
     Vector3 r_dot;
@@ -45,15 +45,15 @@ void Simulation::run(int steps) {
 
     double roll, pitch, yaw;
 
-    _motor.ignite(_tStamp);
+    motor_.ignite(tStamp_);
 
     for (int iter = 0; iter < steps; ++iter) {
-        _rocket.get_r_vect(r_vect);
-        _rocket.get_r_dot(r_dot);
-        _rocket.get_r_ddot(r_ddot);
-        _rocket.get_f_net(f_net);
-        _rocket.get_w_vect(w_net);
-        _rocket.get_q_ornt(q_ornt);
+        rocket_.get_r_vect(r_vect);
+        rocket_.get_r_dot(r_dot);
+        rocket_.get_r_ddot(r_ddot);
+        rocket_.get_f_net(f_net);
+        rocket_.get_w_vect(w_net);
+        rocket_.get_q_ornt(q_ornt);
 
         float s = q_ornt.Gets();
         float x = q_ornt.Getx();
@@ -69,8 +69,8 @@ void Simulation::run(int steps) {
                RAD2DEG;
 
 #ifdef SIM_DEBUG
-        double alpha = acos(_rocket.i2r(r_dot).z / (r_dot.magnitude()));
-        printf("Timestamp: %f\n", _tStamp);
+        double alpha = acos(rocket_.i2r(r_dot).z / (r_dot.magnitude()));
+        printf("Timestamp: %f\n", tStamp_);
         printf("\tR-Vector: <%f, %f, %f>", r_vect.x, r_vect.y, r_vect.z);
         printf("\tVelocity: <%f, %f, %f>", r_dot.x, r_dot.y, r_dot.z);
         printf("\tAccel: <%f, %f, %f>", r_ddot.x, r_ddot.y, r_ddot.z);
@@ -81,13 +81,13 @@ void Simulation::run(int steps) {
 #endif
 
         Vector3 rocket_axis(0, 0, 1);
-        rocket_axis = _rocket.r2i(rocket_axis);
+        rocket_axis = rocket_.r2i(rocket_axis);
 
-        _engine.march_step(_tStamp, _tStep);
+        engine_.march_step(tStamp_, tStep_);
 
         update_sensors();
 
-        dataFile << _tStamp << ",";
+        dataFile << tStamp_ << ",";
         dataFile << r_vect.x << "," << r_vect.y << "," << r_vect.z << ",";
         dataFile << r_dot.x << "," << r_dot.y << "," << r_dot.z << ",";
         dataFile << r_ddot.x << "," << r_ddot.y << "," << r_ddot.z << ",";
@@ -98,13 +98,13 @@ void Simulation::run(int steps) {
                  << rocket_axis.z << ",";
 
         Vector3 sensor_data;
-        _sensors[0]->get_data(sensor_data);
+        sensors_[0]->get_data(sensor_data);
         dataFile << sensor_data.x << "," << sensor_data.y << ","
                  << sensor_data.z;
 
         dataFile << "\n";
 
-        _tStamp += _tStep;
+        tStamp_ += tStep_;
 
         if (r_dot.z < -3.0) {
             break;
@@ -119,15 +119,15 @@ void Simulation::run(int steps) {
  *
  * @param sensor A pointer to the new Sensor object to be added
  */
-void Simulation::add_sensor(Sensor* sensor) { _sensors.push_back(sensor); }
+void Simulation::add_sensor(Sensor* sensor) { sensors_.push_back(sensor); }
 
 /**
  * @brief Updates all sensors' internal data
  *
  */
 void Simulation::update_sensors() {
-    for (std::vector<Sensor*>::iterator it = _sensors.begin();
-         it != _sensors.end(); ++it) {
-        (*it)->update_data(_tStamp);
+    for (std::vector<Sensor*>::iterator it = sensors_.begin();
+         it != sensors_.end(); ++it) {
+        (*it)->update_data(tStamp_);
     }
 }
