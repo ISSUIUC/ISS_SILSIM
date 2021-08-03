@@ -1,52 +1,52 @@
-#include <iostream>
-#include <string>
 #include <stdio.h>
 
-#include "Vector3.h"
+#include <iostream>
+#include <string>
 
-#include "Simulation.h"
 #include "Rocket.h"
 #include "Sensor.h"
+#include "Simulation.h"
+#include "Vector3.h"
 #include "quaternion.h"
 
 double deg2rad = 3.14159265 / 180.0;
 
 int main() {
+    Rocket rocket;
 
-	Rocket rocket;
+    double mass = rocket.get_mass();
+    double I_tensor[9];
+    I_tensor[0] = (1.0 / 12.0) * mass * 5.182 * 5.182 * 25;
+    I_tensor[4] = I_tensor[0];
+    I_tensor[8] = 0.5 * mass * 0.0762 * 0.0762;
+    rocket.set_I(I_tensor);
 
-	double mass = rocket.get_mass();
-	double I_tensor[9];
-	I_tensor[0] = (1.0/12.0) * mass * 5.182 * 5.182 * 25;
-	I_tensor[4] = I_tensor[0];
-	I_tensor[8] = 0.5 * mass * 0.0762 * 0.0762;
-	rocket.set_I(I_tensor);
+    double angle = 5.0 * deg2rad;
+    Quaternion<double> start_ornt(cos(angle / 2.0), sin(angle / 2.0) * 0.707,
+                                  sin(angle / 2.0) * 0.707, 0);
+    rocket.set_q_ornt(start_ornt);
 
-	double angle = 5.0 * deg2rad;
-	Quaternion<double> start_ornt(cos(angle/2.0), sin(angle/2.0)*0.707, sin(angle/2.0)*0.707, 0);
-	rocket.set_q_ornt(start_ornt);
+    // Construct some sensors
+    Accelerometer accel1("LSM9_accel", rocket, 100);
+    accel1.enable_noise_injection();
+    Gyroscope gyro1("LSM9_gyro", rocket, 100);
 
-	// Construct some sensors
-	Accelerometer accel1("LSM9_accel", rocket, 100);
-	accel1.enable_noise_injection();
-	Gyroscope gyro1("LSM9_gyro", rocket, 100);
+    // 3.5 second burn time @ 1500 Newton constant thrust (L ish motor I think)
+    SolidMotor motor(3.5, 4000.0);
 
-	// 3.5 second burn time @ 1500 Newton constant thrust (L ish motor I think)
-	SolidMotor motor(3.5, 4000.0);
+    ForwardEuler engine(rocket, motor);
 
-	ForwardEuler engine(rocket, motor);
+    // std::vector<Sensor&> sensors;
 
-	// std::vector<Sensor&> sensors;
+    Simulation sim(0.01, engine, rocket, motor, "sim_data/data.csv");
 
-	Simulation sim(0.01, engine, rocket, motor, "sim_data/data.csv");
-	
-	sim.add_sensor(&accel1);
-	// sim.add_sensor(&gyro1);
+    sim.add_sensor(&accel1);
+    // sim.add_sensor(&gyro1);
 
-	std::cout << "Running Sim!" << std::endl;
+    std::cout << "Running Sim!" << std::endl;
 
-	// run 3000 steps
-	sim.run(10000);
+    // run 3000 steps
+    sim.run(10000);
 
-	return 0;
+    return 0;
 }

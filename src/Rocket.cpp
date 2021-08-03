@@ -2,39 +2,28 @@
  * @file 		Rocket.cpp
  * @authors 	Ayberk Yaraneri
  *
- * @brief 		Rocket class member function implementations 
+ * @brief 		Rocket class member function implementations
  *
- * The rocket class encapsulates all physical quantities and parameters of the 
- * Rocket. The class also contains references to child objects representing 
+ * The rocket class encapsulates all physical quantities and parameters of the
+ * Rocket. The class also contains references to child objects representing
  * components like sensors and rocket motors along with mechanisms to extract
- * useful information about the rocket's state/trajectory. 
+ * useful information about the rocket's state/trajectory.
  *
  */
 
+#include "Rocket.h"
+
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 
-#include "Rocket.h"
-#include "quaternion.h"
 #include "Vector3.h"
+#include "quaternion.h"
 
 Rocket::Rocket() {
+    q_ornt_ = Quaternion<double>(1, 0, 0, 0);
 
-	_r_vect = Vector3();
-	_r_dot = Vector3();
-	_r_ddot = Vector3();
-
-	_q_ornt = Quaternion<double>(1, 0, 0, 0);
-
-	_w_vect = Vector3();
-	_w_dot = Vector3();
-
-	_f_net = Vector3();
-	_t_net = Vector3();
-
-	_Cp_vect = Vector3(0, 0, -(_nose_to_cp - _nose_to_cg));
-
+    Cp_vect_ = Vector3(0, 0, -(nose_to_cp_ - nose_to_cg_));
 }
 
 /**
@@ -43,7 +32,7 @@ Rocket::Rocket() {
  * @param nose_to_cg Reference to double to overwrite with calculated distance
  */
 void Rocket::get_nose_to_cg(double& nose_to_cg) const {
-	nose_to_cg = _nose_to_cg;
+    nose_to_cg = nose_to_cg_;
 }
 
 /**
@@ -55,10 +44,10 @@ void Rocket::get_nose_to_cg(double& nose_to_cg) const {
  * @param nose_to_cg Distance between tip of nosecone and CG
  */
 void Rocket::set_nose_to_cg(double& nose_to_cg) {
-	_nose_to_cg = nose_to_cg;
-	_Cp_vect.x = 0;
-	_Cp_vect.y = 0;
-	_Cp_vect.z = -(_nose_to_cp - _nose_to_cg);
+    nose_to_cg_ = nose_to_cg;
+    Cp_vect_.x = 0;
+    Cp_vect_.y = 0;
+    Cp_vect_.z = -(nose_to_cp_ - nose_to_cg_);
 }
 
 /**
@@ -67,7 +56,7 @@ void Rocket::set_nose_to_cg(double& nose_to_cg) {
  * @param nose_to_cp Reference to double to overwrite with calculated distance
  */
 void Rocket::get_nose_to_cp(double& nose_to_cp) const {
-	nose_to_cp = _nose_to_cp;
+    nose_to_cp = nose_to_cp_;
 }
 
 /**
@@ -79,10 +68,10 @@ void Rocket::get_nose_to_cp(double& nose_to_cp) const {
  * @param nose_to_cg Distance between tip of nosecone and CG
  */
 void Rocket::set_nose_to_cp(double& nose_to_cp) {
-	_nose_to_cp = nose_to_cp;
-	_Cp_vect.x = 0;
-	_Cp_vect.y = 0;
-	_Cp_vect.z = -(_nose_to_cp - _nose_to_cg);
+    nose_to_cp_ = nose_to_cp;
+    Cp_vect_.x = 0;
+    Cp_vect_.y = 0;
+    Cp_vect_.z = -(nose_to_cp_ - nose_to_cg_);
 }
 
 /**
@@ -90,9 +79,7 @@ void Rocket::set_nose_to_cp(double& nose_to_cp) {
  *
  * @param vector Reference to a vector to overwrite with CG-to-CP vector
  */
-void Rocket::get_Cp_vect(Vector3& vector) const {
-	vector = _Cp_vect;
-}
+void Rocket::get_Cp_vect(Vector3& vector) const { vector = Cp_vect_; }
 
 /**
  * @brief Performs a quaternion rotation to translate a vector from the inertial
@@ -102,13 +89,13 @@ void Rocket::get_Cp_vect(Vector3& vector) const {
  * @return Vector3 The rotated vector represented in the rocket body frame
  */
 Vector3 Rocket::i2r(Vector3 vector) {
-	Quaternion<double> p(0, vector.x, vector.y, vector.z);
-	p = (_q_ornt.conj() * p) * _q_ornt;
-	Vector3 newVector;
-	newVector.x = p.Getx();
-	newVector.y = p.Gety();
-	newVector.z = p.Getz();
-	return newVector;
+    Quaternion<double> p(0, vector.x, vector.y, vector.z);
+    p = (q_ornt_.conj() * p) * q_ornt_;
+    Vector3 newVector;
+    newVector.x = p.Getx();
+    newVector.y = p.Gety();
+    newVector.z = p.Getz();
+    return newVector;
 }
 
 /**
@@ -119,12 +106,11 @@ Vector3 Rocket::i2r(Vector3 vector) {
  * @return Vector3 The rotated vector represented in the inertial frame
  */
 Vector3 Rocket::r2i(Vector3 vector) {
-	Quaternion<double> p(0, vector.x, vector.y, vector.z);
-	p = (_q_ornt * p) * _q_ornt.conj();
-	Vector3 newVector;
-	newVector.x = p.Getx();
-	newVector.y = p.Gety();
-	newVector.z = p.Getz();
-	return newVector;
+    Quaternion<double> p(0, vector.x, vector.y, vector.z);
+    p = (q_ornt_ * p) * q_ornt_.conj();
+    Vector3 newVector;
+    newVector.x = p.Getx();
+    newVector.y = p.Gety();
+    newVector.z = p.Getz();
+    return newVector;
 }
-
