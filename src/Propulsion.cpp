@@ -1,20 +1,21 @@
 /**
- * @file 		Propulsion.cpp	
+ * @file 		Propulsion.cpp
  * @authors 	Ayberk Yaraneri
  *
- * @brief 		Member function implementations of propulsion component classes 
+ * @brief 		Member function implementations of propulsion component
+ * classes
  *
  * The classes defined here represent rocket propulsion components. While these
- * objects will usually represent rocket motors, they can also be defined to 
+ * objects will usually represent rocket motors, they can also be defined to
  * represent components like gas thrusters or other force enducing mechanisms.
  *
  */
 
+#include "Propulsion.h"
+
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
-
-#include "Propulsion.h"
 
 /**
  * @brief Transitions state of SolidMotor to ignited (producing thrust)
@@ -23,9 +24,9 @@
  */
 
 void SolidMotor::ignite(double tStamp) {
-	_ignition = true;
-	_ignition_tStamp = tStamp;
-	_current_thrust = _thrust_value;
+    _ignition = true;
+    _ignition_tStamp = tStamp;
+    _current_thrust = _thrust_value;
 }
 
 /**
@@ -35,17 +36,17 @@ void SolidMotor::ignite(double tStamp) {
  * @param vector Vector reference to overwrite with motor's thrust vector
  */
 void SolidMotor::get_thrust(double tStamp, Vector3& vector) {
-	if (_ignition == true) {
-		if ((tStamp - _ignition_tStamp) <= _max_burn_duration) {
-			vector.x = 0.0;
-			vector.y = 0.0;
-			vector.z = _current_thrust;
-			return;
-		}
-	}
-	vector.x = 0.0;
-	vector.y = 0.0;
-	vector.z = 0.0;
+    if (_ignition == true) {
+        if ((tStamp - _ignition_tStamp) <= _max_burn_duration) {
+            vector.x = 0.0;
+            vector.y = 0.0;
+            vector.z = _current_thrust;
+            return;
+        }
+    }
+    vector.x = 0.0;
+    vector.y = 0.0;
+    vector.z = 0.0;
 }
 
 /**
@@ -55,18 +56,18 @@ void SolidMotor::get_thrust(double tStamp, Vector3& vector) {
  * @return Vector3 The motor's current thrust vector
  */
 Vector3 SolidMotor::get_thrust(double tStamp) {
-  Vector3 vector;
-  if (_ignition == true) {
-		if ((tStamp - _ignition_tStamp) <= _max_burn_duration) {
-			vector.x = 0.0;
-			vector.y = 0.0;
-			vector.z = _current_thrust;
-			return vector;
-		}
-	}
-	vector.x = 0.0;
-	vector.y = 0.0;
-	vector.z = 0.0;
+    Vector3 vector;
+    if (_ignition == true) {
+        if ((tStamp - _ignition_tStamp) <= _max_burn_duration) {
+            vector.x = 0.0;
+            vector.y = 0.0;
+            vector.z = _current_thrust;
+            return vector;
+        }
+    }
+    vector.x = 0.0;
+    vector.y = 0.0;
+    vector.z = 0.0;
 
-  return vector;
+    return vector;
 }
