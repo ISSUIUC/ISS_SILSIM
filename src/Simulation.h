@@ -1,8 +1,8 @@
 /**
- * @file 		Simulation.h
- * @authors 	Ayberk Yaraneri
+ * @file        Simulation.h
+ * @authors     Ayberk Yaraneri
  *
- * @brief 		Simulation class definition
+ * @brief       Simulation class definition
  *
  * The Simulation class encapsulates meta information about the simulation.
  * The class contains references to relevant components of the simulation to

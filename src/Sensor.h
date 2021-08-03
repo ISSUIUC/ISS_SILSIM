@@ -1,8 +1,8 @@
 /**
- * @file 		Sensor.h
- * @authors 	Ayberk Yaraneri
+ * @file        Sensor.h
+ * @authors     Ayberk Yaraneri
  *
- * @brief 		Class definition for Sensor classes
+ * @brief       Class definition for Sensor classes
  *
  * These Sensor classes encapsulate typical sensors found on Rocket avionics
  * like accelerometers and gyroscopes. This is the mechanism through which

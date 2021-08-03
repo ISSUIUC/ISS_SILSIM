@@ -1,8 +1,8 @@
 /**
- * @file 		PhysicsEngine.h
- * @authors 	Ayberk Yaraneri
+ * @file        PhysicsEngine.h
+ * @authors     Ayberk Yaraneri
  *
- * @brief 		PhysicsEngine class definition
+ * @brief       PhysicsEngine class definition
  *
  * The PhysicsEngine class encapsulates a particular algorithm that is used
  * to advance the state of the simulation in time. These algorithms are

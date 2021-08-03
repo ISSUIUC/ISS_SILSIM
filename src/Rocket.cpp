@@ -1,8 +1,8 @@
 /**
- * @file 		Rocket.cpp
- * @authors 	Ayberk Yaraneri
+ * @file        Rocket.cpp
+ * @authors     Ayberk Yaraneri
  *
- * @brief 		Rocket class member function implementations
+ * @brief       Rocket class member function implementations
  *
  * The rocket class encapsulates all physical quantities and parameters of the
  * Rocket. The class also contains references to child objects representing

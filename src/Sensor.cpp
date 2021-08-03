@@ -1,8 +1,8 @@
 /**
- * @file 		Sensor.cpp
- * @authors 	Ayberk Yaraneri
+ * @file        Sensor.cpp
+ * @authors     Ayberk Yaraneri
  *
- * @brief 		Member function implementations for Sensor classes
+ * @brief       Member function implementations for Sensor classes
  *
  * These Sensor classes encapsulate typical sensors found on Rocket avionics
  * like accelerometers and gyroscopes. This is the mechanism through which

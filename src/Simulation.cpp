@@ -1,8 +1,8 @@
 /**
- * @file 		Simulation.cpp
- * @authors 	Ayberk Yaraneri
+ * @file        Simulation.cpp
+ * @authors     Ayberk Yaraneri
  *
- * @brief 		Simulation class member function implementations
+ * @brief       Simulation class member function implementations
  *
  * The Simulation class encapsulates meta information about the simulation.
  * It also contains references to relevant components of the simulation to

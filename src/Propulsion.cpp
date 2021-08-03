@@ -1,8 +1,8 @@
 /**
- * @file 		Propulsion.cpp
- * @authors 	Ayberk Yaraneri
+ * @file        Propulsion.cpp
+ * @authors     Ayberk Yaraneri
  *
- * @brief 		Member function implementations of propulsion component
+ * @brief       Member function implementations of propulsion component
  * classes
  *
  * The classes defined here represent rocket propulsion components. While these

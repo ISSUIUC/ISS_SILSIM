@@ -1,8 +1,8 @@
 /**
- * @file 		Propulsion.h
- * @authors 	Ayberk Yaraneri
+ * @file        Propulsion.h
+ * @authors     Ayberk Yaraneri
  *
- * @brief 		Class definitions for rocket propulsion components
+ * @brief       Class definitions for rocket propulsion components
  *
  * The classes defined here represent rocket propulsion components. While these
  * objects will usually represent rocket motors, they can also be defined to
