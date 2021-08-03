@@ -5,37 +5,36 @@
 #include <random>
 
 class Vector3 {
-public:
+   public:
     double x;
     double y;
     double z;
 
-	Vector3(): x(0), y(0), z(0) {};
-	Vector3(double _x, double _y, double _z): x(_x), y(_y), z(_z) {};
-	Vector3(const Vector3& rhs);
+    Vector3() : x(0), y(0), z(0){};
+    Vector3(double _x, double _y, double _z) : x(_x), y(_y), z(_z){};
+    Vector3(const Vector3& rhs);
 
-	Vector3 operator+(const Vector3& rhs) const;
-	Vector3 operator-(const Vector3& rhs) const;
-	Vector3 operator-() const;
-	Vector3 operator*(double scalar) const;
-	Vector3 operator/(double scalar) const;
-	Vector3& operator+=(const Vector3& rhs);
-	Vector3& operator-=(const Vector3& rhs);
-	Vector3& operator*=(double scalar);
-	Vector3& operator/=(double scalar);
-	Vector3& operator=(const Vector3& rhs);
+    Vector3 operator+(const Vector3& rhs) const;
+    Vector3 operator-(const Vector3& rhs) const;
+    Vector3 operator-() const;
+    Vector3 operator*(double scalar) const;
+    Vector3 operator/(double scalar) const;
+    Vector3& operator+=(const Vector3& rhs);
+    Vector3& operator-=(const Vector3& rhs);
+    Vector3& operator*=(double scalar);
+    Vector3& operator/=(double scalar);
+    Vector3& operator=(const Vector3& rhs);
 
-	Vector3 cross (const Vector3& rhs) const;
-	double dot (const Vector3& rhs) const;
+    Vector3 cross(const Vector3& rhs) const;
+    double dot(const Vector3& rhs) const;
 
-	double magnitude() const;
-	double magnitude2() const;
-	void normalize();
-	Vector3 normalized();
+    double magnitude() const;
+    double magnitude2() const;
+    void normalize();
+    Vector3 normalized();
 
-	void randomize(std::default_random_engine& generator,
-				   std::normal_distribution<double>& dist);
-
+    void randomize(std::default_random_engine& generator,
+                   std::normal_distribution<double>& dist);
 };
 
 Vector3 operator*(double scalar, const Vector3& rhs);
