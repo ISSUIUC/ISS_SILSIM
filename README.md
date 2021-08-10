@@ -55,3 +55,4 @@ or
 ## Improvements/Fixes ToDo List
 
 - [ ] Added functions to Barometer sensor class to either read altitude or air pressure of various units
+- [ ] Added documentation for MacOS users
