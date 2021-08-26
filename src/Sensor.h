@@ -38,9 +38,9 @@ class Sensor {
     bool is_new_data() { return new_data_; };
     std::string get_name() { return name_; };
 
-    virtual void update_data(double tStep) = 0;
-    virtual void get_data(Vector3& data) = 0;
-    // virtual void get_data(double& data) = 0;
+    virtual void update_data(double tStep);
+    virtual void get_data(Vector3& data);
+    virtual double get_data();
 
     // Noise/bias injection control
     void enable_noise_injection() { inject_noise_ = true; };
@@ -107,7 +107,7 @@ class Barometer : public Sensor {
     Barometer(std::string name, Rocket& rocket, double refresh_rate,
               double noise_mean = 0.0f, double noise_stddev = 0.1f);
     void update_data(double tStep);
-    void get_data(double& data);
+    double get_data();
 
     void set_constant_bias(double bias) { bias_ = bias; };
 

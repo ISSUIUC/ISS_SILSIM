@@ -15,10 +15,35 @@
 
 #include "Sensor.h"
 
+#include <iostream>
 #include <string>
 #include <vector>
 
 #include "Rocket.h"
+
+void Sensor::update_data(double tStep) {
+    (void)tStep;
+    std::cout
+        << "Function 'update_data' called on Sensor base class! "
+        << "This function should never be called on the base Sensor class."
+        << std::endl;
+}
+
+void Sensor::get_data(Vector3& data) {
+    (void)data;
+    std::cout
+        << "Function 'get_data' called on Sensor base class! "
+        << "This function should never be called on the base Sensor class."
+        << std::endl;
+}
+
+double Sensor::get_data() {
+    std::cout
+        << "Function 'get_data' called on Sensor base class! "
+        << "This function should never be called on the base Sensor class."
+        << std::endl;
+    return 0;
+}
 
 Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
                      double noise_mean, double noise_stddev)
@@ -99,7 +124,7 @@ void Barometer::update_data(double tStep) {
     }
 }
 
-void Barometer::get_data(double& data) {
-    data = data_;
+double Barometer::get_data() {
     new_data_ = false;
+    return data_;
 }
