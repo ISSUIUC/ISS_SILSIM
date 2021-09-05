@@ -24,6 +24,37 @@ or
 ```
 ./run_and_plot.sh
 ```
+
+#### MacOS Installation Process
+
+There are few extra steps to get your simulator runnning on your Mac.
+
+Install the `g++` compiler through brew:
+
+```
+brew install gcc
+```
+
+Open `~/.bash_profile` in `nano`:
+
+```
+nano ~/.bash_profile
+```
+
+Add the following lines to the end of the file:
+
+```
+# Setting PATH for local executables
+export PATH=/usr/local/bin:$PATH
+```
+
+Add symbolic link from `g++-11` to `g++`:
+
+```
+ln -s /usr/local/bin/g++-11 /usr/local/bin/g++
+```
+
+
 ## Feature ToDo List
 
 - [x] Incorporate sensors into Rocket object
