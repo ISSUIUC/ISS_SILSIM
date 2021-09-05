@@ -25,7 +25,7 @@ or
 ./run_and_plot.sh
 ```
 
-#### MacOS Installation Process
+#### MacOS Installation
 
 There are few extra steps to get your simulator runnning on your Mac.
 
@@ -54,6 +54,13 @@ Add symbolic link from `g++-11` to `g++`:
 ln -s /usr/local/bin/g++-11 /usr/local/bin/g++
 ```
 
+#### Python Dependencies
+
+Run the following command to include the dependencies for the Python simulator in your environment:
+
+```
+pip install -r requirements.txt
+```
 
 ## Feature ToDo List
 
