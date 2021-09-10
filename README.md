@@ -11,7 +11,7 @@ Non-linear 6DOF rocket trajectory simulation utility
 - Python3
 	- matplotlib package
 
-## Instructions
+## Installation and Setup Instructions
 
 Modify parameters in `src/main.cpp` as desired, then run the following:
 
@@ -62,6 +62,36 @@ Run the following command to include the dependencies for the Python simulator i
 pip install -r requirements.txt
 ```
 
+
+## Development Workflow
+
+### Branch Naming Convention
+Please use the following naming conventions when creating branches while developing:
+
+- `user/<github-username>/<branch-name>` for individual tasks or contributions, or as a sandbox for yourself
+- `feature/<branch-name>` for **new** functionality that didn't exist before
+- `bug/<branch-name>` for bug fixes
+- `general/<branch-name>` for overall repository organization or development pipeline tweaks
+- `misc/<branch-name>` or `junk/<branch-name>` for just messing around :)
+
+### Code Style Guide
+The repository now has a GitHub Actions instance that will automatically check for code style violations!
+
+The Actions instance **will not** inhibit a pull-request from merging. It is merely there to _encourage_ style consistency throughout our code base.
+
+There is also an auto formatting script that will _format your code for you_! (its beautiful, you should use it) This means that you don't have to worry about coding to meet the style yourself, as you can simply run the formatting script before you commit/push your changes.
+
+You can run the script on Linux, Mac, or WSL like so:
+```
+clang-format -i **/*.cpp **/*.h
+```
+
+Things to keep in mind about code formatting:
+- The code style being used is defined in `.clang-format`. It currently follows Google's C++ style guide exactly.
+- Changing/tweaking the style guide is always option! If you have ideas, reach out!
+
+
+
 ## Feature ToDo List
 
 - [x] Incorporate sensors into Rocket object
@@ -93,4 +123,4 @@ pip install -r requirements.txt
 ## Improvements/Fixes ToDo List
 
 - [ ] Added functions to Barometer sensor class to either read altitude or air pressure of various units
-- [ ] Added documentation for MacOS users
+- [x] Added documentation for MacOS users
