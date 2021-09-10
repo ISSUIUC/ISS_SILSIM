@@ -25,7 +25,7 @@ or
 ./run_and_plot.sh
 ```
 
-#### MacOS Installation Process
+#### MacOS Installation
 
 There are few extra steps to get your simulator runnning on your Mac.
 
@@ -54,6 +54,15 @@ Add symbolic link from `g++-11` to `g++`:
 ln -s /usr/local/bin/g++-11 /usr/local/bin/g++
 ```
 
+#### Python Dependencies
+
+Run the following command to include the dependencies for the Python simulator in your environment:
+
+```
+pip install -r requirements.txt
+```
+
+
 ## Development Workflow
 
 ### Branch Naming Convention
@@ -80,6 +89,7 @@ clang-format -i **/*.cpp **/*.h
 Things to keep in mind about code formatting:
 - The code style being used is defined in `.clang-format`. It currently follows Google's C++ style guide exactly.
 - Changing/tweaking the style guide is always option! If you have ideas, reach out!
+
 
 
 ## Feature ToDo List
@@ -113,4 +123,4 @@ Things to keep in mind about code formatting:
 ## Improvements/Fixes ToDo List
 
 - [ ] Added functions to Barometer sensor class to either read altitude or air pressure of various units
-- [ ] Added documentation for MacOS users
+- [x] Added documentation for MacOS users
