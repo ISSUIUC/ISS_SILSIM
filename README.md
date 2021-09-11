@@ -41,7 +41,7 @@ Open `~/.bash_profile` in `nano`:
 nano ~/.bash_profile
 ```
 
-Add the following lines to the end of the file:
+Add the following lines to the beginning of the file:
 
 ```
 # Setting PATH for local executables
