@@ -74,6 +74,12 @@ Please use the following naming conventions when creating branches while develop
 - `general/<branch-name>` for overall repository organization or development pipeline tweaks
 - `misc/<branch-name>` or `junk/<branch-name>` for just messing around :)
 
+Please include the Trello ticket ID when relevant! i.e. for a ticket [AV-69] your branch might look like
+
+`user/AyberkY/AV-69-implement-runga-kutta-integrator`
+or
+`feature/AV-69-create-data-logger-class`
+
 ### Code Style Guide
 The repository now has a GitHub Actions instance that will automatically check for code style violations!
 
