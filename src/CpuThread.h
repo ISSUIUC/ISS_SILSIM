@@ -4,18 +4,20 @@
 
 #ifndef SILSIM_CPUTHREAD_H
 #define SILSIM_CPUTHREAD_H
-
+struct CpuStateContext{
+    double timestamp;
+};
 class CpuThread {
    public:
     //returns sleep time
-    double tick(){
+    double tick(CpuStateContext const& context){
         //some checks
-        return real_tick();
+        return real_tick(context);
     }
 
    private:
     //returns sleep time
-    virtual double real_tick() = 0;
+    virtual double real_tick(CpuStateContext const& context) = 0;
 };
 
 #endif  // SILSIM_CPUTHREAD_H
