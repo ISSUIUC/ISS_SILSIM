@@ -1,0 +1,9 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(flight_emu_src)
+
+file(GLOB lib_src lib/teensyShared/*.c lib/teensyShared/*.cpp)
+
+add_library(flight_emu ${lib_src})
+
+target_include_directories(flight_emu PUBLIC lib/emulation lib/teensyShared)
