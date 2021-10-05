@@ -8,9 +8,7 @@
 #include<cstdint>
 
 struct File {
-    void write(const uint8_t * data, size_t size){
-
-    }
+    void write(const uint8_t * data, size_t size);
     void flush();
 };
 

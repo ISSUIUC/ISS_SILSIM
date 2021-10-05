@@ -23,23 +23,17 @@ typedef uint32_t cnt_t;
 #define TIME_IMMEDIATE (sysinterval_t)0
 #define MSG_OK (msg_t)0
 
-struct {
-    static void println(const char *){
+struct SerialClass{
+    static void println(const char *);
+};
 
-    }
-} Serial;
+extern SerialClass Serial;
 
-uint32_t chVTGetSystemTime(){
-    return 0;
-}
+uint32_t chVTGetSystemTime();
 
-void chMtxLock(mutex_t * mtx){
-    mtx->lock();
-}
+void chMtxLock(mutex_t * mtx);
 
-void chMtxUnlock(mutex_t * mtx){
-    mtx->unlock();
-}
+void chMtxUnlock(mutex_t * mtx);
 
 void chSysLock();
 

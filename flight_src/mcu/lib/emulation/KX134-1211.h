@@ -38,5 +38,4 @@ class KX134 {
     // classes
 };
 
-
 #endif  // SILSIM_KX134_1211_H
