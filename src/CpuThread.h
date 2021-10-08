@@ -9,7 +9,7 @@ struct CpuStateContext{
 };
 class CpuThread {
    public:
-    CpuThread((*FSW_function)());
+    CpuThread(void (*FSW_function)());
     //returns sleep time
     double tick(CpuStateContext const& context);
 

@@ -4,13 +4,16 @@
 
 #include "CpuThread.h"
 
-CpuThread::CpuThread((*FSW_function)()) {
+CpuThread::CpuThread(void (*FSW_function)()) {
     FSW_function_ = FSW_function;
 }
-CpuThread::tick(CpuStateContext const& context) {
-    return real_tick(context);
+
+double CpuThread::tick(CpuStateContext const& context) {
+    return real_tick_(context);
 }
+
 double CpuThread::real_tick_(CpuStateContext const& context) {
     (*FSW_function_)();
-    return 0;
+
+    return context.timestamp + 0.5f;
 }

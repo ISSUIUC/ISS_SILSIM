@@ -27,6 +27,7 @@
 #include "Sensor.h"
 #include "Vector3.h"
 #include "quaternion.h"
+#include "CpuState.h"
 
 #define RAD2DEG (180.0 / 3.14159265);
 
@@ -86,6 +87,8 @@ void Simulation::run(int steps) {
         engine_.march_step(tStamp_, tStep_);
 
         update_sensors();
+
+        cpu_.tick(tStamp_);
 
         dataFile << tStamp_ << ",";
         dataFile << r_vect.x << "," << r_vect.y << "," << r_vect.z << ",";

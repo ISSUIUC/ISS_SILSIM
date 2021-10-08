@@ -28,10 +28,12 @@
 #include "Sensor.h"
 #include "quaternion.h"
 
+#include "CpuState.h"
+
 class Simulation {
    public:
     Simulation(double tStep, PhysicsEngine& engine, Rocket& rocket,
-               SolidMotor& motor, std::string filename
+               SolidMotor& motor, CpuState& cpu, std::string filename
                // std::vector<Sensor&>& sensors
                )
         : tStamp_(0),
@@ -39,6 +41,7 @@ class Simulation {
           engine_(engine),
           rocket_(rocket),
           motor_(motor),
+          cpu_(cpu),
           filename_(filename){};
 
     void run(int steps);
@@ -55,6 +58,8 @@ class Simulation {
 
     Rocket& rocket_;
     SolidMotor& motor_;
+
+    CpuState& cpu_;
 
     // Sensors
     std::vector<Sensor*> sensors_;  // array of sensors on the rocket

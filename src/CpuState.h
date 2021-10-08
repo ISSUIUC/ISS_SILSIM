@@ -13,13 +13,13 @@ class CpuState {
 
     CpuState();
 
-    void add_thread(std::unique_ptr<CpuThread> thread);
+    void add_thread(CpuThread* thread);
 
 
     void tick(double timestamp);
    private:
     //thead, when the threads should next run in absolute time
-    std::vector<std::pair<std::unique_ptr<CpuThread>, double>> threads;
+    std::vector<std::pair<CpuThread*, double>> threads_;
 };
 
 #endif  // SILSIM_CPUSTATE_H

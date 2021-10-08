@@ -8,8 +8,16 @@
 #include "Simulation.h"
 #include "Vector3.h"
 #include "quaternion.h"
+#include "CpuState.h"
+#include "CpuThread.h"
 
 double deg2rad = 3.14159265 / 180.0;
+
+
+void test_FSW_func() {
+  std::cout << "hey this is the thread. wooo" << std::endl;
+}
+
 
 int main() {
     Rocket rocket;
@@ -38,7 +46,13 @@ int main() {
 
     // std::vector<Sensor&> sensors;
 
-    Simulation sim(0.01, engine, rocket, motor, "sim_data/data.csv");
+    CpuState cpu;
+
+    CpuThread test_thread(&test_FSW_func);
+
+    cpu.add_thread(&test_thread);
+
+    Simulation sim(0.01, engine, rocket, motor, cpu, "sim_data/data.csv");
 
     sim.add_sensor(&accel1);
     // sim.add_sensor(&gyro1);
