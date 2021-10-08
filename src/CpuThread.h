@@ -9,15 +9,14 @@ struct CpuStateContext{
 };
 class CpuThread {
    public:
+    CpuThread((*FSW_function)());
     //returns sleep time
-    double tick(CpuStateContext const& context){
-        //some checks
-        return real_tick(context);
-    }
+    double tick(CpuStateContext const& context);
 
    private:
     //returns sleep time
-    virtual double real_tick(CpuStateContext const& context) = 0;
+    void (*FSW_function_)();
+    double real_tick_(CpuStateContext const& context);
 };
 
 #endif  // SILSIM_CPUTHREAD_H
