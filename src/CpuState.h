@@ -1,7 +1,15 @@
-//
-// Created by 16182 on 9/30/2021.
-//
-
+/**
+ * @file        CpuState.h
+ * @authors     Ayberk Yaraneri, Brooke Novosad, Nicholas Phillips
+ *
+ * @brief       Class definition for CpuState threads
+ * classes
+ *
+ * The CpuState holds the tick function for the threads to run on. It also
+ * contains the vector of different threads and its runtimes in absolute time
+ * so we know when to run each thread and they are independent of each other.
+ *
+ */
 #ifndef SILSIM_CPUSTATE_H
 #define SILSIM_CPUSTATE_H
 
@@ -14,7 +22,6 @@ class CpuState {
     CpuState();
 
     void add_thread(CpuThread* thread);
-
 
     void tick(double timestamp);
    private:

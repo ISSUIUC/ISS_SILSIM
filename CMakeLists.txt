@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.10)
 project(SILSIM)
 
 add_executable(ISS_SILSIM src/main.cpp
+        src/CpuState.h
+        src/CpuThread.cpp
+        src/CpuState.cpp
+        src/CpuThread.h
         src/PhysicsEngine.cpp
         src/PhysicsEngine.h
         src/Propulsion.cpp
