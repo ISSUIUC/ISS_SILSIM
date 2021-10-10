@@ -13,19 +13,20 @@
 #ifndef SILSIM_CPUSTATE_H
 #define SILSIM_CPUSTATE_H
 
+#include <memory>
+#include <vector>
+
 #include "CpuThread.h"
-#include<vector>
-#include<memory>
 class CpuState {
    public:
-
     CpuState();
 
     void add_thread(CpuThread* thread);
 
     void tick(double timestamp);
+
    private:
-    //thead, when the threads should next run in absolute time
+    // thead, when the threads should next run in absolute time
     std::vector<std::pair<CpuThread*, double>> threads_;
 };
 

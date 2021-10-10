@@ -12,10 +12,7 @@
  */
 #include "CpuThread.h"
 
-CpuThread::CpuThread(void (*FSW_function)()) {
-    FSW_function_ = FSW_function;
-}
-
+CpuThread::CpuThread(void (*FSW_function)()) { FSW_function_ = FSW_function; }
 
 /**
  * @brief Returns the sleep time of the thread
@@ -26,7 +23,6 @@ CpuThread::CpuThread(void (*FSW_function)()) {
 double CpuThread::tick(CpuStateContext const& context) {
     return real_tick_(context);
 }
-
 
 /**
  * @brief Calls the function of the thread and returns the time in absolute

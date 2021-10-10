@@ -12,9 +12,7 @@
  */
 #include "CpuState.h"
 
-CpuState::CpuState() {
-
-}
+CpuState::CpuState() {}
 
 /**
  * @brief Decides if any threads should run and updates the times of the threads
@@ -24,10 +22,10 @@ CpuState::CpuState() {
 
 void CpuState::tick(double timestamp) {
     CpuStateContext context;
-    for(unsigned i = 0; i < threads_.size(); i++){
+    for (unsigned i = 0; i < threads_.size(); i++) {
         CpuThread* thread = threads_.at(i).first;
         double time = threads_.at(i).second;
-        //if not sleep time
+        // if not sleep time
         if (time <= timestamp) {
             context.timestamp = timestamp;
             threads_.at(i).second += thread->tick(context);
