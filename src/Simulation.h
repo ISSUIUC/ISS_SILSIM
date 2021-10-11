@@ -22,13 +22,12 @@
 #include <fstream>
 #include <string>
 
+#include "CpuState.h"
 #include "PhysicsEngine.h"
 #include "Propulsion.h"
 #include "Rocket.h"
 #include "Sensor.h"
 #include "quaternion.h"
-
-#include "CpuState.h"
 
 class Simulation {
    public:

@@ -3,13 +3,13 @@
 #include <iostream>
 #include <string>
 
+#include "CpuState.h"
+#include "CpuThread.h"
 #include "Rocket.h"
 #include "Sensor.h"
 #include "Simulation.h"
 #include "Vector3.h"
 #include "quaternion.h"
-#include "CpuState.h"
-#include "CpuThread.h"
 
 double deg2rad = 3.14159265 / 180.0;
 

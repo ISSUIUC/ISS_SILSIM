@@ -21,13 +21,13 @@
 #include <iostream>
 #include <string>
 
+#include "CpuState.h"
 #include "PhysicsEngine.h"
 #include "Propulsion.h"
 #include "Rocket.h"
 #include "Sensor.h"
 #include "Vector3.h"
 #include "quaternion.h"
-#include "CpuState.h"
 
 #define RAD2DEG (180.0 / 3.14159265);
 
