@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 
+#include "CpuState.h"
+#include "CpuThread.h"
 #include "Rocket.h"
 #include "Sensor.h"
 #include "Simulation.h"
@@ -38,7 +40,9 @@ int main() {
 
     // std::vector<Sensor&> sensors;
 
-    Simulation sim(0.01, engine, rocket, motor, "sim_data/data.csv");
+    CpuState cpu;
+
+    Simulation sim(0.01, engine, rocket, motor, cpu, "sim_data/data.csv");
 
     sim.add_sensor(&accel1);
     // sim.add_sensor(&gyro1);

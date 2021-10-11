@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string>
 
+#include "CpuState.h"
 #include "PhysicsEngine.h"
 #include "Propulsion.h"
 #include "Rocket.h"
@@ -86,6 +87,8 @@ void Simulation::run(int steps) {
         engine_.march_step(tStamp_, tStep_);
 
         update_sensors();
+
+        cpu_.tick(tStamp_);
 
         dataFile << tStamp_ << ",";
         dataFile << r_vect.x << "," << r_vect.y << "," << r_vect.z << ",";
