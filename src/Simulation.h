@@ -46,7 +46,7 @@ class Simulation {
 
     void run(int steps);
 
-	void set_PhysicsEngine(PhysicsEngine* engine) {engine_ = engine;};
+    void set_PhysicsEngine(PhysicsEngine* engine) { engine_ = engine; };
 
     /************************* Sensor interface ***************************/
     void add_sensor(Sensor* sensor);
@@ -56,7 +56,7 @@ class Simulation {
     double tStamp_;
     double tStep_;
 
-	PhysicsEngine* engine_;
+    PhysicsEngine* engine_;
 
     Rocket& rocket_;
     SolidMotor& motor_;

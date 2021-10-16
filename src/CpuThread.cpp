@@ -31,9 +31,9 @@ double CpuThread::tick(CpuStateContext const& context) {
  */
 
 double CpuThread::real_tick_(CpuStateContext const& context) {
-    (void) context; // silence unused param warning
-		
-	(*FSW_function_)();
+    (void)context;  // silence unused param warning
+
+    (*FSW_function_)();
 
     return 0.5f;
 }
