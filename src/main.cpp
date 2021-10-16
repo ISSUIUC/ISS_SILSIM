@@ -33,16 +33,14 @@ int main() {
     accel1.enable_noise_injection();
     Gyroscope gyro1("LSM9_gyro", rocket, 100);
 
-    // 3.5 second burn time @ 1500 Newton constant thrust (L ish motor I think)
+    // 3.5 second burn time @ 4000 Newton constant thrust (L ish motor I think)
     SolidMotor motor(3.5, 4000.0);
 
     ForwardEuler engine(rocket, motor);
 
-    // std::vector<Sensor&> sensors;
-
     CpuState cpu;
 
-    Simulation sim(0.01, engine, rocket, motor, cpu, "sim_data/data.csv");
+    Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
 
     sim.add_sensor(&accel1);
     // sim.add_sensor(&gyro1);

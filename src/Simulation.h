@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <memory>
 #ifndef _SIMULATION_H_
 #define _SIMULATION_H_
 
@@ -31,7 +32,7 @@
 
 class Simulation {
    public:
-    Simulation(double tStep, PhysicsEngine& engine, Rocket& rocket,
+    Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
                SolidMotor& motor, CpuState& cpu, std::string filename
                // std::vector<Sensor&>& sensors
                )
@@ -45,6 +46,8 @@ class Simulation {
 
     void run(int steps);
 
+	void set_PhysicsEngine(PhysicsEngine* engine) {engine_ = engine;};
+
     /************************* Sensor interface ***************************/
     void add_sensor(Sensor* sensor);
     void update_sensors();
@@ -53,7 +56,7 @@ class Simulation {
     double tStamp_;
     double tStep_;
 
-    PhysicsEngine& engine_;
+	PhysicsEngine* engine_;
 
     Rocket& rocket_;
     SolidMotor& motor_;
