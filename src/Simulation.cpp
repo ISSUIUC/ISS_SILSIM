@@ -84,7 +84,7 @@ void Simulation::run(int steps) {
         Vector3 rocket_axis(0, 0, 1);
         rocket_axis = rocket_.r2i(rocket_axis);
 
-        engine_.march_step(tStamp_, tStep_);
+        engine_->march_step(tStamp_, tStep_);
 
         update_sensors();
 
