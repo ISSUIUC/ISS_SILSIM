@@ -5,10 +5,7 @@
 #ifndef SILSIM_CPUTHREAD_H
 #define SILSIM_CPUTHREAD_H
 
-struct CpuStateContext{
-
-};
-
+#include "CpuStateContext.h"
 class CpuThread {
    public:
     //returns sleep time
