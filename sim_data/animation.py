@@ -21,7 +21,7 @@ vx = []
 vy = []
 vz = []
 
-ax = []
+aX = []
 ay = []
 az = []
 
@@ -42,8 +42,13 @@ rocketX = []
 rocketY = []
 rocketZ = []
 
-data_lists = [timestamps, rx, ry, rz, vx, vy, vz, ax, ay, az, fx, fy, fz,
-              q0, q1, q2, q3, roll, pitch, yaw, rocketX, rocketY, rocketZ]
+sensorX = []
+sensorY = []
+sensorZ = []
+
+data_lists = [timestamps, rx, ry, rz, vx, vy, vz, aX, ay, az, fx, fy, fz,
+              q0, q1, q2, q3, roll, pitch, yaw, rocketX, rocketY, rocketZ,
+              sensorX, sensorY, sensorZ]
 
 with open("sim_data/data.csv") as csvfile:
     csvreader = csv.reader(csvfile, delimiter=",")
