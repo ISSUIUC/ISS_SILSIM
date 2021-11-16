@@ -171,3 +171,42 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     rocket_.set_w_vect(w_vect_if);
     rocket_.set_w_dot(w_dot_if);
 }
+
+void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
+    /*************** Retrieve instantaneous rocket parameters *****************/
+
+    // Inertial frame dynamics parameters
+    Vector3 r_vect_if = rocket_.get_r_vect();
+    Vector3 r_dot_if = rocket_.get_r_dot();
+    Vector3 r_ddot_if = rocket_.get_r_ddot();
+    Vector3 w_vect_if = rocket_.get_w_vect();
+    Vector3 w_dot_if = rocket_.get_w_dot();
+    Vector3 f_net_if = rocket_.get_f_net();
+    Vector3 t_net_if = rocket_.get_t_net();
+
+    // Quaternion from inertial to rocket frame
+    Quaternion<double> q_ornt = rocket_.get_q_ornt();
+
+    // CG to Cp vector
+    Vector3 Cp_vect_rf = rocket_.get_Cp_vect();
+
+    // Get moment of inertia tenspr
+    double I_tens[9];
+    rocket_.get_I(I_tens);
+
+    // parameters
+    double mass = rocket_.get_mass();
+    // double d_ref = rocket_.get_d_ref(); --- Ask if this is still necessary
+    double A_ref = rocket_.get_A_ref();
+    double Cna = rocket_.get_Cna();
+    double Cd = rocket_.get_Cd();
+
+    // Motor thrust vector, rocket frame
+    Vector3 thrust_rf = motor_.get_thrust(tStamp);
+    
+    /********************* Calculate forces and torques ***********************/
+
+
+    /************************** Perform euler step ****************************/
+
+}
