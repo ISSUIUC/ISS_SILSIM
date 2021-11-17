@@ -176,33 +176,32 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
     /*************** Retrieve instantaneous rocket parameters *****************/
 
     // Inertial frame dynamics parameters
-    Vector3 r_vect_if = rocket_.get_r_vect();
-    Vector3 r_dot_if = rocket_.get_r_dot();
-    Vector3 r_ddot_if = rocket_.get_r_ddot();
-    Vector3 w_vect_if = rocket_.get_w_vect();
-    Vector3 w_dot_if = rocket_.get_w_dot();
-    Vector3 f_net_if = rocket_.get_f_net();
-    Vector3 t_net_if = rocket_.get_t_net();
+    Vector3 r_vect_if = rocket_.get_r_vect(); // position
+    Vector3 r_dot_if = rocket_.get_r_dot();   // velocity
+    Vector3 r_ddot_if = rocket_.get_r_ddot(); // acceleration
+    Vector3 w_vect_if = rocket_.get_w_vect(); // angular velocity (omega)
+    Vector3 w_dot_if = rocket_.get_w_dot();   // angular acceleration
+    Vector3 f_net_if = rocket_.get_f_net();   // net force (Newtons)
+    Vector3 t_net_if = rocket_.get_t_net();   // net torque (Newtons*meters)
 
     // Quaternion from inertial to rocket frame
-    Quaternion<double> q_ornt = rocket_.get_q_ornt();
+    Quaternion<double> q_ornt = rocket_.get_q_ornt();  // orientation of rocket
 
     // CG to Cp vector
-    Vector3 Cp_vect_rf = rocket_.get_Cp_vect();
+    Vector3 Cp_vect_rf = rocket_.get_Cp_vect();   // CG to Cp (center of pressure) vector
 
     // Get moment of inertia tenspr
-    double I_tens[9];
-    rocket_.get_I(I_tens);
+    double I_tens[9];       // array of size 9 (unclear)
+    rocket_.get_I(I_tens);  // moment of inertia
 
     // parameters
-    double mass = rocket_.get_mass();
-    // double d_ref = rocket_.get_d_ref(); --- Ask if this is still necessary
-    double A_ref = rocket_.get_A_ref();
-    double Cna = rocket_.get_Cna();
-    double Cd = rocket_.get_Cd();
+    double mass = rocket_.get_mass();       // mass of rocket
+    double A_ref = rocket_.get_A_ref();     // 0.0194; ref area in m^2
+    double Cna = rocket_.get_Cna();         // 9.65; normal force coefficient derivative
+    double Cd = rocket_.get_Cd();           // 0.630; drag coefficient
 
     // Motor thrust vector, rocket frame
-    Vector3 thrust_rf = motor_.get_thrust(tStamp);
+    Vector3 thrust_rf = motor_.get_thrust(tStamp);  // thrust of rocket at current timestamp
     
     /********************* Calculate forces and torques ***********************/
 
