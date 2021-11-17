@@ -77,6 +77,22 @@ double Atmosphere::get_temperature(double altitude) {
  * @param altitude Altitude above sea level in meters
  */
 double Atmosphere::get_pressure(double altitude) {
+    float pressure;
+    float geopotential_to_geometric = 86.0 - 84.852;
+    altitude = altitude/1000;
+
+    if (altitude < 11) {
+        pressure = 101325.0 * POW([288.15 / (288.15 - 6.5 * altitude)], (34.1632 / -6.5))
+    }
+
+    if (altitude < 20){
+        pressure = 22632.06 * exp(-34.1632 * (altitude - 11) / 216.65);
+    }
+
+    if(altitude < 32){
+        pressure = 5474.889 * POW([616.65 / (216.65 + 2.8 * (altitude -20))], 34.1632);
+    }
+
     return altitude;
 }
 
