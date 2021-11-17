@@ -57,7 +57,7 @@ double Atmosphere::get_temperature(double altitude) {
     }
 
     else if (altitude < (91 - geopotential_to_geometric)) {
-        temperature = 263.1905 - 76.3232 * sqrt(1 - pow(((altitude + geopotential_to_geometric) - 91) / -19.9429, 2.0));
+        temperature = 186.8673;
     }
 
     else if (altitude < (110 - geopotential_to_geometric)) {
@@ -67,7 +67,7 @@ double Atmosphere::get_temperature(double altitude) {
     else if (altitude < (120 - geopotential_to_geometric)) {
         temperature = 240 + 12 * ((altitude + geopotential_to_geometric) - 110);
     }
-
+//TODO implement 120k-1000k interval
     return temperature;
 }
 
