@@ -75,7 +75,8 @@ fig = plt.figure()
 axes = mplot3d.Axes3D(fig)
 
 # Load the STL files and add the vectors to the plot
-original_mesh = mesh.Mesh.from_file('sim_data/doge.stl')
+#original_mesh = mesh.Mesh.from_file('sim_data/doge.stl')
+original_mesh = mesh.Mesh.from_file('sim_data/rocket.stl')
 
 poly3d = mplot3d.art3d.Poly3DCollection(original_mesh.vectors, edgecolor='k',
                                         facecolor=[0.7, 0.15, 0.15],
