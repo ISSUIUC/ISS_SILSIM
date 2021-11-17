@@ -173,6 +173,10 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
 }
 
 void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
+
+    // {variable}_rf = rocket frame (stuck to rocket)
+    // {variable}_if = inertial frame (stuck to earth)
+
     /*************** Retrieve instantaneous rocket parameters *****************/
 
     // Inertial frame dynamics parameters
@@ -191,7 +195,7 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
     Vector3 Cp_vect_rf = rocket_.get_Cp_vect();   // CG to Cp (center of pressure) vector
 
     // Get moment of inertia tenspr
-    double I_tens[9];       // array of size 9 (unclear)
+    double I_tens[9];
     rocket_.get_I(I_tens);  // moment of inertia
 
     // parameters
@@ -204,7 +208,30 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
     Vector3 thrust_rf = motor_.get_thrust(tStamp);  // thrust of rocket at current timestamp
     
     /********************* Calculate forces and torques ***********************/
+    Vector3 f_aero_rf;  // Aerodynamic forces, rocket frame
+    Vector3 t_aero_rf;  // Aerodynamic torques, rocket frame
+    Vector3 f_aero_if;  // Aerodynamic forces, inertial frame
+    Vector3 t_aero_if;  // Aerodynamic torques, inertial frame
 
+    Vector3 f_net_rf;  // net force
+    Vector3 t_net_rf;  // net torque
+
+    //-----------------------
+
+    Vector3 rocket_axis_rf(0, 0, 1);
+    Vector3 v_rf = rocket_.i2r(r_dot_if);
+    double alpha = acos(v_rf.z / v_rf.magnitude());  // angle between velocity vector and rocket axis
+    Vector3 f_N_rf;  // normal aerodynamic force
+
+    double c_N = Cna * alpha;
+    double f_N_mag = c_N * (0.5 * 1.225 * v_rf.magnitude2() * A_ref);  // magnitude of normal force (assuming constant density (will change))
+
+    f_N_rf.x = (-v_rf.x);
+    f_N_rf.y = (-v_rf.y);
+    f_N_rf.z = 0;
+
+    f_N_rf.normalize();
+    f_N_rf = f_N_rf * f_N_mag;
 
     /************************** Perform euler step ****************************/
 
