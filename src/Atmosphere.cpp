@@ -67,7 +67,10 @@ double Atmosphere::get_temperature(double altitude) {
     else if (altitude < (120 - geopotential_to_geometric)) {
         temperature = 240 + 12 * ((altitude + geopotential_to_geometric) - 110);
     }
-//TODO implement 120k-1000k interval
+
+    else if (altitude < (1000 - geopotential_to_geometric)){
+        temperature = 1000 - 640 * exp(-0.01875 * (((altitude + geopotential_to_geometric) - 120) * (6356.766 + 120) / (6356.766 + (altitude + geopotential_to_geometric))));    }
+    }
     return temperature;
 }
 
@@ -82,17 +85,33 @@ double Atmosphere::get_pressure(double altitude) {
     altitude = altitude/1000;
 
     if (altitude < 11) {
-        pressure = 101325.0 * POW([288.15 / (288.15 - 6.5 * altitude)], (34.1632 / -6.5))
+        pressure = 101325.0 * pow([288.15 / (288.15 - 6.5 * altitude)], (34.1632 / -6.5))
     }
 
-    if (altitude < 20){
+    else if (altitude < 20){
         pressure = 22632.06 * exp(-34.1632 * (altitude - 11) / 216.65);
     }
 
-    if(altitude < 32){
-        pressure = 5474.889 * POW([616.65 / (216.65 + 2.8 * (altitude -20))], 34.1632);
+    else if (altitude < 32){
+        pressure = 5474.889 * pow([616.65 / (216.65 + 2.8 * (altitude -20))], 34.1632);
     }
 
+    else if (altitue < 47){
+        pressure = 868.0187 * pow([228.65 / (216.65 + 2.8 * (h - 32) )], (34.1632 / 28));
+    }
+
+    else if (altitude < 51){
+        pressure = 110.9063 * exp(-34.1632 * (h -47) / 270.65);
+    }
+
+    else if (altitude < 71){
+        pressure = 66.93887 * pow([270.65 / (214.65 -2 * (h -71))], (34.1632 / -2.8));
+    }
+
+    else if (altitude < 84.852){
+                pressure = 3.956420 * pow([214.65 / (214.65 - 2 * (h -71))], (34.1632 / -2));
+    }
+//86k to 1000k formula not sure yet
     return altitude;
 }
 
