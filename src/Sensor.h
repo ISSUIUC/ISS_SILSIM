@@ -111,12 +111,15 @@ class Barometer : public Sensor {
 
     void set_constant_bias(double bias) { bias_ = bias; };
 
+    double get_altitude();
+
    private:
     double data_;  // The sensor's current reading
 
     double noise_;  // Noise value to be added to measurement
 
     double bias_;  // Constant bias value to be added to measurement
+
 };
 
 #endif

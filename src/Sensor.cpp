@@ -44,7 +44,7 @@ double Sensor::get_data() {
         << std::endl;
     return 0;
 }
-
+a
 Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
                      double noise_mean, double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
@@ -127,4 +127,8 @@ void Barometer::update_data(double tStep) {
 double Barometer::get_data() {
     new_data_ = false;
     return data_;
+}
+
+double Barometer::get_altitude() {
+    return 0;
 }
