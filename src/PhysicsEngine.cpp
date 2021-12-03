@@ -176,6 +176,8 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
 
     // {variable}_rf = rocket frame (stuck to rocket)
     // {variable}_if = inertial frame (stuck to earth)
+    // f_{variable} = force
+    // t_{variable} = torque
 
     /*************** Retrieve instantaneous rocket parameters *****************/
 
@@ -201,8 +203,8 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
     // parameters
     double mass = rocket_.get_mass();       // mass of rocket
     double A_ref = rocket_.get_A_ref();     // 0.0194; ref area in m^2
-    double Cna = rocket_.get_Cna();         // 9.65; normal force coefficient derivative
-    double Cd = rocket_.get_Cd();           // 0.630; drag coefficient
+    double c_Na = rocket_.get_Cna();         // 9.65; normal force coefficient derivative
+    double c_D = rocket_.get_Cd();           // 0.630; drag coefficient
 
     // Motor thrust vector, rocket frame
     Vector3 thrust_rf = motor_.get_thrust(tStamp);  // thrust of rocket at current timestamp
@@ -223,8 +225,8 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
     double alpha = acos(v_rf.z / v_rf.magnitude());  // angle between velocity vector and rocket axis
     Vector3 f_N_rf;  // normal aerodynamic force
 
-    double c_N = Cna * alpha;
-    double f_N_mag = c_N * (0.5 * 1.225 * v_rf.magnitude2() * A_ref);  // magnitude of normal force (assuming constant density (will change))
+    double c_N = c_Na * alpha;
+    double f_N_mag = c_N * 0.5 * 1.225 * v_rf.magnitude2() * A_ref;  // magnitude of normal force (assuming constant density (will change))
 
     f_N_rf.x = (-v_rf.x);
     f_N_rf.y = (-v_rf.y);
@@ -232,6 +234,17 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
 
     f_N_rf.normalize();
     f_N_rf = f_N_rf * f_N_mag;
+
+    double f_D_mag = c_D * 0.5 * 1.225 * v_rf.magnitude2() * A_ref;  // Ask about A_ref
+    Vector3 f_D_rf(0, 0, -f_D_mag);
+
+    f_aero_if = f_N_rf + f_D_rf;
+    t_aero_rf = Cp_vect_rf.cross(f_aero_rf);
+
+    f_net_if = rocket_.r2i(f_aero_if + thrust_rf);
+    f_net_if.z -= 9.81 * mass;
+
+    t_net_if = rocket_.r2i(t_aero_rf);
 
     /************************** Perform euler step ****************************/
 
