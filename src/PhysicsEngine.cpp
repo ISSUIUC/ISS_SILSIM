@@ -248,4 +248,44 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
 
     /************************** Perform euler step ****************************/
 
+    r_vect_if += r_dot_if * tStep;
+    r_dot_if += r_ddot_if * tStep;
+    r_ddot_if = f_aero_if / mass;
+
+    double w_mag = w_vect_if.magnitude();
+    if (w_mag > 0.000001) {
+        Quaternion<double> q_rot;
+        q_rot.Set(cos(w_mag / 2.0), (w_vect_if.x / w_mag) * sin(w_mag / 2.0),
+                  (w_vect_if.y / w_mag) * sin(w_mag / 2.0),
+                  (w_vect_if.z / w_mag) * sin(w_mag / 2.0));
+
+        // Apply instantaneous rotation
+        q_ornt = q_ornt * q_rot;
+        q_ornt.Normalize();
+    }
+
+    w_vect_if += w_dot_if * tStep;
+
+    w_dot_if.x = t_net_if.x / I_tens[0];
+    w_dot_if.y = t_net_if.y / I_tens[4];
+    w_dot_if.z = t_net_if.z / I_tens[8];
+
+    // Naively accounting for launch rail
+    if (r_vect_if.magnitude() < 4.50) {
+        w_dot_if.x = 0;
+        w_dot_if.y = 0;
+        w_dot_if.z = 0;
+        w_vect_if.x = 0;
+        w_vect_if.y = 0;
+        w_vect_if.z = 0;
+    }
+
+    rocket_.set_r_vect(r_vect_if);
+    rocket_.set_r_dot(r_dot_if);
+    rocket_.set_r_ddot(r_ddot_if);
+    rocket_.set_w_vect(w_vect_if);
+    rocket_.set_w_dot(w_dot_if);
+    rocket_.set_f_net(f_net_if);
+    rocket_.set_t_net(t_net_if);
+    rocket_.set_q_ornt(q_ornt);
 }
