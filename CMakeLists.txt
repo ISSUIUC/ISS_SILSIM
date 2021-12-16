@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.10)
 
 project(SILSIM)
 
+set(SRC src/)
+
 add_executable(ISS_SILSIM src/main.cpp
         src/CpuState.h
         src/CpuThread.cpp
@@ -23,4 +25,4 @@ add_executable(ISS_SILSIM src/main.cpp
         lib/Vector3/Vector3.h)
 
 
-target_include_directories(ISS_SILSIM PUBLIC ${CMAKE_SOURCE_DIR}/lib/quaternion ${CMAKE_SOURCE_DIR}/lib/Vector3)
+target_include_directories(ISS_SILSIM PUBLIC ${CMAKE_SOURCE_DIR}/lib/quaternion ${CMAKE_SOURCE_DIR}/lib/Vector3 ${SRC}/includes)
