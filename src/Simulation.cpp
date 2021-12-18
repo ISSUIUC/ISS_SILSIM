@@ -29,7 +29,7 @@
 #include "Vector3.h"
 #include "quaternion.h"
 
-#define RAD2DEG (180.0 / 3.14159265);
+#define RAD2DEG (180.0 / 3.14159265)
 
 // #define SIM_DEBUG
 
@@ -71,11 +71,12 @@ void Simulation::run(int steps) {
 
 #ifdef SIM_DEBUG
         double alpha = acos(rocket_.i2r(r_dot).z / (r_dot.magnitude()));
+        printf("############### SIM_DEBUG ###############\n");
         printf("Timestamp: %f\n", tStamp_);
-        printf("\tR-Vector: <%f, %f, %f>", r_vect.x, r_vect.y, r_vect.z);
+        printf("R-Vector: <%f, %f, %f>", r_vect.x, r_vect.y, r_vect.z);
         printf("\tVelocity: <%f, %f, %f>", r_dot.x, r_dot.y, r_dot.z);
         printf("\tAccel: <%f, %f, %f>", r_ddot.x, r_ddot.y, r_ddot.z);
-        printf("\tF-Net: <%f, %f, %f>", f_net.x, f_net.y, f_net.z);
+        printf("\nF-Net: <%f, %f, %f>", f_net.x, f_net.y, f_net.z);
         printf("\tW-Net: <%f, %f, %f>\n", w_net.x, w_net.y, w_net.z);
         printf("ROLL: %f \tPITCH: %f \tYAW: %f  [deg]", roll, pitch, yaw);
         printf("\nalphaSIM: %f  [deg]\n\n", alpha * RAD2DEG);

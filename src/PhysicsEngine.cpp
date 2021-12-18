@@ -23,7 +23,9 @@
 #include "Vector3.h"
 #include "quaternion.h"
 
-#define RAD2DEG (180.0 / 3.14159265);
+#define RAD2DEG (180.0 / 3.14159265)
+
+#define PHYSENG_DEBUG
 
 /**
  * @brief Calculates forces and moments and integrates with a simple euler step
@@ -175,8 +177,6 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
 
 void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
 
-    std::cout << "hmmmmm" << std::endl;
-
     // {variable}_rf = rocket frame (stuck to rocket)
     // {variable}_if = inertial frame (stuck to earth)
     // f_{variable} = force
@@ -211,7 +211,7 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
 
     // Motor thrust vector, rocket frame
     Vector3 thrust_rf = motor_.get_thrust(tStamp);  // thrust of rocket at current timestamp
-    
+
     /********************* Calculate forces and torques ***********************/
     Vector3 f_aero_rf;  // Aerodynamic forces, rocket frame
     Vector3 t_aero_rf;  // Aerodynamic torques, rocket frame
@@ -256,7 +256,7 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
         t_aero_rf.z = 0;
     }
 
-    f_net_if = rocket_.r2i(f_aero_if + thrust_rf);
+    f_net_if = rocket_.r2i(f_aero_rf + thrust_rf);
     f_net_if.z -= 9.81 * mass;
 
     t_net_if = rocket_.r2i(t_aero_rf);
@@ -265,7 +265,7 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
 
     r_vect_if += r_dot_if * tStep;
     r_dot_if += r_ddot_if * tStep;
-    r_ddot_if = f_aero_if / mass;
+    r_ddot_if = f_net_if / mass;
 
     double w_mag = w_vect_if.magnitude();
     if (w_mag > 0.000001) {
@@ -294,6 +294,19 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
         w_vect_if.y = 0;
         w_vect_if.z = 0;
     }
+
+#ifdef PHYSENG_DEBUG
+    printf("############### PHYSENG_DEBUG ###############\n");
+    printf("TimestampL %f\n", tStamp);
+    printf("thrust_rf = <%f, %f, %f>\n", thrust_rf.x, thrust_rf.y, thrust_rf.z);
+    printf("f_aero_rf = <%f, %f, %f>\t", f_aero_rf.x, f_aero_rf.y, f_aero_rf.z);
+    printf("t_aero_rf = <%f, %f, %f>\n", t_aero_rf.x, t_aero_rf.y, t_aero_rf.z);
+    printf("t_net_rf = <%f, %f, %f>\t", t_net_rf.x, t_net_rf.y, t_net_rf.z);
+    printf("f_net_if = <%f, %f, %f>\n", f_net_if.x, f_net_if.y, f_net_if.z);
+    printf("r_dot_if = <%f, %f, %f>\t", r_dot_if.x, r_dot_if.y, r_dot_if.z);
+    printf("r_ddot_if = <%f, %f, %f>\n", r_ddot_if.x, r_ddot_if.y, r_ddot_if.z);
+    printf("\n");
+#endif
 
     rocket_.set_r_vect(r_vect_if);
     rocket_.set_r_dot(r_dot_if);
