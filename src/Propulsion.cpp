@@ -13,10 +13,6 @@
 
 #include "Propulsion.h"
 
-#include <iostream>
-#include <string>
-#include <vector>
-
 /**
  * @brief Transitions state of SolidMotor to ignited (producing thrust)
  *
@@ -35,8 +31,8 @@ void SolidMotor::ignite(double tStamp) {
  * @param tStamp Current simulation timestamp
  * @param vector Vector reference to overwrite with motor's thrust vector
  */
-void SolidMotor::get_thrust(double tStamp, Vector3& vector) {
-    if (ignition_ == true) {
+void SolidMotor::get_thrust(double tStamp, Vector3& vector) const {
+    if (ignition_) {
         if ((tStamp - ignition_tStamp_) <= max_burn_duration_) {
             vector.x = 0.0;
             vector.y = 0.0;
@@ -55,9 +51,9 @@ void SolidMotor::get_thrust(double tStamp, Vector3& vector) {
  * @param tStamp Current simulation timestamp
  * @return Vector3 The motor's current thrust vector
  */
-Vector3 SolidMotor::get_thrust(double tStamp) {
+Vector3 SolidMotor::get_thrust(double tStamp) const {
     Vector3 vector;
-    if (ignition_ == true) {
+    if (ignition_) {
         if ((tStamp - ignition_tStamp_) <= max_burn_duration_) {
             vector.x = 0.0;
             vector.y = 0.0;

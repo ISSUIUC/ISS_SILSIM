@@ -20,7 +20,7 @@ struct CpuStateContext {
 
 class CpuThread {
    public:
-    CpuThread(void (*FSW_function)());
+    explicit CpuThread(void (*FSW_function)());
     double tick(CpuStateContext const& context);
 
    private:

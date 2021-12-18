@@ -35,7 +35,7 @@ class Sensor {
           last_update_tStep_(0),
           normal_dist_(noise_mean, noise_stddev){};
 
-    bool is_new_data() { return new_data_; };
+    bool is_new_data() const { return new_data_; };
     std::string get_name() { return name_; };
 
     virtual void update_data(double tStep);
@@ -55,7 +55,7 @@ class Sensor {
 
     double refresh_rate_;
     double last_update_tStep_;
-    bool new_data_;
+    bool new_data_ = false;
 
     // Normal distribution noise generation
     std::default_random_engine generator_;
@@ -70,8 +70,8 @@ class Gyroscope : public Sensor {
    public:
     Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
               double noise_mean = 0.0f, double noise_stddev = 0.1f);
-    void update_data(double tStep);
-    void get_data(Vector3& data);
+    void update_data(double tStep) override;
+    void get_data(Vector3& data) override;
 
     void set_constant_bias(Vector3 bias) { bias_ = bias; };
 
@@ -87,8 +87,8 @@ class Accelerometer : public Sensor {
    public:
     Accelerometer(std::string name, Rocket& rocket, double refresh_rate,
                   double noise_mean = 0.0f, double noise_stddev = 0.1f);
-    void update_data(double tStep);
-    void get_data(Vector3& data);
+    void update_data(double tStep) override;
+    void get_data(Vector3& data) override;
 
     void set_constant_bias(Vector3 bias) { bias_ = bias; };
 
@@ -106,15 +106,13 @@ class Barometer : public Sensor {
    public:
     Barometer(std::string name, Rocket& rocket, double refresh_rate,
               double noise_mean = 0.0f, double noise_stddev = 0.1f);
-    void update_data(double tStep);
-    double get_data();
+    void update_data(double tStep) override;
+    double get_data() override;
 
     void set_constant_bias(double bias) { bias_ = bias; };
 
    private:
     double data_;  // The sensor's current reading
-
-    double noise_;  // Noise value to be added to measurement
 
     double bias_;  // Constant bias value to be added to measurement
 };
