@@ -22,7 +22,7 @@ CpuState::CpuState() {}
 
 void CpuState::tick(double timestamp) {
     CpuStateContext context{};
-    for (auto & i : threads_) {
+    for (auto& i : threads_) {
         CpuThread* thread = i.first;
         double time = i.second;
         // if not sleep time

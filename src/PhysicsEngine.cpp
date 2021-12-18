@@ -15,7 +15,6 @@
 
 #include <cmath>
 
-
 #include "Vector3.h"
 #include "quaternion.h"
 

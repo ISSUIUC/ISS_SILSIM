@@ -16,7 +16,6 @@
 #include "Simulation.h"
 
 #include <cmath>
-
 #include <iostream>
 #include <string>
 
@@ -124,7 +123,7 @@ void Simulation::add_sensor(Sensor* sensor) { sensors_.push_back(sensor); }
  *
  */
 void Simulation::update_sensors() {
-    for (auto sensor: sensors_) {
+    for (auto sensor : sensors_) {
         sensor->update_data(tStamp_);
     }
 }
