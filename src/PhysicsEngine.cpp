@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "Rocket.h"
 #include "Vector3.h"
@@ -174,6 +175,8 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
 
 void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
 
+    std::cout << "hmmmmm" << std::endl;
+
     // {variable}_rf = rocket frame (stuck to rocket)
     // {variable}_if = inertial frame (stuck to earth)
     // f_{variable} = force
@@ -218,28 +221,40 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
     Vector3 f_net_rf;  // net force
     Vector3 t_net_rf;  // net torque
 
-    //-----------------------
+    // Set aerodynamic forces and torques to zero if velocity is small. This 
+    // avoids calculations returning NaN values.
+    if (r_dot_if.magnitude() > 0.01) {
 
-    Vector3 rocket_axis_rf(0, 0, 1);
-    Vector3 v_rf = rocket_.i2r(r_dot_if);
-    double alpha = acos(v_rf.z / v_rf.magnitude());  // angle between velocity vector and rocket axis
-    Vector3 f_N_rf;  // normal aerodynamic force
+        Vector3 rocket_axis_rf(0, 0, 1);
+        Vector3 v_rf = rocket_.i2r(r_dot_if);
+        double alpha = acos(v_rf.z / v_rf.magnitude());  // angle between velocity vector and rocket axis
+        Vector3 f_N_rf;  // normal aerodynamic force
 
-    double c_N = c_Na * alpha;
-    double f_N_mag = c_N * 0.5 * 1.225 * v_rf.magnitude2() * A_ref;  // magnitude of normal force (assuming constant density (will change))
+        double c_N = c_Na * alpha;
+        double f_N_mag = c_N * 0.5 * 1.225 * v_rf.magnitude2() * A_ref;  // magnitude of normal force (assuming constant density (will change))
 
-    f_N_rf.x = (-v_rf.x);
-    f_N_rf.y = (-v_rf.y);
-    f_N_rf.z = 0;
+        f_N_rf.x = (-v_rf.x);
+        f_N_rf.y = (-v_rf.y);
+        f_N_rf.z = 0;
 
-    f_N_rf.normalize();
-    f_N_rf = f_N_rf * f_N_mag;
+        f_N_rf.normalize();
+        f_N_rf = f_N_rf * f_N_mag;
 
-    double f_D_mag = c_D * 0.5 * 1.225 * v_rf.magnitude2() * A_ref;  // Ask about A_ref
-    Vector3 f_D_rf(0, 0, -f_D_mag);
+        double f_D_mag = c_D * 0.5 * 1.225 * v_rf.magnitude2() * A_ref;  // Ask about A_ref
+        Vector3 f_D_rf(0, 0, -f_D_mag);
 
-    f_aero_if = f_N_rf + f_D_rf;
-    t_aero_rf = Cp_vect_rf.cross(f_aero_rf);
+        f_aero_if = f_N_rf + f_D_rf;
+        t_aero_rf = Cp_vect_rf.cross(f_aero_rf);
+
+    } else {
+        f_aero_rf.x = 0;
+        f_aero_rf.y = 0;
+        f_aero_rf.z = 0;
+
+        t_aero_rf.x = 0;
+        t_aero_rf.y = 0;
+        t_aero_rf.z = 0;
+    }
 
     f_net_if = rocket_.r2i(f_aero_if + thrust_rf);
     f_net_if.z -= 9.81 * mass;

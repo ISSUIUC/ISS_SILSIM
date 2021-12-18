@@ -36,7 +36,8 @@ int main() {
     // 3.5 second burn time @ 4000 Newton constant thrust (L ish motor I think)
     SolidMotor motor(3.5, 4000.0);
 
-    ForwardEuler engine(rocket, motor);
+    // ForwardEuler engine(rocket, motor);
+    ForwardEulerRefactor engine(rocket, motor);
 
     CpuState cpu;
 
