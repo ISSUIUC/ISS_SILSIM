@@ -16,8 +16,9 @@ Non-linear 6DOF rocket trajectory simulation utility
 Modify parameters in `src/main.cpp` as desired, then run the following:
 
 ```
+cmake .
 make
-./main
+./ISS_SILSIM
 python3 sim_data/plotter.py
 ```
 or
