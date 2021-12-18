@@ -243,7 +243,7 @@ void ForwardEulerRefactor::march_step(double tStamp, double tStep) {
         double f_D_mag = c_D * 0.5 * 1.225 * v_rf.magnitude2() * A_ref;  // Ask about A_ref
         Vector3 f_D_rf(0, 0, -f_D_mag);
 
-        f_aero_if = f_N_rf + f_D_rf;
+        f_aero_rf = f_N_rf + f_D_rf;
         t_aero_rf = Cp_vect_rf.cross(f_aero_rf);
 
     } else {
