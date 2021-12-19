@@ -13,10 +13,6 @@
 
 #include "Rocket.h"
 
-#include <iostream>
-#include <string>
-#include <vector>
-
 #include "Vector3.h"
 #include "quaternion.h"
 

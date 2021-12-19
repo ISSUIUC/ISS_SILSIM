@@ -13,12 +13,8 @@
 
 #include "PhysicsEngine.h"
 
-#include <math.h>
+#include <cmath>
 
-#include <string>
-#include <vector>
-
-#include "Rocket.h"
 #include "Vector3.h"
 #include "quaternion.h"
 
