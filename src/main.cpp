@@ -39,7 +39,6 @@ int main() {
     // sim.add_sensor(&gyro1);
 
     std::cout << "Running Sim!" << std::endl;
-    std::cout << "Josh Testing" << std::endl;
 
     // run 10000 steps
     sim.run(10000);
