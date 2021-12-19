@@ -81,7 +81,7 @@ double Atmosphere::get_temperature(double altitude) {
  */
 double Atmosphere::get_pressure(double altitude) {
     float pressure;
-    float geopotential_to_geometric = 86.0 - 84.852;
+    float geopotential_to_geometric = 86.0 - 84.852; //this calculation might be incorrect//
     altitude = altitude/1000;
 
     if (altitude < 11) {
