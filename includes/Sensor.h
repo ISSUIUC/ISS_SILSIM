@@ -114,6 +114,8 @@ class Barometer : public Sensor {
    private:
     double data_;  // The sensor's current reading
 
+    double noise_; // Noise value to be added to measurement
+
     double bias_;  // Constant bias value to be added to measurement
 };
 

@@ -114,7 +114,8 @@ void Barometer::update_data(double tStep) {
         new_data_ = true;
 
         if (inject_noise_) {
-            data_ = normal_dist_(generator_);
+            noise_ = normal_dist_(generator_);
+            data_ += noise_;
         }
 
         if (inject_bias_) {
