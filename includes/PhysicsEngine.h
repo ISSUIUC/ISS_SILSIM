@@ -41,12 +41,4 @@ class ForwardEuler : public PhysicsEngine {
     void march_step(double tStamp, double tStep);
 };
 
-class ForwardEulerRefactor : public PhysicsEngine {
-   public:
-    ForwardEulerRefactor(Rocket& rocket, SolidMotor& motor)
-        : PhysicsEngine(rocket, motor){};
-
-    void march_step(double tStamp, double tStep);
-};
-
 #endif
