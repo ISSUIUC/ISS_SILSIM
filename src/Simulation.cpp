@@ -15,16 +15,10 @@
 
 #include "Simulation.h"
 
-#include <math.h>
-
-#include <fstream>
+#include <cmath>
 #include <iostream>
 #include <string>
 
-#include "CpuState.h"
-#include "PhysicsEngine.h"
-#include "Propulsion.h"
-#include "Rocket.h"
 #include "Sensor.h"
 #include "Vector3.h"
 #include "quaternion.h"
@@ -56,10 +50,10 @@ void Simulation::run(int steps) {
         rocket_.get_w_vect(w_net);
         rocket_.get_q_ornt(q_ornt);
 
-        float s = q_ornt.Gets();
-        float x = q_ornt.Getx();
-        float y = q_ornt.Gety();
-        float z = q_ornt.Getz();
+        double s = q_ornt.Gets();
+        double x = q_ornt.Getx();
+        double y = q_ornt.Gety();
+        double z = q_ornt.Getz();
 
         // eqns from
         // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
@@ -130,8 +124,7 @@ void Simulation::add_sensor(Sensor* sensor) { sensors_.push_back(sensor); }
  *
  */
 void Simulation::update_sensors() {
-    for (std::vector<Sensor*>::iterator it = sensors_.begin();
-         it != sensors_.end(); ++it) {
-        (*it)->update_data(tStamp_);
+    for (auto sensor : sensors_) {
+        sensor->update_data(tStamp_);
     }
 }

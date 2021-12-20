@@ -1,21 +1,15 @@
-#include <stdio.h>
-
 #include <iostream>
-#include <string>
 
 #include "CpuState.h"
-#include "CpuThread.h"
 #include "Rocket.h"
 #include "Sensor.h"
 #include "Simulation.h"
-#include "Vector3.h"
 #include "quaternion.h"
 
 double deg2rad = 3.14159265 / 180.0;
 
 int main() {
-    Rocket rocket;
-
+    Rocket rocket{};
     double mass = rocket.get_mass();
     double I_tensor[9];
     I_tensor[0] = (1.0 / 12.0) * mass * 5.182 * 5.182 * 25;
@@ -38,7 +32,6 @@ int main() {
 
     // ForwardEuler engine(rocket, motor);
     ForwardEuler engine(rocket, motor);
-
     CpuState cpu;
 
     Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
@@ -48,7 +41,7 @@ int main() {
 
     std::cout << "Running Sim!" << std::endl;
 
-    // run 3000 steps
+    // run 10000 steps
     sim.run(10000);
 
     return 0;

@@ -54,6 +54,25 @@ Add symbolic link from `g++-11` to `g++`:
 ```
 ln -s /usr/local/bin/g++-11 /usr/local/bin/g++
 ```
+#### Windows Installation
+
+On Windows it is recommended to use visual studio, but gcc and clang both work
+
+Visual Studio instructions:
+
+Get visual studio here: https://visualstudio.microsoft.com/
+
+When installing visual studio install the c++ desktop development package
+
+Once visual studio finishes installing clone the repo
+
+`git clone https://github.com/ISSUIUC/ISS_SILSIM`
+
+In visual studio choose "Open a local folder" and open the cloned repo
+
+After visual studio finishes loading the project go to "Select Startup Item" in the top center of the screen and select "ISS_SILSIM.exe" from the dropdown
+
+Build and run the project by clicking the run button or by pressing "F5"
 
 #### Python Dependencies
 

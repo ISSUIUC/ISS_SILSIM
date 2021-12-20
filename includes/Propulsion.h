@@ -28,14 +28,14 @@ class SolidMotor {
           thrust_value_(thrust_value){};
 
     void ignite(double tStamp);
-    void get_thrust(double tStamp, Vector3& vector);
-    Vector3 get_thrust(double tStamp);
+    void get_thrust(double tStamp, Vector3& vector) const;
+    Vector3 get_thrust(double tStamp) const;
 
    private:
     bool ignition_;
     double max_burn_duration_;
-    double ignition_tStamp_;
-    double current_thrust_;
+    double ignition_tStamp_{};
+    double current_thrust_{};
     double thrust_value_;
 };
 

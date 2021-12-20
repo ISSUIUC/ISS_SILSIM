@@ -17,7 +17,6 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
 
 #include "Rocket.h"
 
@@ -106,6 +105,7 @@ Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
                      double noise_mean, double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
     data_ = rocket_.get_r_vect().x;
+    bias_ = 0;
 }
 
 void Barometer::update_data(double tStep) {
