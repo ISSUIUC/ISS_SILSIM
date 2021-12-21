@@ -60,9 +60,8 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     // parameters
     double mass = rocket_.get_mass();    // mass of rocket
     double A_ref = rocket_.get_A_ref();  // ref area in m^2
-    double c_Na =
-        rocket_.get_Cna();          // normal force coefficient derivative
-    double c_D = rocket_.get_Cd();  // drag coefficient
+    double c_Na = rocket_.get_Cna();     // normal force coefficient derivative
+    double c_D = rocket_.get_Cd();       // drag coefficient
 
     // Motor thrust vector, rocket frame
     Vector3 thrust_rf =
@@ -128,7 +127,8 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     r_ddot_if = f_net_if / mass;
 
     double w_mag = w_vect_if.magnitude();
-    if (w_mag > 0.000001) {          // if the rocket is moving; numbers below this threshold are interpreted as 0 and cause errors
+    if (w_mag > 0.000001) {  // if the rocket is moving; numbers below this
+                             // threshold are interpreted as 0 and cause errors
         Quaternion<double> q_rot;
         q_rot.Set(cos(w_mag / 2.0), (w_vect_if.x / w_mag) * sin(w_mag / 2.0),
                   (w_vect_if.y / w_mag) * sin(w_mag / 2.0),
