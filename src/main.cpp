@@ -11,12 +11,21 @@
 #include "Vector3.h"
 #include "quaternion.h"
 #include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
+
 
 double deg2rad = 3.14159265 / 180.0;
 
 int main() {
-    Rocket rocket;
+    auto global_logger = spdlog::basic_logger_mt("basic logger", "logs/logs_test.txt");
+    spdlog::set_default_logger(global_logger);
+    spdlog::set_level(spdlog::level::debug);
+    // spdlog::debug("This message should not have displayed!");
+    
 
+    Rocket rocket;
+    
+    
     double mass = rocket.get_mass();
     double I_tensor[9];
     I_tensor[0] = (1.0 / 12.0) * mass * 5.182 * 5.182 * 25;

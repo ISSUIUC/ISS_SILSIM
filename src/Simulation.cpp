@@ -29,8 +29,12 @@
 #include "Vector3.h"
 #include "quaternion.h"
 
-#define RAD2DEG (180.0 / 3.14159265);
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/logger.h"
 
+#define RAD2DEG (180.0 / 3.14159265)
+#define SIM_DEBUG
 // #define SIM_DEBUG
 
 void Simulation::run(int steps) {
@@ -47,7 +51,6 @@ void Simulation::run(int steps) {
     double roll, pitch, yaw;
 
     motor_.ignite(tStamp_);
-
     for (int iter = 0; iter < steps; ++iter) {
         rocket_.get_r_vect(r_vect);
         rocket_.get_r_dot(r_dot);
@@ -68,17 +71,17 @@ void Simulation::run(int steps) {
         pitch = asin(2.0 * (s * y - z * x)) * RAD2DEG;
         roll = atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
                RAD2DEG;
-
+    
 #ifdef SIM_DEBUG
         double alpha = acos(rocket_.i2r(r_dot).z / (r_dot.magnitude()));
-        printf("Timestamp: %f\n", tStamp_);
-        printf("\tR-Vector: <%f, %f, %f>", r_vect.x, r_vect.y, r_vect.z);
-        printf("\tVelocity: <%f, %f, %f>", r_dot.x, r_dot.y, r_dot.z);
-        printf("\tAccel: <%f, %f, %f>", r_ddot.x, r_ddot.y, r_ddot.z);
-        printf("\tF-Net: <%f, %f, %f>", f_net.x, f_net.y, f_net.z);
-        printf("\tW-Net: <%f, %f, %f>\n", w_net.x, w_net.y, w_net.z);
-        printf("ROLL: %f \tPITCH: %f \tYAW: %f  [deg]", roll, pitch, yaw);
-        printf("\nalphaSIM: %f  [deg]\n\n", alpha * RAD2DEG);
+        spdlog::log(spdlog::level::level_enum::debug, "Timestamp: {}\n", tStamp_);
+        spdlog::log(spdlog::level::level_enum::debug,"\tR-Vector: <{}, {}, {}>", r_vect.x, r_vect.y, r_vect.z);
+        spdlog::log(spdlog::level::level_enum::debug,"\tVelocity: <{}, {}, {}>", r_dot.x, r_dot.y, r_dot.z);
+        spdlog::log(spdlog::level::level_enum::debug, "\tAccel: <{}, {}, {}>", r_ddot.x, r_ddot.y, r_ddot.z);
+        spdlog::log(spdlog::level::level_enum::debug, "\tF-Net: <{}, {}, {}>", f_net.x, f_net.y, f_net.z);
+        spdlog::log(spdlog::level::level_enum::debug, "\tW-Net: <{}, {}, {}>\n", w_net.x, w_net.y, w_net.z);
+        spdlog::log(spdlog::level::level_enum::debug,"ROLL: {} \tPITCH: {} \tYAW: {}  [deg]", roll, pitch, yaw);
+        spdlog::log(spdlog::level::level_enum::debug, "\nalphaSIM: {}  [deg]\n\n", alpha * RAD2DEG);
 #endif
 
         Vector3 rocket_axis(0, 0, 1);
