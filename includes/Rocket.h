@@ -16,6 +16,7 @@
 #ifndef _ROCKET_H_
 #define _ROCKET_H_
 
+#include <array>
 #include <string>
 #include <vector>
 
@@ -128,7 +129,7 @@ class Rocket {
     // The following are in rocket frame
     Vector3 Cp_vect_;  // CG to Cp vector
 
-    double I_[9];  // Rocket moment of inertia tensor
+    std::array<double, 9> I_{};  // Rocket moment of inertia tensor
 
     // Default scalar parameters from OpenRocket
     double mass_ = 41.034;      // in Kg

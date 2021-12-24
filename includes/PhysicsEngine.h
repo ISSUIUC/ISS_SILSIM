@@ -38,7 +38,7 @@ class ForwardEuler : public PhysicsEngine {
     ForwardEuler(Rocket& rocket, SolidMotor& motor)
         : PhysicsEngine(rocket, motor){};
 
-    void march_step(double tStamp, double tStep);
+    void march_step(double tStamp, double tStep) override;
 };
 
 #endif
