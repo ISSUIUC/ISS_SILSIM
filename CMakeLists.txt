@@ -8,17 +8,16 @@ set(LIB ${CMAKE_SOURCE_DIR}/lib)
 
 add_subdirectory(flight_src/mcu)
 
-set(sources
+add_executable(ISS_SILSIM src/main.cpp
+        src/CpuThread.cpp
+        src/CpuState.cpp
         src/PhysicsEngine.cpp
         src/Propulsion.cpp
         src/Rocket.cpp
         src/Sensor.cpp
         src/Simulation.cpp
-        src/Simulation.h
-        src/CpuThread.h
-        src/CpuThread.cpp
-        src/CpuState.h
-        src/CpuState.cpp
+        lib/quaternion/quaternion.cpp
+        lib/Vector3/Vector3.cpp
         )
 
 
