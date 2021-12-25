@@ -22,6 +22,7 @@
 #include "Sensor.h"
 #include "Vector3.h"
 #include "quaternion.h"
+#include <spdlog/spdlog.h>
 
 
 #define RAD2DEG (180.0 / 3.14159265)
@@ -65,7 +66,6 @@ void Simulation::run(int steps) {
     
 #ifdef SIM_DEBUG
         double alpha = acos(rocket_.i2r(r_dot).z / (r_dot.magnitude()));
-<<<<<<< HEAD
         spdlog::log(spdlog::level::level_enum::debug, "Timestamp: {}\n", tStamp_);
         spdlog::log(spdlog::level::level_enum::debug,"\tR-Vector: <{}, {}, {}>", r_vect.x, r_vect.y, r_vect.z);
         spdlog::log(spdlog::level::level_enum::debug,"\tVelocity: <{}, {}, {}>", r_dot.x, r_dot.y, r_dot.z);
@@ -74,17 +74,6 @@ void Simulation::run(int steps) {
         spdlog::log(spdlog::level::level_enum::debug, "\tW-Net: <{}, {}, {}>\n", w_net.x, w_net.y, w_net.z);
         spdlog::log(spdlog::level::level_enum::debug,"ROLL: {} \tPITCH: {} \tYAW: {}  [deg]", roll, pitch, yaw);
         spdlog::log(spdlog::level::level_enum::debug, "\nalphaSIM: {}  [deg]\n\n", alpha * RAD2DEG);
-=======
-        printf("############### SIM_DEBUG ###############\n");
-        printf("Timestamp: %f\n", tStamp_);
-        printf("R-Vector: <%f, %f, %f>", r_vect.x, r_vect.y, r_vect.z);
-        printf("\tVelocity: <%f, %f, %f>", r_dot.x, r_dot.y, r_dot.z);
-        printf("\tAccel: <%f, %f, %f>", r_ddot.x, r_ddot.y, r_ddot.z);
-        printf("\nF-Net: <%f, %f, %f>", f_net.x, f_net.y, f_net.z);
-        printf("\tW-Net: <%f, %f, %f>\n", w_net.x, w_net.y, w_net.z);
-        printf("ROLL: %f \tPITCH: %f \tYAW: %f  [deg]", roll, pitch, yaw);
-        printf("\nalphaSIM: %f  [deg]\n\n", alpha * RAD2DEG);
->>>>>>> d8e3ade798dec96bf7b4a7cbb53e438621727afd
 #endif
 
         Vector3 rocket_axis(0, 0, 1);
