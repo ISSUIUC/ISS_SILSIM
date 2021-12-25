@@ -52,6 +52,7 @@ build/*
 compile_commands.json
 bin
 .clangd
+.session.vim
 
 *.make
 **/*.make
