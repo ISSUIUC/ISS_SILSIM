@@ -5,10 +5,8 @@
 #ifndef SILSIM_CPUSTATECONTEXT_H
 #define SILSIM_CPUSTATECONTEXT_H
 
-
-struct CpuStateContext{
+struct CpuStateContext {
     double system_time;
 };
-
 
 #endif  // SILSIM_CPUSTATECONTEXT_H

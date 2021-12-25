@@ -4,7 +4,7 @@
 
 #include "CpuState.h"
 
-int main(){
+int main() {
     auto fsm_thread = std::make_unique<Rocket_FSM>();
     CpuState cpu;
     cpu.add_thread(std::move(fsm_thread));

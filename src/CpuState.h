@@ -5,17 +5,19 @@
 #ifndef SILSIM_CPUSTATE_H
 #define SILSIM_CPUSTATE_H
 
+#include <memory>
+#include <vector>
+
 #include "CpuThread.h"
-#include<vector>
-#include<memory>
 class CpuState {
    public:
-    CpuState(){}
+    CpuState() {}
 
     void add_thread(std::unique_ptr<CpuThread> thread);
     void tick(double timestamp);
+
    private:
-    //thead, when the threads_ should next run in absolute time
+    // thead, when the threads_ should next run in absolute time
     std::vector<std::pair<std::unique_ptr<CpuThread>, double>> threads_;
 };
 
