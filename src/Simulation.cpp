@@ -34,8 +34,8 @@
 #include "spdlog/logger.h"
 
 #define RAD2DEG (180.0 / 3.14159265)
+
 #define SIM_DEBUG
-// #define SIM_DEBUG
 
 void Simulation::run(int steps) {
     std::ofstream dataFile(filename_);
