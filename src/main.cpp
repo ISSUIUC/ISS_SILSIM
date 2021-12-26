@@ -1,14 +1,9 @@
-#include <stdio.h>
-
 #include <iostream>
-#include <string>
 
 #include "CpuState.h"
-#include "CpuThread.h"
 #include "Rocket.h"
 #include "Sensor.h"
 #include "Simulation.h"
-#include "Vector3.h"
 #include "quaternion.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
@@ -47,8 +42,8 @@ int main() {
     // 3.5 second burn time @ 4000 Newton constant thrust (L ish motor I think)
     SolidMotor motor(3.5, 4000.0);
 
+    // ForwardEuler engine(rocket, motor);
     ForwardEuler engine(rocket, motor);
-
     CpuState cpu;
 
     Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
@@ -58,7 +53,7 @@ int main() {
 
     std::cout << "Running Sim!" << std::endl;
 
-    // run 3000 steps
+    // run 10000 steps
     sim.run(10000);
 
     return 0;

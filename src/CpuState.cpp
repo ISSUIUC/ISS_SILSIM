@@ -21,14 +21,14 @@ CpuState::CpuState() {}
  */
 
 void CpuState::tick(double timestamp) {
-    CpuStateContext context;
-    for (unsigned i = 0; i < threads_.size(); i++) {
-        CpuThread* thread = threads_.at(i).first;
-        double time = threads_.at(i).second;
+    CpuStateContext context{};
+    for (auto& i : threads_) {
+        CpuThread* thread = i.first;
+        double time = i.second;
         // if not sleep time
         if (time <= timestamp) {
             context.timestamp = timestamp;
-            threads_.at(i).second += thread->tick(context);
+            i.second += thread->tick(context);
         }
     }
 }
@@ -40,5 +40,5 @@ void CpuState::tick(double timestamp) {
  */
 
 void CpuState::add_thread(CpuThread* thread) {
-    threads_.push_back({thread, 0});
+    threads_.emplace_back(thread, 0);
 }
