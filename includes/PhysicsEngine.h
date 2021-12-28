@@ -41,4 +41,12 @@ class ForwardEuler : public PhysicsEngine {
     void march_step(double tStamp, double tStep) override;
 };
 
+class RungeKutta : public PhysicsEngine {
+    public:
+     RungeKutta(Rocket& rocket, SolidMotor& motor)
+        : PhysicsEngine(rocket, motor){};
+
+    void march_step(double tStamp, double tStep) override;
+};
+
 #endif
