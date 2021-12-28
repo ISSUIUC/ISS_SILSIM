@@ -17,7 +17,7 @@ add_executable(ISS_SILSIM src/main.cpp
         lib/quaternion/quaternion.cpp
         lib/Vector3/Vector3.cpp
         )
-add_executable(visualizer lib/raylib)
+add_executable(visualizer lib/raylib/src/raylib.h)
 
 #set highest warning levels
 if(MSVC)
