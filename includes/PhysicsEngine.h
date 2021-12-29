@@ -21,6 +21,9 @@
 #include "Rocket.h"
 #include "quaternion.h"
 
+#include <spdlog/spdlog.h>
+#include<spdlog/sinks/basic_file_sink.h>
+
 class PhysicsEngine {
    public:
     PhysicsEngine(Rocket& rocket, SolidMotor& motor)
@@ -34,11 +37,15 @@ class PhysicsEngine {
 };
 
 class ForwardEuler : public PhysicsEngine {
+
+
    public:
-    ForwardEuler(Rocket& rocket, SolidMotor& motor)
-        : PhysicsEngine(rocket, motor){};
+    ForwardEuler(Rocket& rocket, SolidMotor& motor);
 
     void march_step(double tStamp, double tStep) override;
+
+    private:
+        std::shared_ptr<spdlog::logger> euler_logger;
 };
 
 #endif

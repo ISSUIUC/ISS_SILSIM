@@ -21,6 +21,7 @@
 
 #include <fstream>
 #include <string>
+#include<memory>
 
 #include "CpuState.h"
 #include "PhysicsEngine.h"
@@ -29,19 +30,15 @@
 #include "Sensor.h"
 #include "quaternion.h"
 
+#include <spdlog/sinks/basic_file_sink.h>
+
 class Simulation {
    public:
     Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
                SolidMotor& motor, CpuState& cpu, std::string filename
                // std::vector<Sensor&>& sensors
-               )
-        : tStamp_(0),
-          tStep_(tStep),
-          engine_(engine),
-          rocket_(rocket),
-          motor_(motor),
-          cpu_(cpu),
-          filename_(filename){};
+               );
+          
 
     void run(int steps);
 
@@ -66,6 +63,9 @@ class Simulation {
     std::vector<Sensor*> sensors_;  // array of sensors on the rocket
 
     std::string filename_;
+
+    // logger
+    std::shared_ptr<spdlog::logger> sim_log;
 };
 
 #endif
