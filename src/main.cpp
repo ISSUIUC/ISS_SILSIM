@@ -13,12 +13,11 @@
 constexpr double deg2rad = 3.14159265 / 180.0;
 
 int main() {
-    auto global_logger = spdlog::basic_logger_mt("basic logger", "logs/logs_test.log");
-    spdlog::set_default_logger(global_logger);
+    
     spdlog::set_level(spdlog::level::debug);
+    // comment below is used if we want to change the format of the logging
     // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
-    // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
-    // spdlog::debug("This message should not have displayed!");
+
     
 
     Rocket rocket;
