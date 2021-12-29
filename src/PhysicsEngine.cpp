@@ -188,8 +188,8 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     Vector3 pos_if = rocket_.get_r_vect();
     Vector3 vel_if = rocket_.get_r_dot();
     Vector3 accel_if = rocket_.get_r_ddot();
-    Vector3 angular_vel_if = rocket_.get_w_vect();
-    Vector3 angular_accel_if = rocket_.get_w_dot();
+    Vector3 ang_vel_if = rocket_.get_w_vect();
+    Vector3 ang_accel_if = rocket_.get_w_dot();
     Vector3 net_force_if = rocket_.get_f_net();
     Vector3 net_torque_if = rocket_.get_t_net();
 
@@ -253,42 +253,64 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     /*************************** Calculate Slopes *****************************/
 
+    Vector3 jerk = ((net_force_if / mass) - accel_if) / tStep;
+    Vector3 ang_jerk;
+    ang_jerk.x = ((net_torque_if.x / inertia[0]) - ang_accel_if.x) / tStep;
+    ang_jerk.y = ((net_torque_if.x / inertia[4]) - ang_accel_if.y) / tStep;
+    ang_jerk.z = ((net_torque_if.x / inertia[8]) - ang_accel_if.z) / tStep;
+
     //---- k1 ----
     Vector3 pos_k1 = vel_if;
     Vector3 vel_k1 = accel_if;
-    Vector3 accel_k1 = net_force_if / mass;
+    Vector3 ang_vel_k1 = ang_accel_if;
 
     //---- k2 ----
     Vector3 pos_k2 = pos_k1 + (vel_k1 * tStep * 0.5);
-    Vector3 vel_k2 = vel_k1 + (accel_k1 * tStep * 0.5);
-    Vector3 accel_k2;
+    Vector3 vel_k2 = vel_k1 + (jerk * tStep * 0.5);
+    Vector3 ang_vel_k2 = ang_vel_k1 + (ang_jerk * tStep * 0.5);
     
     //---- k3 ----
     Vector3 pos_k3 = pos_k1 + (vel_k2 * tStep * 0.5);
-    Vector3 vel_k3 = vel_k1 + (accel_k2 * tStep * 0.5);
-    Vector3 accel_k3;
-
+    Vector3 vel_k3 = vel_k1 + (jerk * tStep * 0.5);
+    Vector3 ang_vel_k3 = ang_vel_k1 + (ang_jerk * tStep * 0.5);
+    
     //---- k4 ----
-    Vector3 pos_k4 = pos_k1 + (pos_k3 * tStep);
-    Vector3 vel_k4 = vel_k1 + (vel_k3 * tStep);
-    Vector3 accel_k4;
+    Vector3 pos_k4 = pos_k1 + (vel_k3 * tStep);
+    Vector3 vel_k4 = vel_k1 + (jerk * tStep);
+    Vector3 ang_vel_k4 = ang_vel_k1 + (ang_jerk * tStep);
 
     //---- orientation ----
-
-
-    //---- angular velocity ----
-    Vector3 ang_vel_k1 = angular_accel_if;
-    Vector3 ang_vel_k2;
-    Vector3 ang_vel_k3;
-    Vector3 ang_vel_k4;
-
-
-    //---- angular acceleration ----
 
 
     /********************** Perform Runge-Kutta Method ************************/
 
     pos_if += tStep * (pos_k1 + (2 * pos_k2) + (2 * pos_k3) + pos_k4) / 6;
     vel_if += tStep * (vel_k1 + (2 * vel_k2) + (2 * vel_k3) + vel_k4) / 6;
+    accel_if = net_force_if / mass;
+
+    ang_vel_if += tStep * (ang_vel_k1 + (2 * ang_vel_k2) + (2 * ang_vel_k3) + ang_vel_k4) / 6;
+    ang_accel_if.x = net_torque_if.x / inertia[0];
+    ang_accel_if.y = net_torque_if.y / inertia[4];
+    ang_accel_if.z = net_torque_if.z / inertia[8];
+
+    //---- Lauch Rail ----
+    if (pos_if.magnitude() < 4.50) {
+        ang_vel_if.x = 0;
+        ang_vel_if.y = 0;
+        ang_vel_if.z = 0;
+        ang_accel_if.x = 0;
+        ang_accel_if.y = 0;
+        ang_accel_if.z = 0;
+    }
+
+    //---- Set Values ----
+    rocket_.set_r_vect(pos_if);
+    rocket_.set_r_dot(vel_if);
+    rocket_.set_r_ddot(accel_if);
+    rocket_.set_w_vect(ang_vel_if);
+    rocket_.set_w_dot(ang_accel_if);
+    rocket_.set_f_net(net_force_if);
+    rocket_.set_t_net(net_torque_if);
+    rocket_.set_q_ornt(orient);
 
 };
