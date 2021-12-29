@@ -33,7 +33,6 @@
 
 #define RAD2DEG (180.0 / 3.14159265)
 
-#define SIM_DEBUG
 
 Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
                SolidMotor& motor, CpuState& cpu, std::string filename
@@ -84,8 +83,7 @@ void Simulation::run(int steps) {
         pitch = asin(2.0 * (s * y - z * x)) * RAD2DEG;
         roll = atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
                RAD2DEG;
-    
-#ifdef SIM_DEBUG
+
         double alpha = acos(rocket_.i2r(r_dot).z / (r_dot.magnitude()));
         sim_log -> debug("Timestamp: {}\n", tStamp_);
         sim_log -> debug("\tR-Vector: <{}, {}, {}>", r_vect.x, r_vect.y, r_vect.z);
@@ -95,7 +93,6 @@ void Simulation::run(int steps) {
         sim_log -> debug("\tW-Net: <{}, {}, {}>\n", w_net.x, w_net.y, w_net.z);
         sim_log -> debug("ROLL: {} \tPITCH: {} \tYAW: {}  [deg]", roll, pitch, yaw);
         sim_log -> debug("\nalphaSIM: {}  [deg]\n\n", alpha * RAD2DEG);
-#endif
         Vector3 rocket_axis(0, 0, 1);
         rocket_axis = rocket_.r2i(rocket_axis);
 

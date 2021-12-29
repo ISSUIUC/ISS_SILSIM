@@ -24,7 +24,7 @@
 
 #define RAD2DEG (180.0 / 3.14159265)
 
-#define PHYSENG_DEBUG
+
 
 
 ForwardEuler::ForwardEuler(Rocket& rocket, SolidMotor& motor)
@@ -167,7 +167,6 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         w_vect_if.z = 0;
     }
 
-#ifdef PHYSENG_DEBUG
     // spdlog::log(spdlog::level::level_enum::debug, "############### PHYSENG_DEBUG ###############\n");
     euler_logger -> debug("TimestampL {}\n", tStamp);
     euler_logger -> debug("\tthrust_rf = <{}, {}, {}>\n", thrust_rf.x, thrust_rf.y, thrust_rf.z);
@@ -178,7 +177,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     euler_logger -> debug("\tr_dot_if = <{}, {}, {}>\t", r_dot_if.x, r_dot_if.y, r_dot_if.z);
     euler_logger -> debug("\tr_ddot_if = <{}, {}, {}>\n", r_ddot_if.x, r_ddot_if.y, r_ddot_if.z);
    euler_logger -> debug("\n");
-#endif
+
 
     rocket_.set_r_vect(r_vect_if);
     rocket_.set_r_dot(r_dot_if);
