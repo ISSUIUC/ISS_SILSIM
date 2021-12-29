@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(SILSIM)
+project(SILSIM CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -17,7 +17,12 @@ add_executable(ISS_SILSIM src/main.cpp
         lib/quaternion/quaternion.cpp
         lib/Vector3/Vector3.cpp
         )
-add_executable(visualizer lib/raylib/src/raylib.h)
+
+#Linking raylib library
+add_executable(visualizer src/main.cpp) #Change file to whatever is needed
+set_target_properties(visualizer PROPERTIES LINKER_LANGUAGE CXX)
+add_subdirectory(lib/raylib)
+target_link_libraries(visualizer raylib)
 
 #set highest warning levels
 if(MSVC)
