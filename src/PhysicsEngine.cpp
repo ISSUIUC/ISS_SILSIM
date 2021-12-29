@@ -168,7 +168,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     }
 
     // spdlog::log(spdlog::level::level_enum::debug, "############### PHYSENG_DEBUG ###############\n");
-    euler_logger -> debug("TimestampL {}\n", tStamp);
+    euler_logger -> debug("Timestamp {}\n", tStamp);
     euler_logger -> debug("\tthrust_rf = <{}, {}, {}>\n", thrust_rf.x, thrust_rf.y, thrust_rf.z);
     euler_logger -> debug("\tf_aero_rf = <{}, {}, {}>\t", f_aero_rf.x, f_aero_rf.y, f_aero_rf.z);
     euler_logger -> debug("\tt_aero_rf = <{}, {}, {}>\n", t_aero_rf.x, t_aero_rf.y, t_aero_rf.z);
