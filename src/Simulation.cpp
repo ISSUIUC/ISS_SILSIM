@@ -86,12 +86,12 @@ void Simulation::run(int steps) {
 
         double alpha = acos(rocket_.i2r(r_dot).z / (r_dot.magnitude()));
         sim_log -> debug("Timestamp: {}\n", tStamp_);
-        sim_log -> debug("\tR-Vector: <{}, {}, {}>", r_vect.x, r_vect.y, r_vect.z);
-        sim_log -> debug("\tVelocity: <{}, {}, {}>", r_dot.x, r_dot.y, r_dot.z);
-        sim_log -> debug("\tAccel: <{}, {}, {}>", r_ddot.x, r_ddot.y, r_ddot.z);
-        sim_log -> debug("\tF-Net: <{}, {}, {}>", f_net.x, f_net.y, f_net.z);
-        sim_log -> debug("\tW-Net: <{}, {}, {}>\n", w_net.x, w_net.y, w_net.z);
-        sim_log -> debug("ROLL: {} \tPITCH: {} \tYAW: {}  [deg]", roll, pitch, yaw);
+        sim_log -> debug("R-Vector: <{}, {}, {}>", r_vect.x, r_vect.y, r_vect.z);
+        sim_log -> debug("Velocity: <{}, {}, {}>", r_dot.x, r_dot.y, r_dot.z);
+        sim_log -> debug("Accel: <{}, {}, {}>", r_ddot.x, r_ddot.y, r_ddot.z);
+        sim_log -> debug("F-Net: <{}, {}, {}>", f_net.x, f_net.y, f_net.z);
+        sim_log -> debug("W-Net: <{}, {}, {}>\n", w_net.x, w_net.y, w_net.z);
+        sim_log -> debug("ROLL: {} PITCH: {} YAW: {}  [deg]", roll, pitch, yaw);
         sim_log -> debug("\nalphaSIM: {}  [deg]\n\n", alpha * RAD2DEG);
         Vector3 rocket_axis(0, 0, 1);
         rocket_axis = rocket_.r2i(rocket_axis);
