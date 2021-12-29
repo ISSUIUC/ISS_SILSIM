@@ -19,20 +19,13 @@
 #include "Vector3.h"
 #include "quaternion.h"
 
-
-
-
 #define RAD2DEG (180.0 / 3.14159265)
 
-
-
-
 ForwardEuler::ForwardEuler(Rocket& rocket, SolidMotor& motor)
-        : PhysicsEngine(rocket, motor)
-        {
-            euler_logger = spdlog::basic_logger_mt("Euler_Logger", "logs/forward_euler.log");
-        }
-
+    : PhysicsEngine(rocket, motor) {
+    euler_logger =
+        spdlog::basic_logger_mt("Euler_Logger", "logs/forward_euler.log");
+}
 
 /**
  * @brief Calculates forces and moments and integrates with a simple euler step

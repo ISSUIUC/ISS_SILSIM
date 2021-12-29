@@ -19,9 +19,11 @@
 #ifndef _SIMULATION_H_
 #define _SIMULATION_H_
 
+#include <spdlog/sinks/basic_file_sink.h>
+
 #include <fstream>
+#include <memory>
 #include <string>
-#include<memory>
 
 #include "CpuState.h"
 #include "PhysicsEngine.h"
@@ -30,15 +32,12 @@
 #include "Sensor.h"
 #include "quaternion.h"
 
-#include <spdlog/sinks/basic_file_sink.h>
-
 class Simulation {
    public:
     Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
                SolidMotor& motor, CpuState& cpu, std::string filename
                // std::vector<Sensor&>& sensors
-               );
-          
+    );
 
     void run(int steps);
 

@@ -14,15 +14,15 @@
 #ifndef _PHYSICS_ENGINE_H_
 #define _PHYSICS_ENGINE_H_
 
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
+
 #include <string>
 #include <vector>
 
 #include "Propulsion.h"
 #include "Rocket.h"
 #include "quaternion.h"
-
-#include <spdlog/spdlog.h>
-#include<spdlog/sinks/basic_file_sink.h>
 
 class PhysicsEngine {
    public:
@@ -37,15 +37,13 @@ class PhysicsEngine {
 };
 
 class ForwardEuler : public PhysicsEngine {
-
-
    public:
     ForwardEuler(Rocket& rocket, SolidMotor& motor);
 
     void march_step(double tStamp, double tStep) override;
 
-    private:
-        std::shared_ptr<spdlog::logger> euler_logger;
+   private:
+    std::shared_ptr<spdlog::logger> euler_logger;
 };
 
 #endif
