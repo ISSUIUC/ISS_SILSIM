@@ -17,7 +17,7 @@ int main() {
     spdlog::set_default_logger(global_logger);
     spdlog::set_level(spdlog::level::debug);
     // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
-    spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
+    // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
     // spdlog::debug("This message should not have displayed!");
     
 
