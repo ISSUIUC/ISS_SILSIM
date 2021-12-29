@@ -253,8 +253,42 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     /*************************** Calculate Slopes *****************************/
 
+    //---- k1 ----
+    Vector3 pos_k1 = vel_if;
+    Vector3 vel_k1 = accel_if;
+    Vector3 accel_k1 = net_force_if / mass;
+
+    //---- k2 ----
+    Vector3 pos_k2 = pos_k1 + (vel_k1 * tStep * 0.5);
+    Vector3 vel_k2 = vel_k1 + (accel_k1 * tStep * 0.5);
+    Vector3 accel_k2;
+    
+    //---- k3 ----
+    Vector3 pos_k3 = pos_k1 + (vel_k2 * tStep * 0.5);
+    Vector3 vel_k3 = vel_k1 + (accel_k2 * tStep * 0.5);
+    Vector3 accel_k3;
+
+    //---- k4 ----
+    Vector3 pos_k4 = pos_k1 + (pos_k3 * tStep);
+    Vector3 vel_k4 = vel_k1 + (vel_k3 * tStep);
+    Vector3 accel_k4;
+
+    //---- orientation ----
+
+
+    //---- angular velocity ----
+    Vector3 ang_vel_k1 = angular_accel_if;
+    Vector3 ang_vel_k2;
+    Vector3 ang_vel_k3;
+    Vector3 ang_vel_k4;
+
+
+    //---- angular acceleration ----
 
 
     /********************** Perform Runge-Kutta Method ************************/
+
+    pos_if += tStep * (pos_k1 + (2 * pos_k2) + (2 * pos_k3) + pos_k4) / 6;
+    vel_if += tStep * (vel_k1 + (2 * vel_k2) + (2 * vel_k3) + vel_k4) / 6;
 
 };
