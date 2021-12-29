@@ -9,6 +9,9 @@
 *.gch
 *.pch
 
+# log files
+logs/*
+
 # Compiled Dynamic libraries
 *.so
 *.dylib
