@@ -14,13 +14,18 @@
 #include "PhysicsEngine.h"
 
 #include <cmath>
+#include <memory>
 
 #include "Vector3.h"
 #include "quaternion.h"
 
 #define RAD2DEG (180.0 / 3.14159265)
 
-#define PHYSENG_DEBUG
+ForwardEuler::ForwardEuler(Rocket& rocket, SolidMotor& motor)
+    : PhysicsEngine(rocket, motor) {
+    euler_logger =
+        spdlog::basic_logger_mt("Euler_Logger", "logs/forward_euler.log");
+}
 
 /**
  * @brief Calculates forces and moments and integrates with a simple euler step
@@ -155,18 +160,21 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         w_vect_if.z = 0;
     }
 
-#ifdef PHYSENG_DEBUG
-    printf("############### PHYSENG_DEBUG ###############\n");
-    printf("TimestampL %f\n", tStamp);
-    printf("thrust_rf = <%f, %f, %f>\n", thrust_rf.x, thrust_rf.y, thrust_rf.z);
-    printf("f_aero_rf = <%f, %f, %f>\t", f_aero_rf.x, f_aero_rf.y, f_aero_rf.z);
-    printf("t_aero_rf = <%f, %f, %f>\n", t_aero_rf.x, t_aero_rf.y, t_aero_rf.z);
-    printf("t_net_rf = <%f, %f, %f>\t", t_net_rf.x, t_net_rf.y, t_net_rf.z);
-    printf("f_net_if = <%f, %f, %f>\n", f_net_if.x, f_net_if.y, f_net_if.z);
-    printf("r_dot_if = <%f, %f, %f>\t", r_dot_if.x, r_dot_if.y, r_dot_if.z);
-    printf("r_ddot_if = <%f, %f, %f>\n", r_ddot_if.x, r_ddot_if.y, r_ddot_if.z);
-    printf("\n");
-#endif
+    euler_logger->debug("Timestamp {}\n", tStamp);
+    euler_logger->debug("thrust_rf = <{}, {}, {}>\n", thrust_rf.x, thrust_rf.y,
+                        thrust_rf.z);
+    euler_logger->debug("f_aero_rf = <{}, {}, {}>", f_aero_rf.x, f_aero_rf.y,
+                        f_aero_rf.z);
+    euler_logger->debug("t_aero_rf = <{}, {}, {}>\n", t_aero_rf.x, t_aero_rf.y,
+                        t_aero_rf.z);
+    euler_logger->debug("t_net_rf = <{}, {}, {}>", t_net_rf.x, t_net_rf.y,
+                        t_net_rf.z);
+    euler_logger->debug("f_net_if = <{}, {}, {}>\n", f_net_if.x, f_net_if.y,
+                        f_net_if.z);
+    euler_logger->debug("r_dot_if = <{}, {}, {}>", r_dot_if.x, r_dot_if.y,
+                        r_dot_if.z);
+    euler_logger->debug("r_ddot_if = <{}, {}, {}>\n", r_ddot_if.x, r_ddot_if.y,
+                        r_ddot_if.z);
 
     rocket_.set_r_vect(r_vect_if);
     rocket_.set_r_dot(r_dot_if);
