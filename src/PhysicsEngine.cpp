@@ -167,15 +167,15 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         w_vect_if.z = 0;
     }
 
-    // spdlog::log(spdlog::level::level_enum::debug, "############### PHYSENG_DEBUG ###############\n");
-    euler_logger -> debug("Timestamp {}\n", tStamp);
-    euler_logger -> debug("thrust_rf = <{}, {}, {}>\n", thrust_rf.x, thrust_rf.y, thrust_rf.z);
+    // spdlog::log(spdlog::level::level_enum::debug, "############### PHYSENG_DEBUG ###############");
+    euler_logger -> debug("Timestamp {}", tStamp);
+    euler_logger -> debug("thrust_rf = <{}, {}, {}>", thrust_rf.x, thrust_rf.y, thrust_rf.z);
     euler_logger -> debug("f_aero_rf = <{}, {}, {}>", f_aero_rf.x, f_aero_rf.y, f_aero_rf.z);
-    euler_logger -> debug("t_aero_rf = <{}, {}, {}>\n", t_aero_rf.x, t_aero_rf.y, t_aero_rf.z);
+    euler_logger -> debug("t_aero_rf = <{}, {}, {}>", t_aero_rf.x, t_aero_rf.y, t_aero_rf.z);
     euler_logger -> debug("t_net_rf = <{}, {}, {}>", t_net_rf.x, t_net_rf.y, t_net_rf.z);
-    euler_logger -> debug("f_net_if = <{}, {}, {}>\n", f_net_if.x, f_net_if.y, f_net_if.z);
+    euler_logger -> debug("f_net_if = <{}, {}, {}>", f_net_if.x, f_net_if.y, f_net_if.z);
     euler_logger -> debug("r_dot_if = <{}, {}, {}>", r_dot_if.x, r_dot_if.y, r_dot_if.z);
-    euler_logger -> debug("r_ddot_if = <{}, {}, {}>\n", r_ddot_if.x, r_ddot_if.y, r_ddot_if.z);
+    euler_logger -> debug("r_ddot_if = <{}, {}, {}>", r_ddot_if.x, r_ddot_if.y, r_ddot_if.z);
 
 
     rocket_.set_r_vect(r_vect_if);
