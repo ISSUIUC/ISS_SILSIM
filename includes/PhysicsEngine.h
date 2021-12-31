@@ -47,6 +47,8 @@ class RungeKutta : public PhysicsEngine {
         : PhysicsEngine(rocket, motor){};
 
     void march_step(double tStamp, double tStep) override;
+    Vector3 calc_accel(double tStamp, Vector3 vel_if);
+    Vector3 calc_ang_accel(double tStamp, Vector3 vel_if, Vector3 ang_vel_if);
 };
 
 #endif

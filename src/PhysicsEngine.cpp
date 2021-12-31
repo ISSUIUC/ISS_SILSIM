@@ -253,45 +253,82 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     /*************************** Calculate Slopes *****************************/
 
-    Vector3 jerk = ((net_force_if / mass) - accel_if) / tStep;
-    Vector3 ang_jerk;
-    ang_jerk.x = ((net_torque_if.x / inertia[0]) - ang_accel_if.x) / tStep;
-    ang_jerk.y = ((net_torque_if.x / inertia[4]) - ang_accel_if.y) / tStep;
-    ang_jerk.z = ((net_torque_if.x / inertia[8]) - ang_accel_if.z) / tStep;
+    Quaternion<double> orient_true = rocket_.get_q_ornt();
 
     //---- k1 ----
-    Vector3 pos_k1 = vel_if;
-    Vector3 vel_k1 = accel_if;
-    Vector3 ang_vel_k1 = ang_accel_if;
+    Vector3 vel_k1 = vel_if;
+    Vector3 accel_k1 = accel_if;
+    Vector3 ang_vel_k1 = ang_vel_if;
+    Vector3 ang_accel_k1 = ang_accel_if;
 
     //---- k2 ----
-    Vector3 pos_k2 = pos_k1 + (vel_k1 * tStep * 0.5);
-    Vector3 vel_k2 = vel_k1 + (jerk * tStep * 0.5);
-    Vector3 ang_vel_k2 = ang_vel_k1 + (ang_jerk * tStep * 0.5);
+    Vector3 vel_k2 = vel_k1 + (accel_k1 * tStep * 0.5);
+    Vector3 accel_k2 = calc_accel(tStamp, vel_k1);
+    Vector3 ang_vel_k2 = ang_vel_k1 + (ang_accel_k1 * tStep * 0.5);
+    Vector3 ang_accel_k2 = calc_ang_accel(tStamp, vel_k1, ang_vel_k1);
     
     //---- k3 ----
-    Vector3 pos_k3 = pos_k1 + (vel_k2 * tStep * 0.5);
-    Vector3 vel_k3 = vel_k1 + (jerk * tStep * 0.5);
-    Vector3 ang_vel_k3 = ang_vel_k1 + (ang_jerk * tStep * 0.5);
+    double ang_vel_mag = ang_vel_k2.magnitude();
+    if (ang_vel_mag > 0.000001) {
+        Quaternion<double> rotation;
+        rotation.Set(cos(ang_vel_mag / 2.0), (ang_vel_k2.x / ang_vel_mag) * sin(ang_vel_mag / 2.0),
+                  (ang_vel_k2.y / ang_vel_mag) * sin(ang_vel_mag / 2.0),
+                  (ang_vel_k2.z / ang_vel_mag) * sin(ang_vel_mag / 2.0));
+        orient = orient * rotation;
+        orient.Normalize();
+    }
+    rocket_.set_q_ornt(orient);
+
+    Vector3 vel_k3 = vel_k1 + (accel_k2 * tStep * 0.5);
+    Vector3 accel_k3 = calc_accel(tStamp, vel_k2);
+    Vector3 ang_vel_k3 = ang_vel_k1 + (ang_accel_k2 * tStep * 0.5);
+    Vector3 ang_accel_k3 = calc_ang_accel(tStamp, vel_k2, ang_vel_k2);
+
+    rocket_.set_q_ornt(orient_true);
     
     //---- k4 ----
-    Vector3 pos_k4 = pos_k1 + (vel_k3 * tStep);
-    Vector3 vel_k4 = vel_k1 + (jerk * tStep);
-    Vector3 ang_vel_k4 = ang_vel_k1 + (ang_jerk * tStep);
+    double ang_vel_mag = ang_vel_k3.magnitude();
+    if (ang_vel_mag > 0.000001) {
+        Quaternion<double> rotation;
+        rotation.Set(cos(ang_vel_mag / 2.0), (ang_vel_k3.x / ang_vel_mag) * sin(ang_vel_mag / 2.0),
+                  (ang_vel_k3.y / ang_vel_mag) * sin(ang_vel_mag / 2.0),
+                  (ang_vel_k3.z / ang_vel_mag) * sin(ang_vel_mag / 2.0));
+        orient = orient * rotation;
+        orient.Normalize();
+    }
+    rocket_.set_q_ornt(orient);
 
-    //---- orientation ----
+    Vector3 vel_k4 = vel_k1 + (accel_k3 * tStep);
+    Vector3 accel_k4 = calc_accel(tStamp, vel_k3);
+    Vector3 ang_vel_k4 = ang_vel_k1 + (ang_accel_k3 * tStep);
+    Vector3 ang_accel_k4 = calc_ang_accel(tStamp, vel_k3, ang_vel_k3);
 
+    rocket_.set_q_ornt(orient_true);
 
     /********************** Perform Runge-Kutta Method ************************/
 
-    pos_if += tStep * (pos_k1 + (2 * pos_k2) + (2 * pos_k3) + pos_k4) / 6;
-    vel_if += tStep * (vel_k1 + (2 * vel_k2) + (2 * vel_k3) + vel_k4) / 6;
-    accel_if = net_force_if / mass;
+    Vector3 vel_avg = (vel_k1 + (2 * vel_k2) + (2 * vel_k3) + vel_k4) / 6;
+    Vector3 accel_avg = (accel_k1 + (2 * accel_k2) + (2 * accel_k3) + accel_k4) / 6;
+    Vector3 ang_vel_avg = (ang_vel_k1 + (2 * ang_vel_k2) + (2 * ang_vel_k3) + ang_vel_k4) / 6;
+    Vector3 ang_accel_avg = (ang_accel_k1 + (2 * ang_accel_k2) + (2 * ang_accel_k3) + ang_accel_k4) / 6;
 
-    ang_vel_if += tStep * (ang_vel_k1 + (2 * ang_vel_k2) + (2 * ang_vel_k3) + ang_vel_k4) / 6;
-    ang_accel_if.x = net_torque_if.x / inertia[0];
-    ang_accel_if.y = net_torque_if.y / inertia[4];
-    ang_accel_if.z = net_torque_if.z / inertia[8];
+    pos_if += tStep * vel_avg;
+    vel_if += tStep * accel_avg;
+    accel_if = calc_accel(tStamp, vel_avg);
+
+    ang_vel_if += tStep * ang_accel_avg;
+    ang_accel_if = calc_ang_accel(tStamp, vel_avg, ang_vel_avg);
+
+    //---- Orientation ----
+    double ang_vel_mag = ang_vel_avg.magnitude();
+    if (ang_vel_mag > 0.000001) {
+        Quaternion<double> rotation;
+        rotation.Set(cos(ang_vel_mag / 2.0), (ang_vel_avg.x / ang_vel_mag) * sin(ang_vel_mag / 2.0),
+                (ang_vel_avg.y / ang_vel_mag) * sin(ang_vel_mag / 2.0),
+                (ang_vel_avg.z / ang_vel_mag) * sin(ang_vel_mag / 2.0));
+        orient = orient * rotation;
+        orient.Normalize();
+    }
 
     //---- Lauch Rail ----
     if (pos_if.magnitude() < 4.50) {
@@ -310,7 +347,117 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     rocket_.set_w_vect(ang_vel_if);
     rocket_.set_w_dot(ang_accel_if);
     rocket_.set_f_net(net_force_if);
-    rocket_.set_t_net(net_torque_if);
+    rocket_.set_t_net(net_torque_if);  // Maybe make helper class instead of function, .get_accel, .get_net_torque, etc.
     rocket_.set_q_ornt(orient);
 
+};
+
+Vector3 RungeKutta::calc_accel(double tStamp, Vector3 vel_if) {
+    
+    /*************** Retrieve Instantaneous Rocket Parameters *****************/
+
+    Vector3 thrust_rf = motor_.get_thrust(tStamp);
+
+    double mass = rocket_.get_mass();
+    double area = rocket_.get_A_ref();
+    double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
+    double drag_coef = rocket_.get_Cd();
+
+    /******************** Calculate Angular Acceleration **********************/
+
+    Vector3 aero_force_rf;
+
+    if (vel_if.magnitude() > 0.01) {
+        Vector3 vel_rf = rocket_.i2r(vel_if);
+        Vector3 normal_force_rf;
+
+        double alpha = acos(vel_rf.z / vel_rf.magnitude());  // angle between velocity vector and rocket axis
+        double normal_coef = c_Na * alpha;
+        
+        // 1.225 is temporary density of air
+        double normal_force_mag = 0.5 * normal_coef * vel_rf.magnitude2() * area * 1.225;
+        normal_force_rf.x = (-vel_rf.x);
+        normal_force_rf.y = (-vel_rf.y);
+        normal_force_rf.z = 0;
+
+        normal_force_rf.normalize();
+        normal_force_rf = normal_force_rf * normal_force_mag;
+
+        double drag_mag = 0.5 * drag_coef * vel_rf.magnitude2() * area * 1.225;
+        Vector3 drag_rf(0, 0, -(drag_mag));
+
+        aero_force_rf = normal_force_rf + drag_rf;
+    } else {
+        aero_force_rf.x = 0;
+        aero_force_rf.y = 0;
+        aero_force_rf.z = 0;
+    }
+
+    Vector3 net_force_if = rocket_.r2i(aero_force_rf + thrust_rf);
+    net_force_if.z -= (9.81 * mass);
+
+    Vector3 accel_if = net_force_if / mass;
+
+    return accel_if;
+};
+
+Vector3 RungeKutta::calc_ang_accel(double tStamp, Vector3 vel_if, Vector3 ang_vel_if) {
+    
+    /*************** Retrieve Instantaneous Rocket Parameters *****************/
+
+    Vector3 Cp_vect_rf = rocket_.get_Cp_vect();
+    Vector3 thrust_rf = motor_.get_thrust(tStamp);
+
+    double inertia[9];         // moments of inertia
+    rocket_.get_I(inertia);
+
+    double mass = rocket_.get_mass();
+    double area = rocket_.get_A_ref();
+    double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
+    double drag_coef = rocket_.get_Cd();
+
+    /********************* Calculate Axial Acceleration ***********************/
+
+    Vector3 aero_force_rf;
+    Vector3 aero_torque_rf;
+    Vector3 aero_force_if;
+    Vector3 aero_torque_if;
+    Vector3 net_force_rf;
+    Vector3 net_torque_rf;
+
+    if (vel_if.magnitude() > 0.01) {
+        Vector3 vel_rf = rocket_.i2r(vel_if);
+        Vector3 normal_force_rf;
+
+        double alpha = acos(vel_rf.z / vel_rf.magnitude());  // angle between velocity vector and rocket axis
+        double normal_coef = c_Na * alpha;
+        
+        // 1.225 is temporary density of air
+        double normal_force_mag = 0.5 * normal_coef * vel_rf.magnitude2() * area * 1.225;
+        normal_force_rf.x = (-vel_rf.x);
+        normal_force_rf.y = (-vel_rf.y);
+        normal_force_rf.z = 0;
+
+        normal_force_rf.normalize();
+        normal_force_rf = normal_force_rf * normal_force_mag;
+
+        double drag_mag = 0.5 * drag_coef * vel_rf.magnitude2() * area * 1.225;
+        Vector3 drag_rf(0, 0, -(drag_mag));
+
+        aero_force_rf = normal_force_rf + drag_rf;
+        aero_torque_rf = Cp_vect_rf.cross(aero_force_rf);
+    } else {
+        aero_torque_rf.x = 0;
+        aero_torque_rf.y = 0;
+        aero_torque_rf.z = 0;
+    }
+
+    Vector3 net_torque_if = rocket_.r2i(aero_torque_rf);
+
+    Vector3 ang_accel_if;
+    ang_accel_if.x = net_torque_if.x / inertia[0];
+    ang_accel_if.y = net_torque_if.y / inertia[4];
+    ang_accel_if.z = net_torque_if.z / inertia[8];
+
+    return ang_accel_if;
 };
