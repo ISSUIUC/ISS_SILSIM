@@ -263,9 +263,13 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     //---- k2 ----
     Vector3 vel_k2 = vel_k1 + (accel_k1 * tStep * 0.5);
-    Vector3 accel_k2 = calc_accel(tStamp, vel_k1);
+    Vector3 accel_k2 = calc_net_force(tStamp, vel_k1) / mass;
     Vector3 ang_vel_k2 = ang_vel_k1 + (ang_accel_k1 * tStep * 0.5);
-    Vector3 ang_accel_k2 = calc_ang_accel(tStamp, vel_k1, ang_vel_k1);
+    Vector3 ang_accel_k2;
+    Vector3 net_torque_new = calc_net_torque(tStamp, vel_k1, ang_vel_k1);
+    ang_accel_k2.x = net_torque_new.x / inertia[0];
+    ang_accel_k2.y = net_torque_new.y / inertia[4];
+    ang_accel_k2.z = net_torque_new.z / inertia[8];
     
     //---- k3 ----
     double ang_vel_mag = ang_vel_k2.magnitude();
@@ -280,9 +284,13 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     rocket_.set_q_ornt(orient);
 
     Vector3 vel_k3 = vel_k1 + (accel_k2 * tStep * 0.5);
-    Vector3 accel_k3 = calc_accel(tStamp, vel_k2);
+    Vector3 accel_k3 = calc_net_force(tStamp, vel_k2) / mass;
     Vector3 ang_vel_k3 = ang_vel_k1 + (ang_accel_k2 * tStep * 0.5);
-    Vector3 ang_accel_k3 = calc_ang_accel(tStamp, vel_k2, ang_vel_k2);
+    Vector3 ang_accel_k3;
+    net_torque_new = calc_net_torque(tStamp, vel_k2, ang_vel_k2);
+    ang_accel_k3.x = net_torque_new.x / inertia[0];
+    ang_accel_k3.y = net_torque_new.y / inertia[4];
+    ang_accel_k3.z = net_torque_new.z / inertia[8];
 
     rocket_.set_q_ornt(orient_true);
     
@@ -299,9 +307,13 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     rocket_.set_q_ornt(orient);
 
     Vector3 vel_k4 = vel_k1 + (accel_k3 * tStep);
-    Vector3 accel_k4 = calc_accel(tStamp, vel_k3);
+    Vector3 accel_k4 = calc_net_force(tStamp, vel_k3) / mass;
     Vector3 ang_vel_k4 = ang_vel_k1 + (ang_accel_k3 * tStep);
-    Vector3 ang_accel_k4 = calc_ang_accel(tStamp, vel_k3, ang_vel_k3);
+    Vector3 ang_accel_k4;
+    net_torque_new = calc_net_torque(tStamp, vel_k3, ang_vel_k3);
+    ang_accel_k4.x = net_torque_new.x / inertia[0];
+    ang_accel_k4.y = net_torque_new.y / inertia[4];
+    ang_accel_k4.z = net_torque_new.z / inertia[8];
 
     rocket_.set_q_ornt(orient_true);
 
@@ -312,12 +324,19 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     Vector3 ang_vel_avg = (ang_vel_k1 + (2 * ang_vel_k2) + (2 * ang_vel_k3) + ang_vel_k4) / 6;
     Vector3 ang_accel_avg = (ang_accel_k1 + (2 * ang_accel_k2) + (2 * ang_accel_k3) + ang_accel_k4) / 6;
 
+    net_force_if = calc_net_force(tStamp, vel_avg);
+    net_torque_if = calc_net_torque(tStamp, vel_avg, ang_vel_avg);
+
     pos_if += tStep * vel_avg;
     vel_if += tStep * accel_avg;
-    accel_if = calc_accel(tStamp, vel_avg);
+    accel_if = net_force_if / mass;
 
     ang_vel_if += tStep * ang_accel_avg;
-    ang_accel_if = calc_ang_accel(tStamp, vel_avg, ang_vel_avg);
+    ang_accel_if.x = net_torque_if.x / inertia[0];
+    ang_accel_if.y = net_torque_if.y / inertia[4];
+    ang_accel_if.z = net_torque_if.z / inertia[8];
+
+    
 
     //---- Orientation ----
     double ang_vel_mag = ang_vel_avg.magnitude();
@@ -347,12 +366,12 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     rocket_.set_w_vect(ang_vel_if);
     rocket_.set_w_dot(ang_accel_if);
     rocket_.set_f_net(net_force_if);
-    rocket_.set_t_net(net_torque_if);  // Maybe make helper class instead of function, .get_accel, .get_net_torque, etc.
+    rocket_.set_t_net(net_torque_if);
     rocket_.set_q_ornt(orient);
 
 };
 
-Vector3 RungeKutta::calc_accel(double tStamp, Vector3 vel_if) {
+Vector3 RungeKutta::calc_net_force(double tStamp, Vector3 vel_if) {
     
     /*************** Retrieve Instantaneous Rocket Parameters *****************/
 
@@ -396,12 +415,10 @@ Vector3 RungeKutta::calc_accel(double tStamp, Vector3 vel_if) {
     Vector3 net_force_if = rocket_.r2i(aero_force_rf + thrust_rf);
     net_force_if.z -= (9.81 * mass);
 
-    Vector3 accel_if = net_force_if / mass;
-
-    return accel_if;
+    return net_force_if;
 };
 
-Vector3 RungeKutta::calc_ang_accel(double tStamp, Vector3 vel_if, Vector3 ang_vel_if) {
+Vector3 RungeKutta::calc_net_torque(double tStamp, Vector3 vel_if, Vector3 ang_vel_if) {
     
     /*************** Retrieve Instantaneous Rocket Parameters *****************/
 
@@ -454,10 +471,5 @@ Vector3 RungeKutta::calc_ang_accel(double tStamp, Vector3 vel_if, Vector3 ang_ve
 
     Vector3 net_torque_if = rocket_.r2i(aero_torque_rf);
 
-    Vector3 ang_accel_if;
-    ang_accel_if.x = net_torque_if.x / inertia[0];
-    ang_accel_if.y = net_torque_if.y / inertia[4];
-    ang_accel_if.z = net_torque_if.z / inertia[8];
-
-    return ang_accel_if;
+    return net_torque_if;
 };
