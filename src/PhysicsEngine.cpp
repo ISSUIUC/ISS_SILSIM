@@ -295,7 +295,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     rocket_.set_q_ornt(orient_true);
     
     //---- k4 ----
-    double ang_vel_mag = ang_vel_k3.magnitude();
+    ang_vel_mag = ang_vel_k3.magnitude();
     if (ang_vel_mag > 0.000001) {
         Quaternion<double> rotation;
         rotation.Set(cos(ang_vel_mag / 2.0), (ang_vel_k3.x / ang_vel_mag) * sin(ang_vel_mag / 2.0),
@@ -339,7 +339,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     
 
     //---- Orientation ----
-    double ang_vel_mag = ang_vel_avg.magnitude();
+    ang_vel_mag = ang_vel_avg.magnitude();
     if (ang_vel_mag > 0.000001) {
         Quaternion<double> rotation;
         rotation.Set(cos(ang_vel_mag / 2.0), (ang_vel_avg.x / ang_vel_mag) * sin(ang_vel_mag / 2.0),
