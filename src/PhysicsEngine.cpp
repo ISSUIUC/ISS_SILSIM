@@ -182,19 +182,11 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     /*************** Retrieve Instantaneous Rocket Parameters *****************/
 
-    // {variable}_rf = rocket frame (stuck to rocket)
-    // {variable}_if = inertial frame (stuck to earth)
-
     Vector3 pos_if = rocket_.get_r_vect();
     Vector3 vel_if = rocket_.get_r_dot();
     Vector3 accel_if = rocket_.get_r_ddot();
     Vector3 ang_vel_if = rocket_.get_w_vect();
     Vector3 ang_accel_if = rocket_.get_w_dot();
-    Vector3 net_force_if = rocket_.get_f_net();
-    Vector3 net_torque_if = rocket_.get_t_net();
-
-    Vector3 Cp_vect_rf = rocket_.get_Cp_vect();
-    Vector3 thrust_rf = motor_.get_thrust(tStamp);
     
     Quaternion<double> orient = rocket_.get_q_ornt();
 
@@ -202,58 +194,14 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     rocket_.get_I(inertia);
 
     double mass = rocket_.get_mass();
-    double area = rocket_.get_A_ref();
-    double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
-    double drag_coef = rocket_.get_Cd();
 
-    /********************* Calculate Forces and Torques ***********************/
+    Vector3 net_force_if = calc_net_force(tStamp, vel_if);
+    Vector3 net_torque_if = calc_net_torque(tStamp, vel_if, ang_vel_if);
 
-    Vector3 aero_force_rf;
-    Vector3 aero_torque_rf;
-    Vector3 aero_force_if;
-    Vector3 aero_torque_if;
-    Vector3 net_force_rf;
-    Vector3 net_torque_rf;
-
-    if (vel_if.magnitude() > 0.01) {
-        Vector3 rocket_axis_rf(0, 0, 1);
-        Vector3 vel_rf = rocket_.i2r(vel_if);
-        Vector3 normal_force_rf;
-
-        double alpha = acos(vel_rf.z / vel_rf.magnitude());  // angle between velocity vector and rocket axis
-        double normal_coef = c_Na * alpha;
-        
-        // 1.225 is temporary density of air
-        double normal_force_mag = 0.5 * normal_coef * vel_rf.magnitude2() * area * 1.225;
-        normal_force_rf.x = (-vel_rf.x);
-        normal_force_rf.y = (-vel_rf.y);
-        normal_force_rf.z = 0;
-
-        normal_force_rf.normalize();
-        normal_force_rf = normal_force_rf * normal_force_mag;
-
-        double drag_mag = 0.5 * drag_coef * vel_rf.magnitude2() * area * 1.225;
-        Vector3 drag_rf(0, 0, -(drag_mag));
-
-        aero_force_rf = normal_force_rf + drag_rf;
-        aero_torque_rf = Cp_vect_rf.cross(aero_force_rf);
-    } else {
-        aero_force_rf.x = 0;
-        aero_force_rf.y = 0;
-        aero_force_rf.z = 0;
-
-        aero_torque_rf.x = 0;
-        aero_torque_rf.y = 0;
-        aero_torque_rf.z = 0;
-    }
-
-    net_force_if = rocket_.r2i(aero_force_rf + thrust_rf);
-    net_force_if.z -= (9.81 * mass);
-    net_torque_if = rocket_.r2i(aero_torque_rf);
 
     /*************************** Calculate Slopes *****************************/
 
-    Quaternion<double> orient_true = rocket_.get_q_ornt();
+    Quaternion<double> orient_true = orient;
 
     //---- k1 ----
     Vector3 vel_k1 = vel_if;
@@ -372,6 +320,9 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 };
 
 Vector3 RungeKutta::calc_net_force(double tStamp, Vector3 vel_if) {
+
+    // {variable}_rf = rocket frame (stuck to rocket)
+    // {variable}_if = inertial frame (stuck to earth)
     
     /*************** Retrieve Instantaneous Rocket Parameters *****************/
 
@@ -382,7 +333,7 @@ Vector3 RungeKutta::calc_net_force(double tStamp, Vector3 vel_if) {
     double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
     double drag_coef = rocket_.get_Cd();
 
-    /******************** Calculate Angular Acceleration **********************/
+    /************************* Calculate Net Force ****************************/
 
     Vector3 aero_force_rf;
 
@@ -433,7 +384,7 @@ Vector3 RungeKutta::calc_net_torque(double tStamp, Vector3 vel_if, Vector3 ang_v
     double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
     double drag_coef = rocket_.get_Cd();
 
-    /********************* Calculate Axial Acceleration ***********************/
+    /************************ Calculate Net Torque ***************************/
 
     Vector3 aero_force_rf;
     Vector3 aero_torque_rf;
