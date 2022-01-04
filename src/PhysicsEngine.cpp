@@ -201,15 +201,17 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     /*************************** Calculate Slopes *****************************/
 
-    Quaternion<double> orient_true = orient;
+    Quaternion<double> orient_true = orient;  // save initial quaternion value
 
     //---- k1 ----
+    // rename initial values
     Vector3 vel_k1 = vel_if;
     Vector3 accel_k1 = accel_if;
     Vector3 ang_vel_k1 = ang_vel_if;
     Vector3 ang_accel_k1 = ang_accel_if;
 
     //---- k2 ----
+    // same as forward euler but with half tStep
     Vector3 vel_k2 = vel_k1 + (accel_k1 * tStep * 0.5);
     Vector3 accel_k2 = calc_net_force(tStamp, vel_k1) / mass;
     Vector3 ang_vel_k2 = ang_vel_k1 + (ang_accel_k1 * tStep * 0.5);
@@ -220,6 +222,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     ang_accel_k2.z = net_torque_new.z / inertia[8];
     
     //---- k3 ----
+    // forward euler from k1 using k2, half tStep
     double ang_vel_mag = ang_vel_k2.magnitude();
     if (ang_vel_mag > 0.000001) {
         Quaternion<double> rotation;
@@ -229,7 +232,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
         orient = orient * rotation;
         orient.Normalize();
     }
-    rocket_.set_q_ornt(orient);
+    rocket_.set_q_ornt(orient);  // new quaternion for r2i function
 
     Vector3 vel_k3 = vel_k1 + (accel_k2 * tStep * 0.5);
     Vector3 accel_k3 = calc_net_force(tStamp, vel_k2) / mass;
@@ -240,9 +243,10 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     ang_accel_k3.y = net_torque_new.y / inertia[4];
     ang_accel_k3.z = net_torque_new.z / inertia[8];
 
-    rocket_.set_q_ornt(orient_true);
+    rocket_.set_q_ornt(orient_true);  // reset quaternion
     
     //---- k4 ----
+    // forward euler from k1 using k3, full tStep
     ang_vel_mag = ang_vel_k3.magnitude();
     if (ang_vel_mag > 0.000001) {
         Quaternion<double> rotation;
@@ -267,11 +271,13 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     /********************** Perform Runge-Kutta Method ************************/
 
+    // calculate weighted averages
     Vector3 vel_avg = (vel_k1 + (2 * vel_k2) + (2 * vel_k3) + vel_k4) / 6;
     Vector3 accel_avg = (accel_k1 + (2 * accel_k2) + (2 * accel_k3) + accel_k4) / 6;
     Vector3 ang_vel_avg = (ang_vel_k1 + (2 * ang_vel_k2) + (2 * ang_vel_k3) + ang_vel_k4) / 6;
     Vector3 ang_accel_avg = (ang_accel_k1 + (2 * ang_accel_k2) + (2 * ang_accel_k3) + ang_accel_k4) / 6;
 
+    // calculate rocket data based on averages (forward euler)
     net_force_if = calc_net_force(tStamp, vel_avg);
     net_torque_if = calc_net_torque(tStamp, vel_avg, ang_vel_avg);
 
@@ -287,6 +293,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     
 
     //---- Orientation ----
+    // calculate orientation based on average angular velocity
     ang_vel_mag = ang_vel_avg.magnitude();
     if (ang_vel_mag > 0.000001) {
         Quaternion<double> rotation;
@@ -374,7 +381,6 @@ Vector3 RungeKutta::calc_net_torque(double tStamp, Vector3 vel_if, Vector3 ang_v
     /*************** Retrieve Instantaneous Rocket Parameters *****************/
 
     Vector3 Cp_vect_rf = rocket_.get_Cp_vect();
-    Vector3 thrust_rf = motor_.get_thrust(tStamp);
 
     double inertia[9];         // moments of inertia
     rocket_.get_I(inertia);
