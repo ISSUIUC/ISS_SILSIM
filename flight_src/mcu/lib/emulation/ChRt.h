@@ -8,6 +8,7 @@
 #include <atomic>
 #include <mutex>
 #include <cstring>
+#include <cmath>
 
 #define SEMAPHORE_DECL(name, n) std::atomic<size_t> name{n};
 #define MUTEX_DECL(name) std::mutex name;
@@ -18,6 +19,10 @@ typedef std::mutex mutex_t;
 typedef uint32_t sysinterval_t;
 typedef uint32_t msg_t;
 typedef uint32_t cnt_t;
+typedef uint32_t systime_t;
+
+#define CH_CFG_ST_FREQUENCY 100000
+#define TIME_I2MS(x) (((systime_t)(x) * (systime_t)(1000) + CH_CFG_ST_FREQUENCY - 1) / CH_CFG_ST_FREQUENCY)
 
 #define __itoa _itoa
 #define TIME_IMMEDIATE (sysinterval_t)0
@@ -38,17 +43,5 @@ void chMtxUnlock(mutex_t * mtx);
 void chSysLock();
 
 void chSysUnlock();
-
-void chSemObjectInit(semaphore_t *sp, cnt_t n);
-void chSemReset(semaphore_t *sp, cnt_t n);
-void chSemResetI(semaphore_t *sp, cnt_t n);
-msg_t chSemWait(semaphore_t *sp);
-msg_t chSemWaitS(semaphore_t *sp);
-msg_t chSemWaitTimeout(semaphore_t *sp, sysinterval_t timeout);
-msg_t chSemWaitTimeoutS(semaphore_t *sp, sysinterval_t timeout);
-void chSemSignal(semaphore_t *sp);
-void chSemSignalI(semaphore_t *sp);
-void chSemAddCounterI(semaphore_t *sp, cnt_t n);
-msg_t chSemSignalWait(semaphore_t *sps, semaphore_t *spw);
 
 #endif  // SILSIM_CHRT_H

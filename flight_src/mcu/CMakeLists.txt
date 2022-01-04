@@ -6,4 +6,4 @@ file(GLOB lib_src lib/teensyShared/*.c lib/teensyShared/*.cpp)
 
 add_library(flight_emu ${lib_src} lib/emulation/EMU.cpp lib/emulation/ChRt.cpp)
 
-target_include_directories(flight_emu PUBLIC lib/emulation lib/teensyShared)
+target_include_directories(flight_emu PRIVATE lib/FifoBuffer lib/EigenArduino lib/emulation lib/teensyShared)

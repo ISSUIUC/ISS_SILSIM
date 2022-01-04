@@ -11,29 +11,7 @@
  *
  */
 #include "CpuThread.h"
-
-CpuThread::CpuThread(void (*FSW_function)()) { FSW_function_ = FSW_function; }
-
-/**
- * @brief Returns the sleep time of the thread
- *
- * @param context The current time of the rocket
- */
-
-double CpuThread::tick(CpuStateContext const& context) {
-    return real_tick_(context);
-}
-
-/**
- * @brief Calls the function of the thread and returns the time in absolute
- *
- * @param context The current time of the rocket
- */
-
-double CpuThread::real_tick_(CpuStateContext const& context) {
-    (void)context;  // silence unused param warning
-
-    (*FSW_function_)();
-
-    return 0.5f;
+double Rocket_FSM::real_tick(CpuStateContext& context) {
+    (void)context;
+    return 1.0;
 }

@@ -5,6 +5,7 @@
 #ifndef SILSIM_SD_H
 #define SILSIM_SD_H
 
+#include "Arduino.h"
 #include<cstdint>
 
 struct File {

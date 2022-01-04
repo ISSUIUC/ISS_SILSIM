@@ -6,10 +6,9 @@
 #include <ChRt.h>
 #include <SD.h>
 #include <stdio.h>
+#include "pins.h"
 
 #include "sensors.h"
-
-#define THREAD_DEBUG
 
 MUTEX_DECL(SD_Card_Mutex);
 
@@ -24,70 +23,47 @@ MUTEX_DECL(SD_Card_Mutex);
 void dataLoggerTickFunction(pointers* pointer_struct) {
     // Initialize a new data struct object to hold the data that will be
     // logged
-    sensorDataStruct_t current_data;
 
-    // Copy low G data
-    chSemWait(&pointer_struct->dataloggerTHDVarsPointer.fifoData_lowG);
-    chMtxLock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_lowG);
-    current_data.lowG_data =
-        pointer_struct->dataloggerTHDVarsPointer
-            .fifoArray[pointer_struct->dataloggerTHDVarsPointer.fifoTail_all]
-            .lowG_data;
-    chSemSignal(&pointer_struct->dataloggerTHDVarsPointer.fifoSpace_lowG);
-    chMtxUnlock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_lowG);
+    // write to the sd card while any buffers have data
+    while (true) {
+        sensorDataStruct_t current_data{};
 
-    // Copy high G data
-    chSemWait(&pointer_struct->dataloggerTHDVarsPointer.fifoData_highG);
-    chMtxLock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_highG);
-    current_data.highG_data =
-        pointer_struct->dataloggerTHDVarsPointer
-            .fifoArray[pointer_struct->dataloggerTHDVarsPointer.fifoTail_all]
-            .highG_data;
-    chSemSignal(&pointer_struct->dataloggerTHDVarsPointer.fifoSpace_highG);
-    chMtxUnlock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_highG);
+        datalogger_THD& buffers = pointer_struct->dataloggerTHDVarsPointer;
 
-    // Copy gps data
-    chSemWait(&pointer_struct->dataloggerTHDVarsPointer.fifoData_GPS);
-    chMtxLock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_GPS);
-    current_data.gps_data =
-        pointer_struct->dataloggerTHDVarsPointer
-            .fifoArray[pointer_struct->dataloggerTHDVarsPointer.fifoTail_all]
-            .gps_data;
-    chSemSignal(&pointer_struct->dataloggerTHDVarsPointer.fifoSpace_GPS);
-    chMtxUnlock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_GPS);
+        // read each fifo once checking if they have data
+        current_data.has_lowG_data =
+            buffers.lowGFifo.pop(&current_data.lowG_data);
 
-    // Copy state data
-    // chSemWait(&pointer_struct->dataloggerTHDVarsPointer.fifoData_state);
-    // chMtxLock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_state);
-    // current_data.state_data =
-    // pointer_struct->dataloggerTHDVarsPointer.fifoArray[pointer_struct->dataloggerTHDVarsPointer.fifoTail_all].state_data;
-    // chSemSignal(&pointer_struct->dataloggerTHDVarsPointer.fifoSpace_state);
-    // chMtxUnlock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_state);
+        current_data.has_highG_data =
+            buffers.highGFifo.pop(&current_data.highG_data);
 
-    // Copy rocketState data
-    chSemWait(&pointer_struct->dataloggerTHDVarsPointer.fifoData_RS);
-    chMtxLock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_RS);
-    current_data.rocketState_data =
-        pointer_struct->dataloggerTHDVarsPointer
-            .fifoArray[pointer_struct->dataloggerTHDVarsPointer.fifoTail_all]
-            .rocketState_data;
-    chSemSignal(&pointer_struct->dataloggerTHDVarsPointer.fifoSpace_RS);
-    chMtxUnlock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_RS);
+        current_data.has_gps_data = buffers.gpsFifo.pop(&current_data.gps_data);
 
-    // Increment fifoTail after all data has been transfered to current_data
-    pointer_struct->dataloggerTHDVarsPointer.fifoTail_all =
-        pointer_struct->dataloggerTHDVarsPointer.fifoTail_all < (FIFO_SIZE - 1)
-            ? pointer_struct->dataloggerTHDVarsPointer.fifoTail_all + 1
-            : 0;
+        current_data.has_state_data =
+            buffers.stateFifo.pop(&current_data.state_data);
 
-    // Log all data that was copied from the buffer onto the sd card
-    chMtxLock(&SD_Card_Mutex);
-    logData(&pointer_struct->dataloggerTHDVarsPointer.dataFile, &current_data);
-    chMtxUnlock(&SD_Card_Mutex);
+        current_data.has_rocketState_data =
+            buffers.rocketStateFifo.pop(&current_data.rocketState_data);
 
-#ifdef THREAD_DEBUG
-    Serial.println("Data Logging thread exit");
-#endif
+        current_data.has_barometer_data =
+            buffers.barometerFifo.pop(&current_data.barometer_data);
+
+        // check if any buffers have data
+        bool any_have_data =
+            current_data.has_gps_data || current_data.has_highG_data ||
+            current_data.has_lowG_data || current_data.has_rocketState_data ||
+            current_data.has_state_data || current_data.has_barometer_data;
+
+        if (!any_have_data) {
+            return;
+        }
+
+        // Log all data that was copied from the buffer onto the sd card
+        chMtxLock(&SD_Card_Mutex);
+        logData(&pointer_struct->dataloggerTHDVarsPointer.dataFile,
+                &current_data);
+        chMtxUnlock(&SD_Card_Mutex);
+    }
 }
 
 /**
@@ -157,7 +133,39 @@ char* sd_file_namer(char* fileName, char* fileExtensionParam) {
 int32_t flush_iterator = 0;
 void logData(File* dataFile, sensorDataStruct_t* data) {
     // Write raw bytes to SD card.
+    digitalWrite(LED_WHITE, HIGH);
     dataFile->write((const uint8_t*)data, sizeof(*data));
+    digitalWrite(LED_WHITE, LOW);
+    // dataFile->print(data->has_lowG_data);
+    // dataFile->print(" ");
+    // dataFile->print(data->lowG_data.ax);
+    // dataFile->print(" ");
+    // dataFile->print(data->lowG_data.ay);
+    // dataFile->print(" ");
+    // dataFile->print(data->lowG_data.az);
+    // dataFile->print(" ");
+    // dataFile->print(data->lowG_data.gx);
+    // dataFile->print(" ");
+    // dataFile->print(data->lowG_data.gy);
+    // dataFile->print(" ");
+    // dataFile->print(data->lowG_data.gz);
+    // dataFile->print(" ");
+    // dataFile->print(data->has_barometer_data);
+    // dataFile->print(" ");
+    // dataFile->print(data->barometer_data.temperature);
+    // dataFile->print(" ");
+    // dataFile->print(data->barometer_data.pressure);
+    // dataFile->print(" ");
+    // dataFile->print(data->has_gps_data);
+    // dataFile->print(" ");
+    // dataFile->print(data->gps_data.altitude);
+    // dataFile->print(" ");
+    // dataFile->print(data->gps_data.posLock);
+    // dataFile->print(" ");
+    // dataFile->print(data->has_rocketState_data);
+    // dataFile->print(" ");
+    // dataFile->print(data->rocketState_data.rocketState);
+    // dataFile->println();
 
     // Flush data once for every 1000 writes (this keeps the ring buffer in sync
     // with data collection)
