@@ -20,12 +20,13 @@ int main(void)
 {
     // Initialization
     rapidcsv::Document csv("sim_data/data.csv");
-    std::vector<double> pitchCol = csv.GetColumn<double>("pitch");
-    std::vector<double> rollCol = csv.GetColumn<double>("roll");
-    std::vector<double> yawCol = csv.GetColumn<double>("yaw");
-
-    
+    std::vector<double> xCol = csv.GetColumn<double>("x");
+    std::vector<double> yCol = csv.GetColumn<double>("y");
+    std::vector<double> zCol = csv.GetColumn<double>("z");
+    std::vector<double> sCol = csv.GetColumn<double>("s");
     int iteration = 0;
+
+    Quaternion rotateQuat = QuaternionFromEuler(-PI/2, 0, 0);
 
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
@@ -45,9 +46,10 @@ int main(void)
     // Texture2D texture = LoadTexture("resources/models/obj/plane_diffuse.png");  // Load model texture
     // model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;            // Set map diffuse texture
 
-    float pitch = 0.0f;
-    float roll = 0.0f;
-    float yaw = 0.0f;
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+    float s = 0.0f;
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -55,15 +57,19 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        if (iteration >= pitchCol.size()) {
-            iteration = pitchCol.size() - 1;
+        if (iteration >= xCol.size()) {
+            iteration = xCol.size() - 1;
         }
-        pitch = pitchCol[iteration];
-        roll = rollCol[iteration];
-        yaw = yawCol[iteration];
-        iteration += 1;
+        x = xCol[iteration];
+        y = yCol[iteration];
+        z = zCol[iteration];
+        s = sCol[iteration];
+        Quaternion fooQuat{x, z, y, s}; // Change order to change rotation in window
+        Matrix rocketMatrix = QuaternionToMatrix(QuaternionMultiply(fooQuat, rotateQuat));
         // Tranformation matrix for rotations
-        model.transform = MatrixRotateXYZ((Vector3){ pitch, yaw, roll });
+        model.transform = rocketMatrix;
+
+        iteration += 1;
         //----------------------------------------------------------------------------------
 
         // Draw
