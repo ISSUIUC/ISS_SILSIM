@@ -29,6 +29,7 @@ class Atmosphere {
     double get_temperature(double altitude);
     double get_pressure(double altitude);
     double get_density(double altitude);
+    double get_geometric_to_geopotential(double altitude);
 
    private:
     double temperature_altitude_;
