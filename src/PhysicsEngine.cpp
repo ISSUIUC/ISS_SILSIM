@@ -18,6 +18,7 @@
 
 #include "Vector3.h"
 #include "quaternion.h"
+#include "Atmosphere.h"
 
 #define RAD2DEG (180.0 / 3.14159265)
 
@@ -92,9 +93,8 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         Vector3 f_N_rf;         // normal aerodynamic force
 
         double c_N = c_Na * alpha;
-        double f_N_mag = c_N * 0.5 * 1.225 * v_rf.magnitude2() *
+        double f_N_mag = c_N * 0.5 * Atmosphere::get_density(r_vect_if.z) * v_rf.magnitude2() *
                          A_ref;  // magnitude of normal force (assuming constant
-                                 // density of 1.225 (will change))
                                  // 0.5 is a coefficient in the equation
 
         f_N_rf.x = (-v_rf.x);
@@ -104,7 +104,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         f_N_rf.normalize();
         f_N_rf = f_N_rf * f_N_mag;
 
-        double f_D_mag = c_D * 0.5 * 1.225 * v_rf.magnitude2() * A_ref;
+        double f_D_mag = c_D * 0.5 * Atmosphere::get_density(r_vect_if.z) * v_rf.magnitude2() * A_ref;
         Vector3 f_D_rf(0, 0, -f_D_mag);
 
         f_aero_rf = f_N_rf + f_D_rf;
