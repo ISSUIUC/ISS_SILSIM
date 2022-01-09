@@ -91,8 +91,8 @@ double Atmosphere::get_pressure(double altitude) {
     double altitude_z = altitude / 1000;
 
     if (altitude_h < 11) {
-        pressure = 101325.0 *
-                   pow((288.15 / (288.15 - 6.5 * altitude_h)), (34.1632 / -6.5));
+        pressure = 101325.0 * pow((288.15 / (288.15 - 6.5 * altitude_h)),
+                                  (34.1632 / -6.5));
     }
 
     else if (altitude_h < 20) {
@@ -100,8 +100,8 @@ double Atmosphere::get_pressure(double altitude) {
     }
 
     else if (altitude_h < 32) {
-        pressure = 5474.889 *
-                   pow((216.65 / (216.65 + (altitude_h - 20))), 34.1632);
+        pressure =
+            5474.889 * pow((216.65 / (216.65 + (altitude_h - 20))), 34.1632);
     }
 
     else if (altitude_h < 47) {
@@ -124,46 +124,52 @@ double Atmosphere::get_pressure(double altitude) {
     }
 
     else if (altitude_h < 91) {
-        pressure =
-            exp(0.000000 * pow(altitude_h, 4) + 2.159582E-06 * pow(altitude_h, 3) +
-                -4.836957E-04 * pow(altitude_h, 2) + -0.1425192 * altitude_h +
-                13.47530);
+        pressure = exp(0.000000 * pow(altitude_h, 4) +
+                       2.159582E-06 * pow(altitude_h, 3) +
+                       -4.836957E-04 * pow(altitude_h, 2) +
+                       -0.1425192 * altitude_h + 13.47530);
     }
 
     else if (altitude_z < 100) {
-        pressure = exp(
-            0.000000 * pow(altitude_z, 4) + 3.304895E-05 * pow(altitude_z, 3) +
-            -0.009062730 * pow(altitude_z, 2) + 0.6516698 * altitude_z + -11.03037);
+        pressure = exp(0.000000 * pow(altitude_z, 4) +
+                       3.304895E-05 * pow(altitude_z, 3) +
+                       -0.009062730 * pow(altitude_z, 2) +
+                       0.6516698 * altitude_z + -11.03037);
     }
 
     else if (altitude_z < 110) {
-        pressure = exp(
-            0.000000 * pow(altitude_z, 4) + 6.693926E-05 * pow(altitude_z, 3) +
-            -0.01945388 * pow(altitude_z, 2) + 1.719080 * altitude_z + -47.75030);
+        pressure = exp(0.000000 * pow(altitude_z, 4) +
+                       6.693926E-05 * pow(altitude_z, 3) +
+                       -0.01945388 * pow(altitude_z, 2) +
+                       1.719080 * altitude_z + -47.75030);
     }
 
     else if (altitude_z < 120) {
-        pressure = exp(
-            0.000000 * pow(altitude_z, 4) + -6.539316E-05 * pow(altitude_z, 3) +
-            0.02485568 * pow(altitude_z, 2) + -3.223620 * altitude_z + 135.9355);
+        pressure = exp(0.000000 * pow(altitude_z, 4) +
+                       -6.539316E-05 * pow(altitude_z, 3) +
+                       0.02485568 * pow(altitude_z, 2) +
+                       -3.223620 * altitude_z + 135.9355);
     }
 
     else if (altitude_z < 150) {
-        pressure = exp(
-            2.283506E-07 * pow(altitude_z, 4) + -1.343221E-04 * pow(altitude_z, 3) +
-            0.02999016 * pow(altitude_z, 2) + -3.055446 * altitude_z + 113.5764);
+        pressure = exp(2.283506E-07 * pow(altitude_z, 4) +
+                       -1.343221E-04 * pow(altitude_z, 3) +
+                       0.02999016 * pow(altitude_z, 2) +
+                       -3.055446 * altitude_z + 113.5764);
     }
 
     else if (altitude_z < 200) {
-        pressure = exp(
-            1.209434E-08 * pow(altitude_z, 4) + -9.692458E-06 * pow(altitude_z, 3) +
-            0.003002041 * pow(altitude_z, 2) + -0.4523015 * altitude_z + 19.19151);
+        pressure = exp(1.209434E-08 * pow(altitude_z, 4) +
+                       -9.692458E-06 * pow(altitude_z, 3) +
+                       0.003002041 * pow(altitude_z, 2) +
+                       -0.4523015 * altitude_z + 19.19151);
     }
 
     else if (altitude_z < 300) {
-        pressure = exp(
-            8.113942E-10 * pow(altitude_z, 4) + -9.822568E-07 * pow(altitude_z, 3) +
-            4.687616E-04 * pow(altitude_z, 2) + -0.1231710 * altitude_z + 3.067409);
+        pressure = exp(8.113942E-10 * pow(altitude_z, 4) +
+                       -9.822568E-07 * pow(altitude_z, 3) +
+                       4.687616E-04 * pow(altitude_z, 2) +
+                       -0.1231710 * altitude_z + 3.067409);
     }
 
     else if (altitude_z < 500) {
@@ -181,9 +187,10 @@ double Atmosphere::get_pressure(double altitude) {
     }
 
     else if (altitude_z < 1000) {
-        pressure = exp(
-            2.813255E-11 * pow(altitude_z, 4) + -1.120689E-07 * pow(altitude_z, 3) +
-            1.695568E-04 * pow(altitude_z, 2) + -0.1188941 * altitude_z + 14.56718);
+        pressure = exp(2.813255E-11 * pow(altitude_z, 4) +
+                       -1.120689E-07 * pow(altitude_z, 3) +
+                       1.695568E-04 * pow(altitude_z, 2) +
+                       -0.1188941 * altitude_z + 14.56718);
     }
 
     else {
