@@ -29,7 +29,7 @@
 
 void Simulation::run(int steps) {
     std::ofstream dataFile(filename_);
-    dataFile << "tStamp_" << ",";
+    dataFile << "timestamp" << ",";
     dataFile << "r_vect_x" << "," << "r_vect_y" << "," << "r_vect_z" << ",";
     dataFile << "r_dot_x" << "," << "r_dot_y" << "," << "r_dot_z" << ",";
     dataFile << "r_ddot_x" << "," << "r_ddot_y" << "," << "r_ddot_z" << ",";
@@ -116,7 +116,7 @@ void Simulation::run(int steps) {
 
         tStamp_ += tStep_;
 
-        if (r_dot.z < -3.0) {
+        if (r_vect.z < -3.0) {
             break;
         }
     }

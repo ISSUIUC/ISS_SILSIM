@@ -20,10 +20,18 @@ int main(void)
 {
     // Initialization
     rapidcsv::Document csv("sim_data/data.csv");
-    std::vector<double> xCol = csv.GetColumn<double>("x");
-    std::vector<double> yCol = csv.GetColumn<double>("y");
-    std::vector<double> zCol = csv.GetColumn<double>("z");
-    std::vector<double> sCol = csv.GetColumn<double>("s");
+    auto xCol = csv.GetColumn<double>("x");
+    auto yCol = csv.GetColumn<double>("y");
+    auto zCol = csv.GetColumn<double>("z");
+    auto sCol = csv.GetColumn<double>("s");
+    auto r_vect_x = csv.GetColumn<double>("r_vect_x");
+    auto r_vect_y = csv.GetColumn<double>("r_vect_y");
+    auto r_vect_z = csv.GetColumn<double>("r_vect_z");
+    auto r_dot_x = csv.GetColumn<double>("r_dot_x");
+    auto r_dot_y = csv.GetColumn<double>("r_dot_y");
+    auto r_dot_z = csv.GetColumn<double>("r_dot_z");
+
+    auto timeCol = csv.GetColumn<double>("timestamp");
     int iteration = 0;
 
     Quaternion rotateQuat = QuaternionFromEuler(-PI/2, 0, 0);
@@ -33,7 +41,7 @@ int main(void)
     const int screenHeight = 450;
 
     //SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_HIGHDPI);
-    InitWindow(screenWidth, screenHeight, "raylib [models] example - plane rotations (yaw, pitch, roll)");
+    InitWindow(screenWidth, screenHeight, "Rocket animation");
 
     Camera camera = { 0 };
     camera.position = (Vector3){ 0.0f, 80.0f, -150.0f };// Camera position perspective
@@ -46,11 +54,6 @@ int main(void)
     // Texture2D texture = LoadTexture("resources/models/obj/plane_diffuse.png");  // Load model texture
     // model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;            // Set map diffuse texture
 
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
-    float s = 0.0f;
-
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
@@ -60,10 +63,17 @@ int main(void)
         if (iteration >= xCol.size()) {
             iteration = xCol.size() - 1;
         }
-        x = xCol[iteration];
-        y = yCol[iteration];
-        z = zCol[iteration];
-        s = sCol[iteration];
+        float x = xCol[iteration];
+        float y = yCol[iteration];
+        float z = zCol[iteration];
+        float s = sCol[iteration];
+
+        char pos_buf[256];
+        sprintf(pos_buf, "Position: {%f, %f, %f}", r_vect_x[iteration], r_vect_y[iteration], r_vect_z[iteration]);
+        char vel_buf[256];
+        sprintf(vel_buf, "Velocity: {%f, %f, %f}", r_dot_x[iteration], r_dot_y[iteration], r_dot_z[iteration]);
+
+        double timestamp = timeCol[iteration];
         Quaternion fooQuat{x, z, y, s}; // Change order to change rotation in window
         Matrix rocketMatrix = QuaternionToMatrix(QuaternionMultiply(fooQuat, rotateQuat));
         // Tranformation matrix for rotations
@@ -89,9 +99,12 @@ int main(void)
             // Draw controls info
             DrawRectangle(30, 370, 260, 70, Fade(GREEN, 0.5f));
             DrawRectangleLines(30, 370, 260, 70, Fade(DARKGREEN, 0.5f));
-            DrawText("Pitch controlled with: KEY_UP / KEY_DOWN", 40, 380, 10, DARKGRAY);
-            DrawText("Roll controlled with: KEY_LEFT / KEY_RIGHT", 40, 400, 10, DARKGRAY);
-            DrawText("Yaw controlled with: KEY_A / KEY_S", 40, 420, 10, DARKGRAY);
+            DrawText(("Timestamp: " + std::to_string(timestamp)).c_str(), 40, 380, 10, DARKGRAY);
+            DrawText(pos_buf, 40, 400, 10, DARKGRAY);
+            DrawText(vel_buf, 40, 420, 10, DARKGRAY);
+
+//            DrawText("Roll controlled with: KEY_LEFT / KEY_RIGHT", 40, 400, 10, DARKGRAY);
+//            DrawText("Yaw controlled with: KEY_A / KEY_S", 40, 420, 10, DARKGRAY);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
