@@ -4,3 +4,6 @@
 [submodule "lib/rapidcsv"]
 	path = lib/rapidcsv
 	url = https://github.com/d99kris/rapidcsv/
+[submodule "spdlog"]
+	path = lib/spdlog
+	url = https://github.com/gabime/spdlog.git

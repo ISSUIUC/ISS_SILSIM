@@ -1,3 +1,6 @@
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
+
 #include <iostream>
 
 #include "CpuState.h"
@@ -6,10 +9,15 @@
 #include "Simulation.h"
 #include "quaternion.h"
 
-double deg2rad = 3.14159265 / 180.0;
+constexpr double deg2rad = 3.14159265 / 180.0;
 
 int main() {
-    Rocket rocket{};
+    spdlog::set_level(spdlog::level::debug);
+    // comment below is used if we want to change the format of the logging
+    // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
+
+    Rocket rocket;
+
     double mass = rocket.get_mass();
     double I_tensor[9];
     I_tensor[0] = (1.0 / 12.0) * mass * 5.182 * 5.182 * 25;

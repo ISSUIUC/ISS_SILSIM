@@ -4,7 +4,11 @@ project(SILSIM CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
+
 set(LIB ${CMAKE_SOURCE_DIR}/lib)
+add_subdirectory(${LIB}/spdlog)
+
+
 
 add_executable(ISS_SILSIM src/main.cpp
         src/CpuThread.cpp
@@ -23,6 +27,8 @@ add_executable(visualizer sim_data/draw_rocket.cpp) #Change file to whatever is 
 add_subdirectory(lib/rapidcsv)
 add_subdirectory(lib/raylib)
 target_link_libraries(visualizer raylib rapidcsv)
+target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog)
+
 
 #set highest warning levels
 if(MSVC)
