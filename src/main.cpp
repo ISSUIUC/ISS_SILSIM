@@ -1,17 +1,21 @@
-#include <stdio.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
 
 #include <iostream>
-#include <string>
 
+#include "CpuState.h"
 #include "Rocket.h"
 #include "Sensor.h"
 #include "Simulation.h"
-#include "Vector3.h"
 #include "quaternion.h"
 
-double deg2rad = 3.14159265 / 180.0;
+constexpr double deg2rad = 3.14159265 / 180.0;
 
 int main() {
+    spdlog::set_level(spdlog::level::debug);
+    // comment below is used if we want to change the format of the logging
+    // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
+
     Rocket rocket;
 
     double mass = rocket.get_mass();
@@ -31,21 +35,21 @@ int main() {
     accel1.enable_noise_injection();
     Gyroscope gyro1("LSM9_gyro", rocket, 100);
 
-    // 3.5 second burn time @ 1500 Newton constant thrust (L ish motor I think)
+    // 3.5 second burn time @ 4000 Newton constant thrust (L ish motor I think)
     SolidMotor motor(3.5, 4000.0);
 
+    // ForwardEuler engine(rocket, motor);
     ForwardEuler engine(rocket, motor);
+    CpuState cpu;
 
-    // std::vector<Sensor&> sensors;
-
-    Simulation sim(0.01, engine, rocket, motor, "sim_data/data.csv");
+    Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
 
     sim.add_sensor(&accel1);
     // sim.add_sensor(&gyro1);
 
     std::cout << "Running Sim!" << std::endl;
 
-    // run 3000 steps
+    // run 10000 steps
     sim.run(10000);
 
     return 0;

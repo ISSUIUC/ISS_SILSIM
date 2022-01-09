@@ -21,7 +21,7 @@ vx = []
 vy = []
 vz = []
 
-ax = []
+aX = []
 ay = []
 az = []
 
@@ -42,8 +42,13 @@ rocketX = []
 rocketY = []
 rocketZ = []
 
-data_lists = [timestamps, rx, ry, rz, vx, vy, vz, ax, ay, az, fx, fy, fz,
-              q0, q1, q2, q3, roll, pitch, yaw, rocketX, rocketY, rocketZ]
+sensorX = []
+sensorY = []
+sensorZ = []
+
+data_lists = [timestamps, rx, ry, rz, vx, vy, vz, aX, ay, az, fx, fy, fz,
+              q0, q1, q2, q3, roll, pitch, yaw, rocketX, rocketY, rocketZ,
+              sensorX, sensorY, sensorZ]
 
 with open("sim_data/data.csv") as csvfile:
     csvreader = csv.reader(csvfile, delimiter=",")
@@ -70,7 +75,8 @@ fig = plt.figure()
 axes = mplot3d.Axes3D(fig)
 
 # Load the STL files and add the vectors to the plot
-original_mesh = mesh.Mesh.from_file('sim_data/doge.stl')
+#original_mesh = mesh.Mesh.from_file('sim_data/doge.stl')
+original_mesh = mesh.Mesh.from_file('sim_data/rocket.stl')
 
 poly3d = mplot3d.art3d.Poly3DCollection(original_mesh.vectors, edgecolor='k',
                                         facecolor=[0.7, 0.15, 0.15],

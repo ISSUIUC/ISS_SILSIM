@@ -15,12 +15,15 @@
 
 #include "Simulation.h"
 
-#include <math.h>
+#include <spdlog/logger.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
 
-#include <fstream>
+#include <cmath>
 #include <iostream>
 #include <string>
 
+#include "CpuState.h"
 #include "PhysicsEngine.h"
 #include "Propulsion.h"
 #include "Rocket.h"
@@ -28,9 +31,22 @@
 #include "Vector3.h"
 #include "quaternion.h"
 
-#define RAD2DEG (180.0 / 3.14159265);
+#define RAD2DEG (180.0 / 3.14159265)
 
-// #define SIM_DEBUG
+Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
+                       SolidMotor& motor, CpuState& cpu, std::string filename
+                       // std::vector<Sensor&>& sensors
+                       )
+    : tStamp_(0),
+      tStep_(tStep),
+      engine_(engine),
+      rocket_(rocket),
+      motor_(motor),
+      cpu_(cpu),
+      filename_(filename) {
+    sim_log =
+        spdlog::basic_logger_mt("Simulation_Logger", "logs/simulation.log");
+}
 
 void Simulation::run(int steps) {
     std::ofstream dataFile(filename_);
@@ -46,7 +62,6 @@ void Simulation::run(int steps) {
     double roll, pitch, yaw;
 
     motor_.ignite(tStamp_);
-
     for (int iter = 0; iter < steps; ++iter) {
         rocket_.get_r_vect(r_vect);
         rocket_.get_r_dot(r_dot);
@@ -55,10 +70,10 @@ void Simulation::run(int steps) {
         rocket_.get_w_vect(w_net);
         rocket_.get_q_ornt(q_ornt);
 
-        float s = q_ornt.Gets();
-        float x = q_ornt.Getx();
-        float y = q_ornt.Gety();
-        float z = q_ornt.Getz();
+        double s = q_ornt.Gets();
+        double x = q_ornt.Getx();
+        double y = q_ornt.Gety();
+        double z = q_ornt.Getz();
 
         // eqns from
         // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
@@ -68,24 +83,23 @@ void Simulation::run(int steps) {
         roll = atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
                RAD2DEG;
 
-#ifdef SIM_DEBUG
         double alpha = acos(rocket_.i2r(r_dot).z / (r_dot.magnitude()));
-        printf("Timestamp: %f\n", tStamp_);
-        printf("\tR-Vector: <%f, %f, %f>", r_vect.x, r_vect.y, r_vect.z);
-        printf("\tVelocity: <%f, %f, %f>", r_dot.x, r_dot.y, r_dot.z);
-        printf("\tAccel: <%f, %f, %f>", r_ddot.x, r_ddot.y, r_ddot.z);
-        printf("\tF-Net: <%f, %f, %f>", f_net.x, f_net.y, f_net.z);
-        printf("\tW-Net: <%f, %f, %f>\n", w_net.x, w_net.y, w_net.z);
-        printf("ROLL: %f \tPITCH: %f \tYAW: %f  [deg]", roll, pitch, yaw);
-        printf("\nalphaSIM: %f  [deg]\n\n", alpha * RAD2DEG);
-#endif
-
+        sim_log->debug("Timestamp: {}", tStamp_);
+        sim_log->debug("R-Vector: <{}, {}, {}>", r_vect.x, r_vect.y, r_vect.z);
+        sim_log->debug("Velocity: <{}, {}, {}>", r_dot.x, r_dot.y, r_dot.z);
+        sim_log->debug("Accel: <{}, {}, {}>", r_ddot.x, r_ddot.y, r_ddot.z);
+        sim_log->debug("F-Net: <{}, {}, {}>", f_net.x, f_net.y, f_net.z);
+        sim_log->debug("W-Net: <{}, {}, {}>", w_net.x, w_net.y, w_net.z);
+        sim_log->debug("ROLL: {} PITCH: {} YAW: {}  [deg]", roll, pitch, yaw);
+        sim_log->debug("alphaSIM: {}  [deg]", alpha * RAD2DEG);
         Vector3 rocket_axis(0, 0, 1);
         rocket_axis = rocket_.r2i(rocket_axis);
 
-        engine_.march_step(tStamp_, tStep_);
+        engine_->march_step(tStamp_, tStep_);
 
         update_sensors();
+
+        cpu_.tick(tStamp_);
 
         dataFile << tStamp_ << ",";
         dataFile << r_vect.x << "," << r_vect.y << "," << r_vect.z << ",";
@@ -126,8 +140,7 @@ void Simulation::add_sensor(Sensor* sensor) { sensors_.push_back(sensor); }
  *
  */
 void Simulation::update_sensors() {
-    for (std::vector<Sensor*>::iterator it = sensors_.begin();
-         it != sensors_.end(); ++it) {
-        (*it)->update_data(tStamp_);
+    for (auto sensor : sensors_) {
+        sensor->update_data(tStamp_);
     }
 }

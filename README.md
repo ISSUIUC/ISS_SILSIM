@@ -16,13 +16,11 @@ Non-linear 6DOF rocket trajectory simulation utility
 Modify parameters in `src/main.cpp` as desired, then run the following:
 
 ```
+git submodule update --init --recursive
+cmake .
 make
-./main
+./ISS_SILSIM
 python3 sim_data/plotter.py
-```
-or
-```
-./run_and_plot.sh
 ```
 
 #### MacOS Installation
@@ -53,6 +51,25 @@ Add symbolic link from `g++-11` to `g++`:
 ```
 ln -s /usr/local/bin/g++-11 /usr/local/bin/g++
 ```
+#### Windows Installation
+
+On Windows it is recommended to use visual studio, but gcc and clang both work
+
+Visual Studio instructions:
+
+Get visual studio here: https://visualstudio.microsoft.com/
+
+When installing visual studio install the c++ desktop development package
+
+Once visual studio finishes installing clone the repo
+
+`git clone https://github.com/ISSUIUC/ISS_SILSIM`
+
+In visual studio choose "Open a local folder" and open the cloned repo
+
+After visual studio finishes loading the project go to "Select Startup Item" in the top center of the screen and select "ISS_SILSIM.exe" from the dropdown
+
+Build and run the project by clicking the run button or by pressing "F5"
 
 #### Python Dependencies
 
@@ -73,6 +90,12 @@ Please use the following naming conventions when creating branches while develop
 - `bug/<branch-name>` for bug fixes
 - `general/<branch-name>` for overall repository organization or development pipeline tweaks
 - `misc/<branch-name>` or `junk/<branch-name>` for just messing around :)
+
+Please include the Trello ticket ID when relevant! i.e. for a ticket [AV-69] your branch might look like
+
+`user/AyberkY/AV-69-implement-runga-kutta-integrator`
+or
+`feature/AV-69-create-data-logger-class`
 
 ### Code Style Guide
 The repository now has a GitHub Actions instance that will automatically check for code style violations!

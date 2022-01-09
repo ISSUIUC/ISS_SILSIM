@@ -19,9 +19,13 @@
 #ifndef _SIMULATION_H_
 #define _SIMULATION_H_
 
+#include <spdlog/sinks/basic_file_sink.h>
+
 #include <fstream>
+#include <memory>
 #include <string>
 
+#include "CpuState.h"
 #include "PhysicsEngine.h"
 #include "Propulsion.h"
 #include "Rocket.h"
@@ -30,18 +34,14 @@
 
 class Simulation {
    public:
-    Simulation(double tStep, PhysicsEngine& engine, Rocket& rocket,
-               SolidMotor& motor, std::string filename
+    Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
+               SolidMotor& motor, CpuState& cpu, std::string filename
                // std::vector<Sensor&>& sensors
-               )
-        : tStamp_(0),
-          tStep_(tStep),
-          engine_(engine),
-          rocket_(rocket),
-          motor_(motor),
-          filename_(filename){};
+    );
 
     void run(int steps);
+
+    void set_PhysicsEngine(PhysicsEngine* engine) { engine_ = engine; };
 
     /************************* Sensor interface ***************************/
     void add_sensor(Sensor* sensor);
@@ -51,15 +51,20 @@ class Simulation {
     double tStamp_;
     double tStep_;
 
-    PhysicsEngine& engine_;
+    PhysicsEngine* engine_;
 
     Rocket& rocket_;
     SolidMotor& motor_;
+
+    CpuState& cpu_;
 
     // Sensors
     std::vector<Sensor*> sensors_;  // array of sensors on the rocket
 
     std::string filename_;
+
+    // logger
+    std::shared_ptr<spdlog::logger> sim_log;
 };
 
 #endif
