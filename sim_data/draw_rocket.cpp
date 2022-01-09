@@ -14,9 +14,11 @@
 #include "raylib.h"
 
 #include "raymath.h"        // Required for: MatrixRotateXYZ()
+#include <rapidcsv.h>
 
 int main(void)
 {
+    rapidcsv::Document csv("data.csv");
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;

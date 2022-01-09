@@ -1,3 +1,6 @@
 [submodule "lib/raylib"]
 	path = lib/raylib
 	url = https://github.com/raysan5/raylib
+[submodule "lib/rapidcsv"]
+	path = lib/rapidcsv
+	url = https://github.com/d99kris/rapidcsv/

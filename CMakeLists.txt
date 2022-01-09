@@ -19,10 +19,10 @@ add_executable(ISS_SILSIM src/main.cpp
         )
 
 #Linking raylib library
-add_executable(visualizer src/main.cpp) #Change file to whatever is needed
-set_target_properties(visualizer PROPERTIES LINKER_LANGUAGE CXX)
+add_executable(visualizer sim_data/draw_rocket.cpp) #Change file to whatever is needed
+add_subdirectory(lib/rapidcsv)
 add_subdirectory(lib/raylib)
-target_link_libraries(visualizer raylib)
+target_link_libraries(visualizer raylib rapidcsv)
 
 #set highest warning levels
 if(MSVC)

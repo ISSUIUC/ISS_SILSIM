@@ -29,6 +29,18 @@
 
 void Simulation::run(int steps) {
     std::ofstream dataFile(filename_);
+    dataFile << "tStamp_" << ",";
+    dataFile << "r_vect_x" << "," << "r_vect_y" << "," << "r_vect_z" << ",";
+    dataFile << "r_dot_x" << "," << "r_dot_y" << "," << "r_dot_z" << ",";
+    dataFile << "r_ddot_x" << "," << "r_ddot_y" << "," << "r_ddot_z" << ",";
+    dataFile << "f_net_x" << "," << "f_net_y" << "," << "f_net_z" << ",";
+    dataFile << "s" << "," << "x" << "," << "y" << "," << "z" << ",";
+    dataFile << "roll" << "," << "pitch" << "," << "yaw" << ",";
+    dataFile << "rocket_axis_x" << "," << "rocket_axis_y" << ","
+    << "rocket_axis_z" << ",";
+    dataFile << "sensor_data_x" << "," << "sensor_data_y" << ","
+    << "sensor_data_z";
+    dataFile << '\n';
 
     Vector3 r_vect;
     Vector3 r_dot;

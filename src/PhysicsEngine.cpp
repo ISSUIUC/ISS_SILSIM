@@ -20,7 +20,7 @@
 
 #define RAD2DEG (180.0 / 3.14159265)
 
-#define PHYSENG_DEBUG
+//#define PHYSENG_DEBUG
 
 /**
  * @brief Calculates forces and moments and integrates with a simple euler step
