@@ -26,8 +26,8 @@
 double Atmosphere::get_temperature(double altitude) {
 
     double temperature;
-    altitude_h = get_geometric_to_geopotential(altitude)/1000; //geopotential//
-    altitude_z = altitude/1000; //geometric//
+    double altitude_h = get_geometric_to_geopotential(altitude)/1000; //geopotential//
+    double altitude_z = altitude/1000; //geometric//
     if (altitude_h < 11.0) {
         temperature = 288.15 - (6.5 * altitude_h);
     }
@@ -56,7 +56,7 @@ double Atmosphere::get_temperature(double altitude) {
         temperature = 356.65 - (2.0 * altitude_h);
     }
 
-    else if (aaltitude_z < 91) {
+    else if (altitude_z < 91) {
         temperature = 186.8673;
     }
 
@@ -87,7 +87,8 @@ double Atmosphere::get_pressure(double altitude) {
     altitude = get_geometric_to_geopotential(altitude)/1000;
 
     if (altitude < 11) {
-        pressure = 101325.0 * pow((288.15 / (288.15 - 6.5 * altitude)), (34.1632 / -6.5))
+        pressure = 101325.0 *
+                   pow((288.15 / (288.15 - 6.5 * altitude)), (34.1632 / -6.5));
     }
 
     else if (altitude < 20){
@@ -98,7 +99,7 @@ double Atmosphere::get_pressure(double altitude) {
         pressure = 5474.889 * pow((216.65 / (216.65 + 2.8 * (altitude -20))), 34.1632);
     }
 
-    else if (altitue < 47){
+    else if (altitude < 47){
         pressure = 868.0187 * pow((228.65 / (228.65 + 2.8 * (altitude - 32))), (34.1632 / 28));
     }
 
@@ -127,12 +128,16 @@ double Atmosphere::get_pressure(double altitude) {
  */
 double Atmosphere::get_density(double altitude) {
     double R = 287.053;
-    double pressure = get_preessure(altitude);
+    double pressure = get_pressure(altitude);
     double temperature = get_temperature(altitude);
+    double density;
     altitude = altitude/1000;
 
     if (altitude < 84.853){
-        density = P/(R*temperature);
+        density = pressure/(R*temperature);
+    }
+    else {
+        throw std::runtime_error("exceding caculatable altitude");
     }
 
     return density;
