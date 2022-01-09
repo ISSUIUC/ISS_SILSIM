@@ -46,6 +46,7 @@ data_lists = [timestamps, rx, ry, rz, vx, vy, vz, aX, ay, az, fx, fy, fz,
 with open("sim_data/data.csv") as csvfile:
     csvreader = csv.reader(csvfile, delimiter=",")
 
+    next(csvreader)
     for row in csvreader:
         for i, val in enumerate(row):
             data_lists[i].append(float(val))

@@ -18,8 +18,15 @@
 
 int main(void)
 {
-    rapidcsv::Document csv("data.csv");
     // Initialization
+    rapidcsv::Document csv("sim_data/data.csv");
+    std::vector<double> pitchCol = csv.GetColumn<double>("pitch");
+    std::vector<double> rollCol = csv.GetColumn<double>("roll");
+    std::vector<double> yawCol = csv.GetColumn<double>("yaw");
+
+    
+    int iteration = 0;
+
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
     const int screenHeight = 450;
@@ -34,7 +41,7 @@ int main(void)
     camera.fovy = 30.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;             // Camera type
 
-    Model model = LoadModel("rocket.obj");                  // Load model
+    Model model = LoadModel("sim_data/rocket.obj");                  // Load model
     // Texture2D texture = LoadTexture("resources/models/obj/plane_diffuse.png");  // Load model texture
     // model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;            // Set map diffuse texture
 
@@ -48,37 +55,15 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        // Update
-        //----------------------------------------------------------------------------------
-        // Plane pitch (x-axis) controls
-        if (IsKeyDown(KEY_DOWN)) pitch += 0.6f;
-        else if (IsKeyDown(KEY_UP)) pitch -= 0.6f;
-        else
-        {
-            if (pitch > 0.3f) pitch -= 0.3f;
-            else if (pitch < -0.3f) pitch += 0.3f;
+        if (iteration >= pitchCol.size()) {
+            iteration = pitchCol.size() - 1;
         }
-
-        // Plane yaw (y-axis) controls
-        if (IsKeyDown(KEY_S)) yaw += 1.0f;
-        else if (IsKeyDown(KEY_A)) yaw -= 1.0f;
-        else
-        {
-            if (yaw > 0.0f) yaw -= 0.5f;
-            else if (yaw < 0.0f) yaw += 0.5f;
-        }
-
-        // Plane roll (z-axis) controls
-        if (IsKeyDown(KEY_LEFT)) roll += 1.0f;
-        else if (IsKeyDown(KEY_RIGHT)) roll -= 1.0f;
-        else
-        {
-            if (roll > 0.0f) roll -= 0.5f;
-            else if (roll < 0.0f) roll += 0.5f;
-        }
-
+        pitch = pitchCol[iteration];
+        roll = rollCol[iteration];
+        yaw = yawCol[iteration];
+        iteration += 1;
         // Tranformation matrix for rotations
-        model.transform = MatrixRotateXYZ((Vector3){ DEG2RAD*pitch, DEG2RAD*yaw, DEG2RAD*roll });
+        model.transform = MatrixRotateXYZ((Vector3){ pitch, yaw, roll });
         //----------------------------------------------------------------------------------
 
         // Draw
