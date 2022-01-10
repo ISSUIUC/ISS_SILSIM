@@ -1,3 +1,6 @@
 [submodule "spdlog"]
 	path = lib/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "flight_src/mcu/lib/eigen"]
+	path = flight_src/mcu/lib/eigen
+	url = https://gitlab.com/libeigen/eigen

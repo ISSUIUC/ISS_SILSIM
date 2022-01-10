@@ -9,12 +9,12 @@
 #include <mutex>
 #include <cstring>
 #include <cmath>
+#include <memory>
 
 #define SEMAPHORE_DECL(name, n) std::atomic<size_t> name{n};
-#define MUTEX_DECL(name) std::mutex name;
+#define MUTEX_DECL(name) std::mutex name
+#define THD_WORKING_AREA(name, size) char name[size]
 
-
-typedef std::atomic<size_t> semaphore_t;
 typedef std::mutex mutex_t;
 typedef uint32_t sysinterval_t;
 typedef uint32_t msg_t;
@@ -23,16 +23,20 @@ typedef uint32_t systime_t;
 
 #define CH_CFG_ST_FREQUENCY 100000
 #define TIME_I2MS(x) (((systime_t)(x) * (systime_t)(1000) + CH_CFG_ST_FREQUENCY - 1) / CH_CFG_ST_FREQUENCY)
-
+#define chThdCreateStatic(working_area, sizeof_working_area, priority, thread_name, sensor_pointers)
 #define __itoa _itoa
 #define TIME_IMMEDIATE (sysinterval_t)0
 #define MSG_OK (msg_t)0
+#define NORMALPRIO ((unsigned char)128)
 
 struct SerialClass{
     static void println(const char *);
+    static void begin(uint32_t frequency);
+    static void write(void * data, uint32_t size);
 };
 
 extern SerialClass Serial;
+extern SerialClass Serial1;
 
 uint32_t chVTGetSystemTime();
 
@@ -43,5 +47,9 @@ void chMtxUnlock(mutex_t * mtx);
 void chSysLock();
 
 void chSysUnlock();
+
+void chThdSleepMilliseconds(uint32_t ms);
+
+void chBegin(void (*mainThread)());
 
 #endif  // SILSIM_CHRT_H
