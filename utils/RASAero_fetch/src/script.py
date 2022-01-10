@@ -7,10 +7,12 @@ def main():
     pyautogui.PAUSE = 0.4
     pyautogui.FAILSAFE = True
 
+    # TODO: Search throgh files in that location
     protuberance = 0
     alpha = 15
     nozzle_exit_diameter = 2.7
 
+    # TODO: Don't think this is accounting for the XXX protuberance value of the rocket
     rasaero_location = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\RASAero II\RASAero II"
     rasaero_file = "{}_protub.CDX1".format(protuberance)
 
@@ -36,8 +38,10 @@ def main():
 
     pyautogui.PAUSE = 0.001
 
+    # TODO: Account for nozzle exit diameter in case its not implemented
     for i in range(alpha):
-
+        
+        # TODO: Make this path relative to RASAero_fetch folder
         output_path = "C:\\Users\\rishi\\Documents\\GitHub\\ISS_SILSIM\\utils\\RASAero_fetch\\output\\{}_{}.txt".format(str(i).zfill(2), str(protuberance).zfill(3))
 
         pyautogui.hotkey('ctrl', 'a')
