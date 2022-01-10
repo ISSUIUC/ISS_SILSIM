@@ -26,8 +26,9 @@ def parse_file(directory, filename):
     data = "\n".join(data)
     data = data.split("\n\n\n\n")
     
-    # ignore transitional headers
+    # ignore transitional headers and empty entries
     data = [line for line in data if not '-------->' in line]
+    data = [line for line in data if line.strip()]
     
     # split groupings into specific numerical entries
     refined_data = []
@@ -61,6 +62,7 @@ def generate_consolidated_data():
     # loop thorugh each file and accumulate entries
     consolidated_data = []  
     for filename in sorted(listdir(output_directory)):
+        if "RAS_Aero" in filename: continue
         consolidated_data += parse_file(output_directory, filename)
         
     # return sorted dictionary entries by mach, aoa, and protuberancez
