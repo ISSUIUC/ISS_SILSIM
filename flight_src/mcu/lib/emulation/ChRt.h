@@ -20,6 +20,8 @@ typedef uint32_t sysinterval_t;
 typedef uint32_t msg_t;
 typedef uint32_t cnt_t;
 typedef uint32_t systime_t;
+using std::min;
+using std::max;
 
 #define CH_CFG_ST_FREQUENCY 100000
 #define TIME_I2MS(x) (((systime_t)(x) * (systime_t)(1000) + CH_CFG_ST_FREQUENCY - 1) / CH_CFG_ST_FREQUENCY)

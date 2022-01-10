@@ -17,8 +17,10 @@ class CpuState {
     void tick(double timestamp);
 
    private:
-    // thead, when the threads_ should next run in absolute time
+
+    CpuStateContext context;
     std::vector<std::pair<std::unique_ptr<CpuThread>, double>> threads_;
+    // thead, when the threads_ should next run in absolute time
 };
 
 #endif  // SILSIM_CPUSTATE_H

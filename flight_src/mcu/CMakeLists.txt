@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(flight_emu_src)
 
-file(GLOB lib_src lib/teensyShared/*.cpp lib/teensyShared/*.cpp lib/ServoControl/*.cpp)
+file(GLOB lib_src lib/teensyShared/*.cpp lib/FifoBuffer/*.cpp lib/ServoControl/*.cpp)
 
 add_subdirectory(lib/eigen)
 

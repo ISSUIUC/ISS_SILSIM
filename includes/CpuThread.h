@@ -2,6 +2,7 @@
 // Created by 16182 on 9/30/2021.
 //
 
+#include "CpuStateContext.h"
 #ifndef SILSIM_CPUTHREAD_H
 #define SILSIM_CPUTHREAD_H
 
@@ -9,7 +10,6 @@
     struct name : public CpuThread { double real_tick(void*); }; \
     double name::real_tick(void*arg)
 
-#include "CpuStateContext.h"
 class CpuThread {
    public:
     // returns sleep time
@@ -22,14 +22,6 @@ class CpuThread {
    private:
     // returns sleep time
     virtual double real_tick(void*) = 0;
-};
-
-class Rocket_FSM : public CpuThread {
-   public:
-    Rocket_FSM();
-
-   private:
-    double real_tick(void*) override;
 };
 
 #endif  // SILSIM_CPUTHREAD_H

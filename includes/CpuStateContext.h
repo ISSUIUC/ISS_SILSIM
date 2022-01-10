@@ -5,7 +5,7 @@
 #ifndef SILSIM_CPUSTATECONTEXT_H
 #define SILSIM_CPUSTATECONTEXT_H
 
-
+#include <vector>
 #include <Arduino.h>
 #include <ChRt.h>
 #include <PWMServo.h>
@@ -15,7 +15,6 @@
 
 #include <KX134-1211.h>       //High-G IMU Library
 #include <SparkFunLSM9DS1.h>  //Low-G IMU Library
-#include <ZOEM8Q0.hpp>        //GPS Library
 #include <acShared.h>
 #include <dataLog.h>
 #include <hybridShared.h>
@@ -23,6 +22,7 @@
 #include <rocketFSM.h>
 #include <sensors.h>
 #include <ServoControl.h>
+
 
 struct CpuStateContext {
     double system_time;
@@ -32,7 +32,7 @@ struct CpuStateContext {
 
     KX134 highGimu;
     LSM9DS1 lowGimu;
-    ZOEM8Q0 gps = ZOEM8Q0();
+    SFE_UBLOX_GNSS gps;
 
     PWMServo servo_cw;   // Servo that induces clockwise roll moment
     PWMServo servo_ccw;  // Servo that counterclockwisei roll moment

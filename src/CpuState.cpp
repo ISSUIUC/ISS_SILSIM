@@ -20,9 +20,8 @@
  */
 
 void CpuState::tick(double timestamp) {
-    CpuStateContext context{timestamp};
     if(threads_.empty()) return;
-
+    context.system_time = timestamp;
     while(true){
         //get the first scheduled thread to run
         auto min_thread = std::min_element(threads_.begin(), threads_.end(),
