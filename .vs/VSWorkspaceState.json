@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\utils",
+    "\\utils\\RASAero_fetch",
+    "\\utils\\RASAero_fetch\\output",
+    "\\utils\\RASAero_fetch\\src"
+  ],
+  "SelectedNode": "\\utils\\RASAero_fetch\\src\\consolidate.py",
+  "PreviewInSolutionExplorer": false
+}
