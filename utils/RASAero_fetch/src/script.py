@@ -1,20 +1,24 @@
 import os
 import pyautogui
 import time
+from pathlib import Path
 
 def main():
 
-    pyautogui.PAUSE = 0.4
+    out_pth = os.getcwd()[:-3] + "output\\"
+    ras_pth = os.getcwd()[:-3] + "cdx1\\"
+
+    pyautogui.PAUSE = 0.6
     pyautogui.FAILSAFE = True
 
-    # TODO: Search throgh files in that location
-    protuberance = 0
+    protuberance = 100
     alpha = 15
     nozzle_exit_diameter = 2.7
 
-    # TODO: Don't think this is accounting for the XXX protuberance value of the rocket
+    ned_string = str(nozzle_exit_diameter).zfill(5)
+
     rasaero_location = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\RASAero II\RASAero II"
-    rasaero_file = "{}_protub.CDX1".format(protuberance)
+    rasaero_file = "Test_5800_mk3_{}.cdx1".format(str(protuberance).zfill(3))
 
     os.startfile(rasaero_location)
     screenWidth, screenHeight = pyautogui.size()
@@ -26,9 +30,18 @@ def main():
     pyautogui.press('enter')
 
     pyautogui.hotkey('ctrl', 'o')
+    pyautogui.hotkey('ctrl', 'l')
+    pyautogui.press('delete')
+    pyautogui.write(ras_pth)
+    pyautogui.press('enter')
+    for i in range(6):
+            pyautogui.press('tab')
+
 
     pyautogui.write(rasaero_file)
     pyautogui.press('enter')
+
+    pyautogui.PAUSE = 0.001
 
     pyautogui.press('alt')
     pyautogui.press('right')
@@ -36,13 +49,15 @@ def main():
     pyautogui.press('down')
     pyautogui.press('enter')
 
-    pyautogui.PAUSE = 0.001
+    pyautogui.hotkey('shift', 'tab')
+    pyautogui.hotkey('ctrl', 'a')
+    pyautogui.press('delete')
+    pyautogui.write(ned_string)
+    pyautogui.press('tab')
 
-    # TODO: Account for nozzle exit diameter in case its not implemented
     for i in range(alpha):
         
-        # TODO: Make this path relative to RASAero_fetch folder
-        output_path = "C:\\Users\\rishi\\Documents\\GitHub\\ISS_SILSIM\\utils\\RASAero_fetch\\output\\{}_{}.txt".format(str(i).zfill(2), str(protuberance).zfill(3))
+        output_path = (out_pth + "{}_{}.txt").format(str(i).zfill(2), str(protuberance).zfill(3))
 
         pyautogui.hotkey('ctrl', 'a')
         pyautogui.write(output_path)
