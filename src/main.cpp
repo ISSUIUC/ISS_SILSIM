@@ -8,10 +8,15 @@
 #include "Sensor.h"
 #include "Simulation.h"
 #include "quaternion.h"
+#include "RASAeroImport.h"
 
 constexpr double deg2rad = 3.14159265 / 180.0;
 
 int main() {
+
+    RASAeroImport import("../sim_data/rasaero_data.csv");
+
+    /*
     spdlog::set_level(spdlog::level::debug);
     // comment below is used if we want to change the format of the logging
     // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
@@ -51,6 +56,7 @@ int main() {
 
     // run 10000 steps
     sim.run(10000);
+    */
 
     return 0;
 }

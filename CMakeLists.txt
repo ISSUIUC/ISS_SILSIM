@@ -19,6 +19,7 @@ add_executable(ISS_SILSIM src/main.cpp
         src/Sensor.cpp
         src/Simulation.cpp
         src/Atmosphere.cpp
+        src/RASAeroImport.cpp
         lib/quaternion/quaternion.cpp
         lib/Vector3/Vector3.cpp
         )

@@ -14,7 +14,34 @@
 #include <rapidcsv.h>
 
 #include <string>
+#include <iostream>
 
 RASAeroImport::RASAeroImport(std::string file_path) {
+
     rapidcsv::Document csv(file_path);
+
+    auto mach = csv.GetColumn<double>("Mach");
+    auto alpha = csv.GetColumn<double>("Alpha");
+    auto protuberance = csv.GetColumn<double>("Protuberance");
+    auto cd = csv.GetColumn<double>("CD");
+    
+    int n_data = mach.size();
+
+    std::cout << "Number of Mach points = " << mach.size() << std::endl;
+    std::cout << "Number of Alpha points = " << alpha.size() << std::endl;
+    std::cout << "Number of protub points = " << protuberance.size() << std::endl;
+    std::cout << "Number of cd points = " << cd.size() << std::endl;
+
+    aero_table_.resize(n_data, 4);
+
+    for (int i = 0; i < n_data; i++) {
+       aero_table_(i, 0) = mach[i];
+       aero_table_(i, 1) = alpha[i];
+       aero_table_(i, 2) = protuberance[i];
+       aero_table_(i, 3) = cd[i];
+    }
+
+
+    std::cout << aero_table_ << std::endl;
+
 }
