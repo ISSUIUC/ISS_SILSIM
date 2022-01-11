@@ -11,6 +11,8 @@
 
 #include <string>
 
+#include <rapidcsv.h>
+
 
 RASAeroImport::RASAeroImport(std::string filePath) {
 
