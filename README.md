@@ -96,10 +96,15 @@ Then use the following scheme to then organize your branches:
 An example branch for a ticket [AV-69] look like
 
 `AV-69-implement-engine-thrust-lookup-function` for simple one-off tasks that you collaborate on with a group
+
 or
+
 `user/AyberkY/AV-69-implement-runga-kutta-integrator` if you're the sole contributor
+
 or
+
 `feature/AV-69-create-data-logger-class` if its adding new functionality or software components
+
 and so on..
 
 ### Code Style Guide
