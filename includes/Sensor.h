@@ -23,7 +23,10 @@
 #include <vector>
 
 #include "Rocket.h"
-#include "Vector3.h"
+#include <Eigen/Core>
+
+using Eigen::Vector3d;
+
 
 class Sensor {
    public:
@@ -39,7 +42,7 @@ class Sensor {
     std::string get_name() { return name_; };
 
     virtual void update_data(double tStep);
-    virtual void get_data(Vector3& data);
+    virtual void get_data(Vector3d& data);
     virtual double get_data();
 
     // Noise/bias injection control
@@ -71,16 +74,16 @@ class Gyroscope : public Sensor {
     Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
               double noise_mean = 0.0f, double noise_stddev = 0.1f);
     void update_data(double tStep) override;
-    void get_data(Vector3& data) override;
+    void get_data(Vector3d& data) override;
 
-    void set_constant_bias(Vector3 bias) { bias_ = bias; };
+    void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
    private:
-    Vector3 data_;  // The sensor's current reading
+    Vector3d data_;  // The sensor's current reading
 
-    Vector3 noise_;  // Noise vector to be added to measurement
+    Vector3d noise_;  // Noise vector to be added to measurement
 
-    Vector3 bias_;  // Constant bias vector to be added to measurement
+    Vector3d bias_;  // Constant bias vector to be added to measurement
 };
 
 class Accelerometer : public Sensor {
@@ -88,16 +91,16 @@ class Accelerometer : public Sensor {
     Accelerometer(std::string name, Rocket& rocket, double refresh_rate,
                   double noise_mean = 0.0f, double noise_stddev = 0.1f);
     void update_data(double tStep) override;
-    void get_data(Vector3& data) override;
+    void get_data(Vector3d& data) override;
 
-    void set_constant_bias(Vector3 bias) { bias_ = bias; };
+    void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
    private:
-    Vector3 data_;  // The sensor's current reading
+    Vector3d data_;  // The sensor's current reading
 
-    Vector3 noise_;  // Noise vector to be added to measurement
+    Vector3d noise_;  // Noise vector to be added to measurement
 
-    Vector3 bias_;  // Constant bias vector to be added to measurement
+    Vector3d bias_;  // Constant bias vector to be added to measurement
 };
 
 // TODO: Implement functions for both altitude and pressure measurements (and
@@ -118,5 +121,10 @@ class Barometer : public Sensor {
 
     double bias_;  // Constant bias value to be added to measurement
 };
+
+
+Vector3d randomize_vector(std::default_random_engine& generator,
+                          std::normal_distribution<double>& dist);
+
 
 #endif
