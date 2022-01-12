@@ -20,7 +20,7 @@ add_executable(ISS_SILSIM src/main.cpp
         src/Simulation.cpp
         src/Atmosphere.cpp
         lib/quaternion/quaternion.cpp
-        lib/Vector3/Vector3.cpp
+        
         )
 
 target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog Eigen3::Eigen)
@@ -33,4 +33,4 @@ else()
     target_compile_options(ISS_SILSIM PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-target_include_directories(ISS_SILSIM PUBLIC ${LIB}/quaternion ${LIB}/Vector3 ${CMAKE_SOURCE_DIR}/includes/)
+target_include_directories(ISS_SILSIM PUBLIC ${LIB}/quaternion ${CMAKE_SOURCE_DIR}/includes/)
