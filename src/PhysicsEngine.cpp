@@ -34,7 +34,6 @@ ForwardEuler::ForwardEuler(Rocket& rocket, SolidMotor& motor)
  * @param tStamp Current simulation timestamp
  * @param tStep Simulation time step size
  */
-
 void ForwardEuler::march_step(double tStamp, double tStep) {
     // {variable}_rf = rocket frame (stuck to rocket)
     // {variable}_if = inertial frame (stuck to earth)
@@ -133,18 +132,9 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     r_dot_if += r_ddot_if * tStep;
     r_ddot_if = f_net_if / mass;
 
-    double w_mag = w_vect_if.magnitude();
-    if (w_mag > 0.000001) {  // if the rocket is moving; numbers below this
-                             // threshold are interpreted as 0 and cause errors
-        Quaternion<double> q_rot;
-        q_rot.Set(cos(w_mag / 2.0), (w_vect_if.x / w_mag) * sin(w_mag / 2.0),
-                  (w_vect_if.y / w_mag) * sin(w_mag / 2.0),
-                  (w_vect_if.z / w_mag) * sin(w_mag / 2.0));
-
-        // Apply instantaneous rotation
-        q_ornt = q_ornt * q_rot;
-        q_ornt.Normalize();
-    }
+    // magnitudes below this threshold approach division-by-zero 
+    if (w_vect_if.magnitude() > 1e-6)
+        q_ornt = update_quaternion(q_ornt, w_vect_if, tStep);
 
     w_vect_if += w_dot_if * tStep;
 
@@ -186,4 +176,33 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     rocket_.set_f_net(f_net_if);
     rocket_.set_t_net(t_net_if);
     rocket_.set_q_ornt(q_ornt);
+}
+
+/**
+ * @brief Updates the orientation quaternion of the rocket from an angular
+ * velocity vector
+ *
+ * Implements the math found below:
+ * ahrs.readthedocs.io/en/latest/filters/angular.html#quaternion-integration
+ *
+ * @param q_ornt    The current orientation quaternion
+ * @param omega_if  The angular velocity vector in inertial frame
+ * @param tStep     Simulation time step size
+ */
+Quaternion<double> ForwardEuler::update_quaternion(Quaternion<double> q_ornt,
+                                                   Vector3 omega_if,
+                                                   double tStep) {
+    // Create a quaternion from angular velocity
+    Quaternion<double> q_omega{0, omega_if.x, omega_if.y, omega_if.z};
+
+    // quaternion first time derivative
+    Quaternion<double> q_dot = 0.5 * q_omega * q_ornt;
+
+    // Update orientation quaternion
+    q_ornt = q_ornt + (q_dot * tStep);
+
+    // Orientation quaternions must always stay at unit norm
+    q_ornt.Normalize();
+
+    return q_ornt;
 }
