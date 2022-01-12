@@ -3,6 +3,7 @@
     "",
     "\\utils",
     "\\utils\\RASAero_fetch",
+    "\\utils\\RASAero_fetch\\cdx1",
     "\\utils\\RASAero_fetch\\output",
     "\\utils\\RASAero_fetch\\src"
   ],

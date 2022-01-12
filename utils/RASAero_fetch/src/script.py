@@ -8,11 +8,11 @@ def main():
     out_pth = os.getcwd()[:-3] + "output\\"
     ras_pth = os.getcwd()[:-3] + "cdx1\\"
 
-    pyautogui.PAUSE = 0.5
+    pyautogui.PAUSE = 0.8
     pyautogui.FAILSAFE = True
 
     protuberances = []
-    alpha = 5
+    alpha = 16
     nozzle_exit_diameter = 2.7
 
     ned_string = str(nozzle_exit_diameter).zfill(5)
