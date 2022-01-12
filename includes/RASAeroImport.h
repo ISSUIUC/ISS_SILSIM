@@ -20,13 +20,16 @@ class RASAeroImport {
     RASAeroImport(std::string file_path);
 
     /**************** Retrieve Aero Parameters of Rocket **********************/
-    double get_Cp_location(double mach, double alpha,
+    double get_CD_poweroff(double mach, double alpha,
                            double protuberance_percent);
-    double get_CNa(double mach, double alpha, double protuberance_percent);
+    double get_CD_poweron(double mach, double alpha,
+                          double protuberance_percent);
     double get_CA_poweroff(double mach, double alpha,
                            double protuberance_percent);
     double get_CA_poweron(double mach, double alpha,
                           double protuberance_percent);
+    double get_CN_total(double mach, double alpha, double protuberance_percent);
+    double get_CP_total(double mach, double alpha, double protuberance_percent);
     double get_CD_protuberance(double mach, double alpha,
                                double protuberance_percent);
 
