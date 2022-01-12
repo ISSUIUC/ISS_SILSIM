@@ -15,7 +15,7 @@ endif()
 
 add_subdirectory(${LIB}/spdlog)
 add_subdirectory(${LIB}/eigen)
-
+add_subdirectory(${LIB}/rapidcsv)
 
 
 add_executable(ISS_SILSIM src/main.cpp
@@ -27,11 +27,11 @@ add_executable(ISS_SILSIM src/main.cpp
         src/Sensor.cpp
         src/Simulation.cpp
         src/Atmosphere.cpp
-        
-        
+        src/RASAeroImport.cpp
         )
 
 target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog Eigen3::Eigen)
+target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog Eigen3::Eigen rapidcsv)
 
 
 #set highest warning levels
