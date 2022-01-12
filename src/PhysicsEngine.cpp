@@ -186,10 +186,12 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
  * @param q_ornt    The current orientation quaternion
  * @param omega_if  The angular velocity vector in inertial frame
  * @param tStep     Simulation time step size
+ *
+ * @return Quaternion<double> Updated quaterion with the applied rotation
  */
 Quaternion<double> ForwardEuler::update_quaternion(Quaternion<double> q_ornt,
                                                    Vector3 omega_if,
-                                                   double tStep) {
+                                                   double tStep) const {
     // Create a quaternion from angular velocity
     Quaternion<double> q_omega{0, omega_if.x, omega_if.y, omega_if.z};
 
