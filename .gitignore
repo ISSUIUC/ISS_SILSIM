@@ -44,6 +44,9 @@ logs/*
 **/CMakeScripts
 **/compile_commands.json
 
+# Absolutely not
+.vs/
+
 main
 ISS_SILSIM
 sim_data/*.csv
