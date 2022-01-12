@@ -4,12 +4,6 @@ ISS Software-In-The-Loop Simulator
 
 Non-linear 6DOF rocket trajectory simulation utility
 
-## Dependencies
-- Linux Operating System
-	- Tested on Ubuntu 20.04 (Recommended)
-- GNU Make
-- Python3
-	- matplotlib package
 
 ## Installation and Setup Instructions
 
@@ -85,17 +79,28 @@ pip install -r requirements.txt
 ### Branch Naming Convention
 Please use the following naming conventions when creating branches while developing:
 
+Your `<branch-name>` should consist of the Trello ticket ID and a short description of the work being done. For example:
+
+`AV-420-write-cp-location-interpolation-function`
+
+Then use the following scheme to then organize your branches:
+
+- `<branch-name>` for small and simple contributions pertaining to a ticket
 - `user/<github-username>/<branch-name>` for individual tasks or contributions, or as a sandbox for yourself
 - `feature/<branch-name>` for **new** functionality that didn't exist before
 - `bug/<branch-name>` for bug fixes
 - `general/<branch-name>` for overall repository organization or development pipeline tweaks
 - `misc/<branch-name>` or `junk/<branch-name>` for just messing around :)
 
-Please include the Trello ticket ID when relevant! i.e. for a ticket [AV-69] your branch might look like
 
-`user/AyberkY/AV-69-implement-runga-kutta-integrator`
+An example branch for a ticket [AV-69] look like
+
+`AV-69-implement-engine-thrust-lookup-function` for simple one-off tasks that you collaborate on with a group
 or
-`feature/AV-69-create-data-logger-class`
+`user/AyberkY/AV-69-implement-runga-kutta-integrator` if you're the sole contributor
+or
+`feature/AV-69-create-data-logger-class` if its adding new functionality or software components
+and so on..
 
 ### Code Style Guide
 The repository now has a GitHub Actions instance that will automatically check for code style violations!
@@ -113,37 +118,3 @@ Things to keep in mind about code formatting:
 - The code style being used is defined in `.clang-format`. It currently follows Google's C++ style guide exactly.
 - Changing/tweaking the style guide is always option! If you have ideas, reach out!
 
-
-
-## Feature ToDo List
-
-- [x] Incorporate sensors into Rocket object
-	- [x] Create a list of sensors
-	- [x] Enumerate sensors and update their data
-	- [x] Add noise and bias injection
-- [ ] Create a "FlightSoftware" class that encapsulates flight software being tested.
-	- [ ] Could have containers that sort-of emulate threads
-	- [ ] Some sort of way of injecting faults or halting threads would be cool
-- [ ] Utilize an XML parsing library to take in OpenRocket design files (.ork)
-	- [ ] Choose one of many libraries; RapidXML, pugiXML, etc..
-	- [ ] Implement a constructor for Rocket class that'll take a .ork file
-- [ ] Create an "Atmosphere" class that governs air pressure/density properties
-	- [ ] Parameters could vary by altitude
-	- [ ] How to propogate atmospheric variables to other classes?
-	- [ ] Use existing atmospheric databases and interpolate
-	- [ ] How to model wind???
-- [ ] Look into a better method of trajectory visualtization
-	- [ ] Possibly PyBullet?
-- [ ] Add graphical arrows in simulation playback to illustrate in-flight forces
-- [ ] Make a logging library that is modular and accepts data from configurable sources
-	- [ ] Decide on mechanism and architecture of logging system
-		- Single file or multiple files?
-		- Human readable format? - need a parser if not human readable
-	- [ ] Implement a LogAggregator class that collects logs from all sources
-	- [ ] Implement a LogSource class that supplies LogAggregator with data 
-	- [ ] Perhaps some phython to parse the logged data?
-
-## Improvements/Fixes ToDo List
-
-- [ ] Added functions to Barometer sensor class to either read altitude or air pressure of various units
-- [x] Added documentation for MacOS users
