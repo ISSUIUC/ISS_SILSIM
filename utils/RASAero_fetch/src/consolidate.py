@@ -62,7 +62,7 @@ def generate_consolidated_data():
     # loop thorugh each file and accumulate entries
     consolidated_data = []  
     for filename in sorted(listdir(output_directory)):
-        if "RAS_Aero" in filename: continue
+        if "RASAero.csv" in filename: continue
         consolidated_data += parse_file(output_directory, filename)
         
     # return sorted dictionary entries by mach, aoa, and protuberancez
