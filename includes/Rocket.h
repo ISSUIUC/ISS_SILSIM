@@ -22,7 +22,7 @@
 
 
 #include "quaternion.h"
-#include <Eigen/Core>
+#include <Eigen/Dense>
 
 using Eigen::Vector3d;
 

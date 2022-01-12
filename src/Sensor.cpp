@@ -18,7 +18,7 @@
 #include <iostream>
 #include <string>
 
-#include <Eigen/Core>
+#include <Eigen/Dense>
 
 using Eigen::Vector3d;
 
