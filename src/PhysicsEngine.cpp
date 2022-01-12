@@ -132,9 +132,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     r_dot_if += r_ddot_if * tStep;
     r_ddot_if = f_net_if / mass;
 
-    // magnitudes below this threshold approach division-by-zero 
-    if (w_vect_if.magnitude() > 1e-6)
-        q_ornt = update_quaternion(q_ornt, w_vect_if, tStep);
+    q_ornt = update_quaternion(q_ornt, w_vect_if, tStep);
 
     w_vect_if += w_dot_if * tStep;
 
