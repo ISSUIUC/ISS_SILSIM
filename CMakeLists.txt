@@ -6,7 +6,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(LIB ${CMAKE_SOURCE_DIR}/lib)
 
-if(NOT EXISTS ${LIB}/spdlog/CMakeLists.txt)
+if(
+        NOT EXISTS ${LIB}/spdlog/CMakeLists.txt
+        OR NOT EXISTS ${LIB}/eigen/CMakeLists.txt
+)
     message(FATAL_ERROR "Missing submodule dependencies try\ngit submodule update --init --recursive\nto download dependencies")
 endif()
 
