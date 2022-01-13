@@ -13,16 +13,14 @@
 
 #include "PhysicsEngine.h"
 
+#include <Eigen/Dense>
 #include <cmath>
 #include <memory>
 
 #include "Atmosphere.h"
-#include <Eigen/Dense>
 
-
-using Eigen::Vector3d;
 using Eigen::Quaterniond;
-
+using Eigen::Vector3d;
 
 #define RAD2DEG (180.0 / 3.14159265)
 
@@ -91,10 +89,10 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     if (r_dot_if.norm() > 0.01) {
         Vector3d rocket_axis_rf(0, 0, 1);
         Vector3d v_rf = rocket_.i2r(r_dot_if);
-        double alpha = acos(
-            v_rf.z() /
-            v_rf.norm());  // angle between velocity vector and rocket axis
-        Vector3d f_N_rf;         // normal aerodynamic force
+        double alpha =
+            acos(v_rf.z() /
+                 v_rf.norm());  // angle between velocity vector and rocket axis
+        Vector3d f_N_rf;        // normal aerodynamic force
 
         double c_N = c_Na * alpha;
         double f_N_mag = c_N * 0.5 * Atmosphere::get_density(r_vect_if.z()) *
@@ -140,10 +138,11 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     double w_mag = w_vect_if.norm();
     if (w_mag > 0.000001) {  // if the rocket is moving; numbers below this
                              // threshold are interpreted as 0 and cause errors
-        
-        Quaterniond q_rot(cos(w_mag / 2.0), (w_vect_if.x() / w_mag) * sin(w_mag / 2.0),
-                  (w_vect_if.y() / w_mag) * sin(w_mag / 2.0),
-                  (w_vect_if.z() / w_mag) * sin(w_mag / 2.0));
+
+        Quaterniond q_rot(cos(w_mag / 2.0),
+                          (w_vect_if.x() / w_mag) * sin(w_mag / 2.0),
+                          (w_vect_if.y() / w_mag) * sin(w_mag / 2.0),
+                          (w_vect_if.z() / w_mag) * sin(w_mag / 2.0));
 
         // Apply instantaneous rotation
         q_ornt = q_ornt * q_rot;
@@ -167,20 +166,20 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     }
 
     euler_logger->debug("Timestamp {}", tStamp);
-    euler_logger->debug("thrust_rf = <{}, {}, {}>", thrust_rf.x(), thrust_rf.y(),
-                        thrust_rf.z());
-    euler_logger->debug("f_aero_rf = <{}, {}, {}>", f_aero_rf.x(), f_aero_rf.y(),
-                        f_aero_rf.z());
-    euler_logger->debug("t_aero_rf = <{}, {}, {}>", t_aero_rf.x(), t_aero_rf.y(),
-                        t_aero_rf.z());
+    euler_logger->debug("thrust_rf = <{}, {}, {}>", thrust_rf.x(),
+                        thrust_rf.y(), thrust_rf.z());
+    euler_logger->debug("f_aero_rf = <{}, {}, {}>", f_aero_rf.x(),
+                        f_aero_rf.y(), f_aero_rf.z());
+    euler_logger->debug("t_aero_rf = <{}, {}, {}>", t_aero_rf.x(),
+                        t_aero_rf.y(), t_aero_rf.z());
     euler_logger->debug("t_net_rf = <{}, {}, {}>", t_net_rf.x(), t_net_rf.y(),
                         t_net_rf.z());
     euler_logger->debug("f_net_if = <{}, {}, {}>", f_net_if.x(), f_net_if.y(),
                         f_net_if.z());
     euler_logger->debug("r_dot_if = <{}, {}, {}>", r_dot_if.x(), r_dot_if.y(),
                         r_dot_if.z());
-    euler_logger->debug("r_ddot_if = <{}, {}, {}>", r_ddot_if.x(), r_ddot_if.y(),
-                        r_ddot_if.z());
+    euler_logger->debug("r_ddot_if = <{}, {}, {}>", r_ddot_if.x(),
+                        r_ddot_if.y(), r_ddot_if.z());
 
     rocket_.set_r_vect(r_vect_if);
     rocket_.set_r_dot(r_dot_if);

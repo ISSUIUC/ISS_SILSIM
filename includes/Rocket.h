@@ -16,13 +16,10 @@
 #ifndef _ROCKET_H_
 #define _ROCKET_H_
 
+#include <Eigen/Dense>
 #include <array>
 #include <string>
 #include <vector>
-
-
-
-#include <Eigen/Dense>
 
 using Eigen::Vector3d;
 

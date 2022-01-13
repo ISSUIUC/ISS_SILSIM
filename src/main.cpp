@@ -8,7 +8,6 @@
 #include "Sensor.h"
 #include "Simulation.h"
 
-
 constexpr double deg2rad = 3.14159265 / 180.0;
 
 int main() {
@@ -27,7 +26,7 @@ int main() {
 
     double angle = 5.0 * deg2rad;
     Quaterniond start_ornt(cos(angle / 2.0), sin(angle / 2.0) * 0.707,
-                                  sin(angle / 2.0) * 0.707, 0);
+                           sin(angle / 2.0) * 0.707, 0);
     rocket.set_q_ornt(start_ornt);
 
     // Construct some sensors

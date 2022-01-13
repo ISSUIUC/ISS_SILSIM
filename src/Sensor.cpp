@@ -15,13 +15,11 @@
 
 #include "Sensor.h"
 
+#include <Eigen/Dense>
 #include <iostream>
 #include <string>
 
-#include <Eigen/Dense>
-
 using Eigen::Vector3d;
-
 
 void Sensor::update_data(double tStep) {
     (void)tStep;
@@ -84,7 +82,6 @@ Accelerometer::Accelerometer(std::string name, Rocket& rocket,
     data_ = Vector3d(0, 0, 0);
     noise_ = Vector3d(0, 0, 0);
     bias_ = Vector3d(0, 0, 0);
-
 }
 
 void Accelerometer::update_data(double tStep) {
@@ -115,7 +112,6 @@ Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
     data_ = rocket_.get_r_vect().x();
     bias_ = 0;
     noise_ = 0;
-
 }
 
 void Barometer::update_data(double tStep) {
@@ -140,12 +136,11 @@ double Barometer::get_data() {
 }
 
 Vector3d randomize_vector(std::default_random_engine& generator,
-    std::normal_distribution<double>& dist) {
-    Vector3d vector; 
+                          std::normal_distribution<double>& dist) {
+    Vector3d vector;
     vector.x() = dist(generator);
     vector.y() = dist(generator);
     vector.z() = dist(generator);
-    
-    return vector;
 
+    return vector;
 }

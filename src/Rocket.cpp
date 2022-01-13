@@ -13,12 +13,10 @@
 
 #include "Rocket.h"
 
-
-
 #include <Eigen/Dense>
 
-using Eigen::Vector3d;
 using Eigen::Quaterniond;
+using Eigen::Vector3d;
 
 Rocket::Rocket() {
     q_ornt_ = Quaterniond(1, 0, 0, 0);
@@ -32,9 +30,6 @@ Rocket::Rocket() {
     w_dot_ = Vector3d(0, 0, 0);
     f_net_ = Vector3d(0, 0, 0);
     t_net_ = Vector3d(0, 0, 0);
-    
-
-
 }
 
 /**
@@ -103,7 +98,6 @@ Vector3d Rocket::i2r(Vector3d vector) {
     Quaterniond p(0, vector.x(), vector.y(), vector.z());
     p = (q_ornt_.conjugate() * p) * q_ornt_;
     return p.vec();
-
 }
 
 /**
@@ -116,6 +110,6 @@ Vector3d Rocket::i2r(Vector3d vector) {
 Vector3d Rocket::r2i(Vector3d vector) {
     Quaterniond p(0, vector.x(), vector.y(), vector.z());
     p = (q_ornt_ * p) * q_ornt_.conjugate();
-    
+
     return p.vec();
 }

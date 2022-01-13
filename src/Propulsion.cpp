@@ -12,6 +12,7 @@
  */
 
 #include "Propulsion.h"
+
 #include <Eigen/Dense>
 
 using Eigen::Vector3d;

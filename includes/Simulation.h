@@ -31,7 +31,6 @@
 #include "Rocket.h"
 #include "Sensor.h"
 
-
 class Simulation {
    public:
     Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,

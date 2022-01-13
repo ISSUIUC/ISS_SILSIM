@@ -23,9 +23,6 @@
 #include "Propulsion.h"
 #include "Rocket.h"
 
-
-
-
 class PhysicsEngine {
    public:
     PhysicsEngine(Rocket& rocket, SolidMotor& motor)

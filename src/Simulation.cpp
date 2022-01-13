@@ -19,6 +19,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
+#include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
 #include <string>
@@ -28,13 +29,10 @@
 #include "Propulsion.h"
 #include "Rocket.h"
 #include "Sensor.h"
-#include <Eigen/Dense>
-
 
 #define RAD2DEG (180.0 / 3.14159265)
 
 using Eigen::Vector3d;
-
 
 Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
                        SolidMotor& motor, CpuState& cpu, std::string filename
@@ -88,9 +86,12 @@ void Simulation::run(int steps) {
 
         double alpha = acos(rocket_.i2r(r_dot).z() / (r_dot.norm()));
         sim_log->debug("Timestamp: {}", tStamp_);
-        sim_log->debug("R-Vector: <{}, {}, {}>", r_vect.x(), r_vect.y(), r_vect.z());
-        sim_log->debug("Velocity: <{}, {}, {}>", r_dot.x(), r_dot.y(), r_dot.z());
-        sim_log->debug("Accel: <{}, {}, {}>", r_ddot.x(), r_ddot.y(), r_ddot.z());
+        sim_log->debug("R-Vector: <{}, {}, {}>", r_vect.x(), r_vect.y(),
+                       r_vect.z());
+        sim_log->debug("Velocity: <{}, {}, {}>", r_dot.x(), r_dot.y(),
+                       r_dot.z());
+        sim_log->debug("Accel: <{}, {}, {}>", r_ddot.x(), r_ddot.y(),
+                       r_ddot.z());
         sim_log->debug("F-Net: <{}, {}, {}>", f_net.x(), f_net.y(), f_net.z());
         sim_log->debug("W-Net: <{}, {}, {}>", w_net.x(), w_net.y(), w_net.z());
         sim_log->debug("ROLL: {} PITCH: {} YAW: {}  [deg]", roll, pitch, yaw);

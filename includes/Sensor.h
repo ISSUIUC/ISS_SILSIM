@@ -18,15 +18,14 @@
 #ifndef _SENSOR_H_
 #define _SENSOR_H_
 
+#include <Eigen/Dense>
 #include <random>
 #include <string>
 #include <vector>
 
 #include "Rocket.h"
-#include <Eigen/Dense>
 
 using Eigen::Vector3d;
-
 
 class Sensor {
    public:
@@ -122,9 +121,7 @@ class Barometer : public Sensor {
     double bias_;  // Constant bias value to be added to measurement
 };
 
-
 Vector3d randomize_vector(std::default_random_engine& generator,
                           std::normal_distribution<double>& dist);
-
 
 #endif
