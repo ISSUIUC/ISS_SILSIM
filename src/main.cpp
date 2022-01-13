@@ -31,7 +31,7 @@ int main() {
     SolidMotor motor(3.5, 4000.0);
 
     // ForwardEuler engine(rocket, motor);
-    ForwardEuler engine(rocket, motor);
+    RungeKutta engine(rocket, motor);
     CpuState cpu;
 
     Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");

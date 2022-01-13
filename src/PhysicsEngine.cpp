@@ -28,7 +28,6 @@
  * @param tStamp Current simulation timestamp
  * @param tStep Simulation time step size
  */
-
 void ForwardEuler::march_step(double tStamp, double tStep) {
     // {variable}_rf = rocket frame (stuck to rocket)
     // {variable}_if = inertial frame (stuck to earth)
@@ -178,6 +177,12 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     rocket_.set_q_ornt(q_ornt);
 }
 
+/**
+ * @brief Averages forces and moments for a more accurate euler step
+ * 
+ * @param tStamp 
+ * @param tStep 
+ */
 void RungeKutta::march_step(double tStamp, double tStep) {
 
     /*************** Retrieve Instantaneous Rocket Parameters *****************/
@@ -195,91 +200,25 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     double mass = rocket_.get_mass();
 
-    Vector3 net_force_if = calc_net_force(tStamp, vel_if);
-    Vector3 net_torque_if = calc_net_torque(tStamp, vel_if, ang_vel_if);
+    /********************* Calculate Intermediate States ***********************/
+    // Each state is used to calculate the next state
 
-
-    /*************************** Calculate Slopes *****************************/
-
-    Quaternion<double> orient_true = orient;  // save initial quaternion value
-
-    //---- k1 ----
-    // rename initial values
-    Vector3 vel_k1 = vel_if;
-    Vector3 accel_k1 = accel_if;
-    Vector3 ang_vel_k1 = ang_vel_if;
-    Vector3 ang_accel_k1 = ang_accel_if;
-
-    //---- k2 ----
-    // same as forward euler but with half tStep
-    Vector3 vel_k2 = vel_k1 + (accel_k1 * tStep * 0.5);
-    Vector3 accel_k2 = calc_net_force(tStamp, vel_k1) / mass;
-    Vector3 ang_vel_k2 = ang_vel_k1 + (ang_accel_k1 * tStep * 0.5);
-    Vector3 ang_accel_k2;
-    Vector3 net_torque_new = calc_net_torque(tStamp, vel_k1, ang_vel_k1);
-    ang_accel_k2.x = net_torque_new.x / inertia[0];
-    ang_accel_k2.y = net_torque_new.y / inertia[4];
-    ang_accel_k2.z = net_torque_new.z / inertia[8];
-    
-    //---- k3 ----
-    // forward euler from k1 using k2, half tStep
-    double ang_vel_mag = ang_vel_k2.magnitude();
-    if (ang_vel_mag > 0.000001) {
-        Quaternion<double> rotation;
-        rotation.Set(cos(ang_vel_mag / 2.0), (ang_vel_k2.x / ang_vel_mag) * sin(ang_vel_mag / 2.0),
-                  (ang_vel_k2.y / ang_vel_mag) * sin(ang_vel_mag / 2.0),
-                  (ang_vel_k2.z / ang_vel_mag) * sin(ang_vel_mag / 2.0));
-        orient = orient * rotation;
-        orient.Normalize();
-    }
-    rocket_.set_q_ornt(orient);  // new quaternion for r2i function
-
-    Vector3 vel_k3 = vel_k1 + (accel_k2 * tStep * 0.5);
-    Vector3 accel_k3 = calc_net_force(tStamp, vel_k2) / mass;
-    Vector3 ang_vel_k3 = ang_vel_k1 + (ang_accel_k2 * tStep * 0.5);
-    Vector3 ang_accel_k3;
-    net_torque_new = calc_net_torque(tStamp, vel_k2, ang_vel_k2);
-    ang_accel_k3.x = net_torque_new.x / inertia[0];
-    ang_accel_k3.y = net_torque_new.y / inertia[4];
-    ang_accel_k3.z = net_torque_new.z / inertia[8];
-
-    rocket_.set_q_ornt(orient_true);  // reset quaternion
-    
-    //---- k4 ----
-    // forward euler from k1 using k3, full tStep
-    ang_vel_mag = ang_vel_k3.magnitude();
-    if (ang_vel_mag > 0.000001) {
-        Quaternion<double> rotation;
-        rotation.Set(cos(ang_vel_mag / 2.0), (ang_vel_k3.x / ang_vel_mag) * sin(ang_vel_mag / 2.0),
-                  (ang_vel_k3.y / ang_vel_mag) * sin(ang_vel_mag / 2.0),
-                  (ang_vel_k3.z / ang_vel_mag) * sin(ang_vel_mag / 2.0));
-        orient = orient * rotation;
-        orient.Normalize();
-    }
-    rocket_.set_q_ornt(orient);
-
-    Vector3 vel_k4 = vel_k1 + (accel_k3 * tStep);
-    Vector3 accel_k4 = calc_net_force(tStamp, vel_k3) / mass;
-    Vector3 ang_vel_k4 = ang_vel_k1 + (ang_accel_k3 * tStep);
-    Vector3 ang_accel_k4;
-    net_torque_new = calc_net_torque(tStamp, vel_k3, ang_vel_k3);
-    ang_accel_k4.x = net_torque_new.x / inertia[0];
-    ang_accel_k4.y = net_torque_new.y / inertia[4];
-    ang_accel_k4.z = net_torque_new.z / inertia[8];
-
-    rocket_.set_q_ornt(orient_true);
+    State k1 {vel_if, accel_if, ang_vel_if, ang_accel_if};           // Reformating of the initial state of the rocket
+    State k2 = calc_state(tStamp, 0.5 * tStep, k1);                  // Calculated with Euler step using half tStep and initial state
+    State k3 = calc_state(tStamp + (0.5 * tStep), 0.5 * tStep, k2);  // Calculated with Euler step using half tStep and k2 state
+    State k4 = calc_state(tStamp + (0.5 * tStep), tStep, k3);        // Calculated with Euler step using full tStep and k3 state
 
     /********************** Perform Runge-Kutta Method ************************/
 
     // calculate weighted averages
-    Vector3 vel_avg = (vel_k1 + (2 * vel_k2) + (2 * vel_k3) + vel_k4) / 6;
-    Vector3 accel_avg = (accel_k1 + (2 * accel_k2) + (2 * accel_k3) + accel_k4) / 6;
-    Vector3 ang_vel_avg = (ang_vel_k1 + (2 * ang_vel_k2) + (2 * ang_vel_k3) + ang_vel_k4) / 6;
-    Vector3 ang_accel_avg = (ang_accel_k1 + (2 * ang_accel_k2) + (2 * ang_accel_k3) + ang_accel_k4) / 6;
+    Vector3 vel_avg = (k1.vel + (2 * k2.vel) + (2 * k3.vel) + k4.vel) / 6;
+    Vector3 accel_avg = (k1.accel + (2 * k2.accel) + (2 * k3.accel) + k4.accel) / 6;
+    Vector3 ang_vel_avg = (k1.ang_vel + (2 * k2.ang_vel) + (2 * k3.ang_vel) + k4.ang_vel) / 6;
+    Vector3 ang_accel_avg = (k1.ang_accel + (2 * k2.ang_accel) + (2 * k3.ang_accel) + k4.ang_accel) / 6;
 
-    // calculate rocket data based on averages (forward euler)
-    net_force_if = calc_net_force(tStamp, vel_avg);
-    net_torque_if = calc_net_torque(tStamp, vel_avg, ang_vel_avg);
+    // calculate rocket data based on average values instaed of initial
+    Vector3 net_force_if = calc_net_force(tStamp, vel_avg);
+    Vector3 net_torque_if = calc_net_torque(vel_avg, ang_vel_avg);
 
     pos_if += tStep * vel_avg;
     vel_if += tStep * accel_avg;
@@ -290,21 +229,10 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     ang_accel_if.y = net_torque_if.y / inertia[4];
     ang_accel_if.z = net_torque_if.z / inertia[8];
 
-    
-
-    //---- Orientation ----
-    // calculate orientation based on average angular velocity
-    ang_vel_mag = ang_vel_avg.magnitude();
-    if (ang_vel_mag > 0.000001) {
-        Quaternion<double> rotation;
-        rotation.Set(cos(ang_vel_mag / 2.0), (ang_vel_avg.x / ang_vel_mag) * sin(ang_vel_mag / 2.0),
-                (ang_vel_avg.y / ang_vel_mag) * sin(ang_vel_mag / 2.0),
-                (ang_vel_avg.z / ang_vel_mag) * sin(ang_vel_mag / 2.0));
-        orient = orient * rotation;
-        orient.Normalize();
-    }
+    orient = calc_orient(tStep, ang_vel_avg, orient);
 
     //---- Lauch Rail ----
+    // very basic implementation
     if (pos_if.magnitude() < 4.50) {
         ang_vel_if.x = 0;
         ang_vel_if.y = 0;
@@ -324,8 +252,18 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     rocket_.set_t_net(net_torque_if);
     rocket_.set_q_ornt(orient);
 
-};
+}
 
+/**
+ * @brief Takes in time and velocity to calculate net force
+ * 
+ * @param tStamp 
+ * @param vel_if 
+ * @return Vector3
+ * 
+ * TODO: replace constant atmospheric density, CG, CP, and mass with dynamic once
+ *       those functions are complete
+ */
 Vector3 RungeKutta::calc_net_force(double tStamp, Vector3 vel_if) {
 
     // {variable}_rf = rocket frame (stuck to rocket)
@@ -345,7 +283,7 @@ Vector3 RungeKutta::calc_net_force(double tStamp, Vector3 vel_if) {
     Vector3 aero_force_rf;
 
     if (vel_if.magnitude() > 0.01) {
-        Vector3 vel_rf = rocket_.i2r(vel_if);
+        Vector3 vel_rf = rocket_.i2r(vel_if);  // i2r pulls a quaternion from the rocket, be sure to set orientation beforehand
         Vector3 normal_force_rf;
 
         double alpha = acos(vel_rf.z / vel_rf.magnitude());  // angle between velocity vector and rocket axis
@@ -374,9 +312,19 @@ Vector3 RungeKutta::calc_net_force(double tStamp, Vector3 vel_if) {
     net_force_if.z -= (9.81 * mass);
 
     return net_force_if;
-};
+}
 
-Vector3 RungeKutta::calc_net_torque(double tStamp, Vector3 vel_if, Vector3 ang_vel_if) {
+/**
+ * @brief Takes in time and angulare velocity to calculate net torque
+ * 
+ * @param vel_if 
+ * @param ang_vel_if 
+ * @return Vector3 
+ * 
+ * TODO: replace constant atmospheric density, CG, CP, and mass with dynamic once
+ *       those functions are complete
+ */
+Vector3 RungeKutta::calc_net_torque(Vector3 vel_if, Vector3 ang_vel_if) {
     
     /*************** Retrieve Instantaneous Rocket Parameters *****************/
 
@@ -429,4 +377,56 @@ Vector3 RungeKutta::calc_net_torque(double tStamp, Vector3 vel_if, Vector3 ang_v
     Vector3 net_torque_if = rocket_.r2i(aero_torque_rf);
 
     return net_torque_if;
-};
+}
+
+/**
+ * @brief Calculates a possible rocket state based on the initial and inputed state
+ * 
+ * @param tStamp 
+ * @param tStep 
+ * @param k 
+ * @return State 
+ */
+State RungeKutta::calc_state(double tStamp, double tStep, State k) {
+    
+    // the rocket's initial state (k1), regardless of which state is being calculated
+    Vector3 vel_initial = rocket_.get_r_dot();
+    Vector3 ang_vel_initial = rocket_.get_w_vect();
+    Quaternion<double> orient_true = rocket_.get_q_ornt();
+
+    double inertia[9];
+    rocket_.get_I(inertia);
+
+    Quaternion<double> orient = calc_orient(tStep, k.ang_vel, orient_true);
+    rocket_.set_q_ornt(orient);  // sets the orientation to the current state in order to calculate net forces
+    
+    // Euler Step: y = x + (dx * t)
+    Vector3 vel_k = vel_initial + (k.accel * tStep); // Euler step combinging initial velocity with acceleration from the previous state
+    Vector3 accel_k = calc_net_force(tStamp, k.vel) / rocket_.get_mass();  // Calulate acceleration using forces from the previous state
+    Vector3 ang_vel_k = ang_vel_initial + (k.ang_accel * tStep);
+    Vector3 net_torque_new = calc_net_torque(k.vel, k.ang_vel);
+    Vector3 ang_accel_k;
+    ang_accel_k.x = net_torque_new.x / inertia[0];  // Separated bc inertia is an array, not a vector
+    ang_accel_k.y = net_torque_new.y / inertia[4];
+    ang_accel_k.z = net_torque_new.z / inertia[8];
+
+    rocket_.set_q_ornt(orient_true);  // resets the orientation to the initial
+
+    return {vel_k, accel_k, ang_vel_k, ang_accel_k};  // sets the values of the State structure
+}
+
+Quaternion<double> RungeKutta::calc_orient(double tStep, Vector3 ang_vel, Quaternion<double> orient) {
+    // Create a quaternion from angular velocity
+    Quaternion<double> q_omega{0, ang_vel.x, ang_vel.y, ang_vel.z};
+
+    // quaternion first time derivative
+    Quaternion<double> q_dot = 0.5 * q_omega * orient;
+
+    // Update orientation quaternion
+    orient = orient + (q_dot * tStep);
+
+    // Orientation quaternions must always stay at unit norm
+    orient.Normalize();
+
+    return orient;
+}

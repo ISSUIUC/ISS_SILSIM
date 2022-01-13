@@ -41,14 +41,25 @@ class ForwardEuler : public PhysicsEngine {
     void march_step(double tStamp, double tStep) override;
 };
 
+struct State {
+    Vector3 vel;
+    Vector3 accel;
+    Vector3 ang_vel;
+    Vector3 ang_accel;
+};
+
 class RungeKutta : public PhysicsEngine {
     public:
      RungeKutta(Rocket& rocket, SolidMotor& motor)
         : PhysicsEngine(rocket, motor){};
 
     void march_step(double tStamp, double tStep) override;
-    Vector3 calc_net_force(double tStamp, Vector3 vel_if);
-    Vector3 calc_net_torque(double tStamp, Vector3 vel_if, Vector3 ang_vel_if);
+
+    private:
+     Vector3 calc_net_force(double tStamp, Vector3 vel_if);
+     Vector3 calc_net_torque(Vector3 vel_if, Vector3 ang_vel_if);
+     State calc_state(double tStamp, double tStep, State k);
+     Quaternion<double> calc_orient(double tStep, Vector3 ang_vel, Quaternion<double> orient);
 };
 
 #endif
