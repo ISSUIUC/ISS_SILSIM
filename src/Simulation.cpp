@@ -54,13 +54,13 @@ Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
 void Simulation::run(int steps) {
     std::ofstream dataFile(filename_);
 
-    Vector3d r_vect;
-    Vector3d r_dot;
-    Vector3d r_ddot;
-    Vector3d f_net;
-    Vector3d w_net;
+    Vector3d r_vect{};
+    Vector3d r_dot{};
+    Vector3d r_ddot{};
+    Vector3d f_net{};
+    Vector3d w_net{};
 
-    Quaterniond q_ornt;
+    Quaterniond q_ornt{};
 
     double roll, pitch, yaw;
 

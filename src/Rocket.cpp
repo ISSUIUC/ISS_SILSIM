@@ -24,6 +24,17 @@ Rocket::Rocket() {
     q_ornt_ = Quaterniond(1, 0, 0, 0);
 
     Cp_vect_ = Vector3d(0, 0, -(nose_to_cp_ - nose_to_cg_));
+
+    r_vect_ = Vector3d(0, 0, 0);
+    r_dot_ = Vector3d(0, 0, 0);
+    r_ddot_ = Vector3d(0, 0, 0);
+    w_vect_ = Vector3d(0, 0, 0);
+    w_dot_ = Vector3d(0, 0, 0);
+    f_net_ = Vector3d(0, 0, 0);
+    t_net_ = Vector3d(0, 0, 0);
+    
+
+
 }
 
 /**

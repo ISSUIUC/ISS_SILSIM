@@ -119,20 +119,20 @@ class Rocket {
 
    private:
     // The following are in inertial frame
-    Vector3d r_vect_;  // r vector
-    Vector3d r_dot_;   // r-dot (velocity)
-    Vector3d r_ddot_;  // r-double-dot (acceleration)
-    Vector3d w_vect_;  // angular velocity (omega) vector
-    Vector3d w_dot_;   // angular acceleration vector
+    Vector3d r_vect_{};  // r vector
+    Vector3d r_dot_{};   // r-dot (velocity)
+    Vector3d r_ddot_{};  // r-double-dot (acceleration)
+    Vector3d w_vect_{};  // angular velocity (omega) vector
+    Vector3d w_dot_{};   // angular acceleration vector
 
     // The following are in inertial frame
-    Vector3d f_net_;  // net force in Netwons
-    Vector3d t_net_;  // net torque in Newton*meters
+    Vector3d f_net_{};  // net force in Netwons
+    Vector3d t_net_{};  // net torque in Newton*meters
 
-    Quaterniond q_ornt_;  // inertial -> rocket frame quaternion
+    Quaterniond q_ornt_{};  // inertial -> rocket frame quaternion
 
     // The following are in rocket frame
-    Vector3d Cp_vect_;  // CG to Cp vector
+    Vector3d Cp_vect_{};  // CG to Cp vector
 
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
 
