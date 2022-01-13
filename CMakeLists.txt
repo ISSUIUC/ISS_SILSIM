@@ -19,7 +19,7 @@ add_executable(ISS_SILSIM src/main.cpp
         src/Sensor.cpp
         src/Simulation.cpp
         src/Atmosphere.cpp
-        lib/quaternion/quaternion.cpp
+        
         
         )
 
@@ -33,4 +33,4 @@ else()
     target_compile_options(ISS_SILSIM PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-target_include_directories(ISS_SILSIM PUBLIC ${LIB}/quaternion ${CMAKE_SOURCE_DIR}/includes/)
+target_include_directories(ISS_SILSIM PUBLIC ${CMAKE_SOURCE_DIR}/includes/)

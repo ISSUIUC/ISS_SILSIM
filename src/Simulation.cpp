@@ -29,7 +29,7 @@
 #include "Rocket.h"
 #include "Sensor.h"
 #include <Eigen/Dense>
-#include "quaternion.h"
+
 
 #define RAD2DEG (180.0 / 3.14159265)
 
@@ -60,7 +60,7 @@ void Simulation::run(int steps) {
     Vector3d f_net;
     Vector3d w_net;
 
-    Quaternion<double> q_ornt;
+    Quaterniond q_ornt;
 
     double roll, pitch, yaw;
 
@@ -73,10 +73,10 @@ void Simulation::run(int steps) {
         rocket_.get_w_vect(w_net);
         rocket_.get_q_ornt(q_ornt);
 
-        double s = q_ornt.Gets();
-        double x = q_ornt.Getx();
-        double y = q_ornt.Gety();
-        double z = q_ornt.Getz();
+        double s = q_ornt.w();
+        double x = q_ornt.x();
+        double y = q_ornt.y();
+        double z = q_ornt.z();
 
         // eqns from
         // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles

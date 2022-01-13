@@ -7,7 +7,7 @@
 #include "Rocket.h"
 #include "Sensor.h"
 #include "Simulation.h"
-#include "quaternion.h"
+
 
 constexpr double deg2rad = 3.14159265 / 180.0;
 
@@ -26,7 +26,7 @@ int main() {
     rocket.set_I(I_tensor);
 
     double angle = 5.0 * deg2rad;
-    Quaternion<double> start_ornt(cos(angle / 2.0), sin(angle / 2.0) * 0.707,
+    Quaterniond start_ornt(cos(angle / 2.0), sin(angle / 2.0) * 0.707,
                                   sin(angle / 2.0) * 0.707, 0);
     rocket.set_q_ornt(start_ornt);
 

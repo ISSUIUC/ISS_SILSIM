@@ -14,13 +14,14 @@
 #include "Rocket.h"
 
 
-#include "quaternion.h"
+
 #include <Eigen/Dense>
 
 using Eigen::Vector3d;
+using Eigen::Quaterniond;
 
 Rocket::Rocket() {
-    q_ornt_ = Quaternion<double>(1, 0, 0, 0);
+    q_ornt_ = Quaterniond(1, 0, 0, 0);
 
     Cp_vect_ = Vector3d(0, 0, -(nose_to_cp_ - nose_to_cg_));
 }
@@ -88,13 +89,10 @@ void Rocket::get_Cp_vect(Vector3d& vector) const { vector = Cp_vect_; }
  * @return Vector3d The rotated vector represented in the rocket body frame
  */
 Vector3d Rocket::i2r(Vector3d vector) {
-    Quaternion<double> p(0, vector.x(), vector.y(), vector.z());
-    p = (q_ornt_.conj() * p) * q_ornt_;
-    Vector3d newVector;
-    newVector.x() = p.Getx();
-    newVector.y() = p.Gety();
-    newVector.z() = p.Getz();
-    return newVector;
+    Quaterniond p(0, vector.x(), vector.y(), vector.z());
+    p = (q_ornt_.conjugate() * p) * q_ornt_;
+    return p.vec();
+
 }
 
 /**
@@ -105,11 +103,8 @@ Vector3d Rocket::i2r(Vector3d vector) {
  * @return Vector3d The rotated vector represented in the inertial frame
  */
 Vector3d Rocket::r2i(Vector3d vector) {
-    Quaternion<double> p(0, vector.x(), vector.y(), vector.z());
-    p = (q_ornt_ * p) * q_ornt_.conj();
-    Vector3d newVector;
-    newVector.x() = p.Getx();
-    newVector.y() = p.Gety();
-    newVector.z() = p.Getz();
-    return newVector;
+    Quaterniond p(0, vector.x(), vector.y(), vector.z());
+    p = (q_ornt_ * p) * q_ornt_.conjugate();
+    
+    return p.vec();
 }

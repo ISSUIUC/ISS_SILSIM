@@ -18,9 +18,10 @@
 
 #include "Atmosphere.h"
 #include <Eigen/Dense>
-#include "quaternion.h"
+
 
 using Eigen::Vector3d;
+using Eigen::Quaterniond;
 
 
 #define RAD2DEG (180.0 / 3.14159265)
@@ -56,7 +57,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     Vector3d t_net_if = rocket_.get_t_net();    // net torque (Newtons*meters)
 
     // Quaternion from inertial to rocket frame
-    Quaternion<double> q_ornt = rocket_.get_q_ornt();  // orientation of rocket
+    Quaterniond q_ornt = rocket_.get_q_ornt();  // orientation of rocket
 
     // CG to Cp vector
     Vector3d Cp_vect_rf =
@@ -139,14 +140,14 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     double w_mag = w_vect_if.norm();
     if (w_mag > 0.000001) {  // if the rocket is moving; numbers below this
                              // threshold are interpreted as 0 and cause errors
-        Quaternion<double> q_rot;
-        q_rot.Set(cos(w_mag / 2.0), (w_vect_if.x() / w_mag) * sin(w_mag / 2.0),
+        
+        Quaterniond q_rot(cos(w_mag / 2.0), (w_vect_if.x() / w_mag) * sin(w_mag / 2.0),
                   (w_vect_if.y() / w_mag) * sin(w_mag / 2.0),
                   (w_vect_if.z() / w_mag) * sin(w_mag / 2.0));
 
         // Apply instantaneous rotation
         q_ornt = q_ornt * q_rot;
-        q_ornt.Normalize();
+        q_ornt.normalize();
     }
 
     w_vect_if += w_dot_if * tStep;

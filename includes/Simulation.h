@@ -30,7 +30,7 @@
 #include "Propulsion.h"
 #include "Rocket.h"
 #include "Sensor.h"
-#include "quaternion.h"
+
 
 class Simulation {
    public:

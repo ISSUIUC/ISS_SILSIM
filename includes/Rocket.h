@@ -21,11 +21,12 @@
 #include <vector>
 
 
-#include "quaternion.h"
+
 #include <Eigen/Dense>
 
 using Eigen::Vector3d;
 
+using Eigen::Quaterniond;
 
 class Rocket {
    public:
@@ -36,7 +37,7 @@ class Rocket {
     void get_r_dot(Vector3d& vector) const { vector = r_dot_; };
     void get_r_ddot(Vector3d& vector) const { vector = r_ddot_; };
 
-    void get_q_ornt(Quaternion<double>& quatrn) const { quatrn = q_ornt_; };
+    void get_q_ornt(Quaterniond& quatrn) const { quatrn = q_ornt_; };
 
     void get_I(double (&array)[9]) const {
         for (int i = 0; i < 9; ++i) {
@@ -65,7 +66,7 @@ class Rocket {
     Vector3d get_r_dot() const { return r_dot_; };
     Vector3d get_r_ddot() const { return r_ddot_; };
 
-    Quaternion<double> get_q_ornt() const { return q_ornt_; };
+    Quaterniond get_q_ornt() const { return q_ornt_; };
 
     Vector3d get_w_vect() const { return w_vect_; };
     Vector3d get_w_dot() const { return w_dot_; };
@@ -88,7 +89,7 @@ class Rocket {
     void set_r_dot(Vector3d& vector) { r_dot_ = vector; };
     void set_r_ddot(Vector3d& vector) { r_ddot_ = vector; };
 
-    void set_q_ornt(Quaternion<double>& quatrn) { q_ornt_ = quatrn; };
+    void set_q_ornt(Quaterniond& quatrn) { q_ornt_ = quatrn; };
 
     void set_I(double (&array)[9]) {
         for (int i = 0; i < 9; ++i) {
@@ -128,7 +129,7 @@ class Rocket {
     Vector3d f_net_;  // net force in Netwons
     Vector3d t_net_;  // net torque in Newton*meters
 
-    Quaternion<double> q_ornt_;  // inertial -> rocket frame quaternion
+    Quaterniond q_ornt_;  // inertial -> rocket frame quaternion
 
     // The following are in rocket frame
     Vector3d Cp_vect_;  // CG to Cp vector
