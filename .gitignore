@@ -48,6 +48,11 @@ logs/*
 **/*.cbp
 **/CMakeScripts
 **/compile_commands.json
+out/
+
+# Absolutely not
+.vs/
+
 *.make
 **/*.make
 
