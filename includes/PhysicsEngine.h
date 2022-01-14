@@ -43,6 +43,9 @@ class ForwardEuler : public PhysicsEngine {
     void march_step(double tStamp, double tStep) override;
 
    private:
+    Quaternion<double> update_quaternion(Quaternion<double> q_ornt,
+                                         Vector3 omega_if, double tStep) const;
+
     std::shared_ptr<spdlog::logger> euler_logger;
 };
 
