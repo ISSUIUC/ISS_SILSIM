@@ -428,15 +428,20 @@ State RungeKutta::calc_state(double tStamp, double tStep, State k) {
     return {vel_k, accel_k, ang_vel_k, ang_accel_k};  // sets the values of the State structure
 }
 
-Quaternion<double> RungeKutta::calc_orient(double tStep, Vector3 ang_vel, Quaternion<double> orient) {
-    // Create a quaternion from angular velocity
-    Quaternion<double> q_omega{0, ang_vel.x, ang_vel.y, ang_vel.z};
+Quaternion<double> RungeKutta::calc_orient(double tStep, Vector3 ang_vel, Quaternion<double> orient) const {
+    // Calculate half-angle traveled during this timestep
+    double half_angle = 0.5 * ang_vel.magnitude() * tStep;
 
-    // quaternion first time derivative
-    Quaternion<double> q_dot = 0.5 * q_omega * orient;
+    // Normalize the axis of rotation before using in axis-angle method
+    ang_vel.normalize();
 
-    // Update orientation quaternion
-    orient = orient + (q_dot * tStep);
+    // Assemble quaternion using axis-angle representation
+    Quaternion<double> q_rotation{cos(half_angle), sin(half_angle) * ang_vel.x,
+                                  sin(half_angle) * ang_vel.y,
+                                  sin(half_angle) * ang_vel.z};
+
+    // Apply the rotation to the rocket's orientation quaternion
+    orient = q_rotation * orient;
 
     // Orientation quaternions must always stay at unit norm
     orient.Normalize();
