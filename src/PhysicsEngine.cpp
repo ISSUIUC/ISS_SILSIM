@@ -226,12 +226,15 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     Vector3 ang_vel_avg = (k1.ang_vel + (2 * k2.ang_vel) + (2 * k3.ang_vel) + k4.ang_vel) / 6;
     Vector3 ang_accel_avg = (k1.ang_accel + (2 * k2.ang_accel) + (2 * k3.ang_accel) + k4.ang_accel) / 6;
 
-    // calculate rocket data based on average values instaed of initial
-    Vector3 net_force_if = calc_net_force(tStamp, vel_avg);
-    Vector3 net_torque_if = calc_net_torque(vel_avg, ang_vel_avg);
 
+
+    // calculate rocket data based on average values instaed of initial
     pos_if += tStep * vel_avg;
     vel_if += tStep * accel_avg;
+
+    Vector3 net_force_if = calc_net_force(tStamp, pos_if, vel_avg);
+    Vector3 net_torque_if = calc_net_torque(vel_avg, ang_vel_avg);
+
     accel_if = net_force_if / mass;
 
     ang_vel_if += tStep * ang_accel_avg;
@@ -274,7 +277,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
  * TODO: replace constant atmospheric density, CG, CP, and mass with dynamic once
  *       those functions are complete
  */
-Vector3 RungeKutta::calc_net_force(double tStamp, Vector3 vel_if) {
+Vector3 RungeKutta::calc_net_force(double tStamp, Vector3 pos_if, Vector3 vel_if) {
 
     // {variable}_rf = rocket frame (stuck to rocket)
     // {variable}_if = inertial frame (stuck to earth)
@@ -299,8 +302,7 @@ Vector3 RungeKutta::calc_net_force(double tStamp, Vector3 vel_if) {
         double alpha = acos(vel_rf.z / vel_rf.magnitude());  // angle between velocity vector and rocket axis
         double normal_coef = c_Na * alpha;
         
-        // 1.225 is temporary density of air
-        double normal_force_mag = 0.5 * normal_coef * vel_rf.magnitude2() * area * 1.225;
+        double normal_force_mag = 0.5 * normal_coef * vel_rf.magnitude2() * area * Atmosphere::get_density(pos_if.z);
         normal_force_rf.x = (-vel_rf.x);
         normal_force_rf.y = (-vel_rf.y);
         normal_force_rf.z = 0;
@@ -308,7 +310,7 @@ Vector3 RungeKutta::calc_net_force(double tStamp, Vector3 vel_if) {
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
-        double drag_mag = 0.5 * drag_coef * vel_rf.magnitude2() * area * 1.225;
+        double drag_mag = 0.5 * drag_coef * vel_rf.magnitude2() * area * Atmosphere::get_density(pos_if.z);
         Vector3 drag_rf(0, 0, -(drag_mag));
 
         aero_force_rf = normal_force_rf + drag_rf;
@@ -400,6 +402,7 @@ Vector3 RungeKutta::calc_net_torque(Vector3 vel_if, Vector3 ang_vel_if) {
 State RungeKutta::calc_state(double tStamp, double tStep, State k) {
     
     // the rocket's initial state (k1), regardless of which state is being calculated
+    Vector3 pos_initial = rocket_.get_r_vect();
     Vector3 vel_initial = rocket_.get_r_dot();
     Vector3 ang_vel_initial = rocket_.get_w_vect();
     Quaternion<double> orient_true = rocket_.get_q_ornt();
@@ -409,10 +412,10 @@ State RungeKutta::calc_state(double tStamp, double tStep, State k) {
 
     Quaternion<double> orient = calc_orient(tStep, k.ang_vel, orient_true);
     rocket_.set_q_ornt(orient);  // sets the orientation to the current state in order to calculate net forces
-    
+    Vector3 pos_if = pos_initial + k.vel * tStep;
     // Euler Step: y = x + (dx * t)
     Vector3 vel_k = vel_initial + (k.accel * tStep); // Euler step combinging initial velocity with acceleration from the previous state
-    Vector3 accel_k = calc_net_force(tStamp, k.vel) / rocket_.get_mass();  // Calulate acceleration using forces from the previous state
+    Vector3 accel_k = calc_net_force(tStamp, pos_if, k.vel) / rocket_.get_mass();  // Calulate acceleration using forces from the previous state
     Vector3 ang_vel_k = ang_vel_initial + (k.ang_accel * tStep);
     Vector3 net_torque_new = calc_net_torque(k.vel, k.ang_vel);
     Vector3 ang_accel_k;

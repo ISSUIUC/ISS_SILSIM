@@ -61,7 +61,7 @@ class RungeKutta : public PhysicsEngine {
     void march_step(double tStamp, double tStep) override;
 
     private:
-     Vector3 calc_net_force(double tStamp, Vector3 vel_if);
+     Vector3 calc_net_force(double tStamp, Vector3 pos_if, Vector3 vel_if);
      Vector3 calc_net_torque(Vector3 vel_if, Vector3 ang_vel_if);
      State calc_state(double tStamp, double tStep, State k);
      Quaternion<double> calc_orient(double tStep, Vector3 ang_vel, Quaternion<double> orient);
