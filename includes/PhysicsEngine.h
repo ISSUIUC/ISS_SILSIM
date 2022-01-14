@@ -1,6 +1,7 @@
 /**
  * @file        PhysicsEngine.h
  * @authors     Ayberk Yaraneri
+ *              Jacob Gugala
  *
  * @brief       PhysicsEngine class definition
  *
@@ -46,13 +47,6 @@ class ForwardEuler : public PhysicsEngine {
     std::shared_ptr<spdlog::logger> euler_logger;
 };
 
-struct State {
-    Vector3 vel;
-    Vector3 accel;
-    Vector3 ang_vel;
-    Vector3 ang_accel;
-};
-
 class RungeKutta : public PhysicsEngine {
     public:
      RungeKutta(Rocket& rocket, SolidMotor& motor)
@@ -61,10 +55,17 @@ class RungeKutta : public PhysicsEngine {
     void march_step(double tStamp, double tStep) override;
 
     private:
+     struct RungeKuttaState {
+        Vector3 vel;
+        Vector3 accel;
+        Vector3 ang_vel;
+        Vector3 ang_accel;
+     };
+
      Vector3 calc_net_force(double tStamp, Vector3 vel_if);
      Vector3 calc_net_torque(Vector3 vel_if, Vector3 ang_vel_if);
-     State calc_state(double tStamp, double tStep, State k);
-     Quaternion<double> calc_orient(double tStep, Vector3 ang_vel, Quaternion<double> orient);
+     RungeKuttaState calc_state(double tStamp, double tStep, RungeKuttaState k);
+     Quaternion<double> calc_orient(Quaternion<double> q_ornt, Vector3 omega_if, double tStep) const;
 };
 
 #endif

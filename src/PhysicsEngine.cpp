@@ -1,6 +1,7 @@
 /**
  * @file        PhysicsEngine.cpp
  * @authors     Ayberk Yaraneri
+ *              Jacob Gugala
  *
  * @brief       PhysicsEngine class member function implementations
  *
@@ -186,10 +187,21 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
 }
 
 /**
- * @brief Averages forces and moments for a more accurate euler step
+ * @brief Performs a fourth-order Runge Kutta method to advance the physics forward one timestep
  * 
- * @param tStamp 
- * @param tStep 
+ * Method calculates four different rocket states over the course of the time step, then takes
+ * a weighted average to more accuratly simulate the state of the rocket after the full time step.
+ * The first state is the current state of the rocket.  The second state is a basic Euler step
+ * from the first state using half of the time step.  The third state is an Euler step from the
+ * first state using the forces, velocities, and accelerations of the second state and half of
+ * the time step.  The fourth state is an Euler step from the first state using the data from
+ * the third state and the full time step.
+ * 
+ * Equations (page 4): https://github.com/ISSUIUC/ISS_SILSIM/blob/master/docs/MIT18_330S12_Chapter5.pdf
+ * Visual representation: https://www.haroldserrano.com/blog/visualizing-the-runge-kutta-method
+ * 
+ * @param tStamp Specific time stamp in the simulation
+ * @param tStep Simulation time step size
  */
 void RungeKutta::march_step(double tStamp, double tStep) {
 
@@ -211,10 +223,10 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     /********************* Calculate Intermediate States ***********************/
     // Each state is used to calculate the next state
 
-    State k1 {vel_if, accel_if, ang_vel_if, ang_accel_if};           // Reformating of the initial state of the rocket
-    State k2 = calc_state(tStamp, 0.5 * tStep, k1);                  // Calculated with Euler step using half tStep and initial state
-    State k3 = calc_state(tStamp + (0.5 * tStep), 0.5 * tStep, k2);  // Calculated with Euler step using half tStep and k2 state
-    State k4 = calc_state(tStamp + (0.5 * tStep), tStep, k3);        // Calculated with Euler step using full tStep and k3 state
+    RungeKuttaState k1 {vel_if, accel_if, ang_vel_if, ang_accel_if};           // Reformating of the initial state of the rocket
+    RungeKuttaState k2 = calc_state(tStamp, 0.5 * tStep, k1);                  // Calculated with Euler step using half tStep and initial state
+    RungeKuttaState k3 = calc_state(tStamp + (0.5 * tStep), 0.5 * tStep, k2);  // Calculated with Euler step using half tStep and k2 state
+    RungeKuttaState k4 = calc_state(tStamp + (0.5 * tStep), tStep, k3);        // Calculated with Euler step using full tStep and k3 state
 
     /********************** Perform Runge-Kutta Method ************************/
 
@@ -237,9 +249,9 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     ang_accel_if.y = net_torque_if.y / inertia[4];
     ang_accel_if.z = net_torque_if.z / inertia[8];
 
-    orient = calc_orient(tStep, ang_vel_avg, orient);
+    orient = calc_orient(orient, ang_vel_avg, tStep);
 
-    //---- Lauch Rail ----
+    //---- Launch Rail ----
     // very basic implementation
     if (pos_if.magnitude() < 4.50) {
         ang_vel_if.x = 0;
@@ -265,9 +277,9 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 /**
  * @brief Takes in time and velocity to calculate net force
  * 
- * @param tStamp 
- * @param vel_if 
- * @return Vector3
+ * @param tStamp Specific time stamp in the simulation
+ * @param vel_if Rocket's velocity with respect to the inertial frame
+ * @return Vector3  Vector containing the net force on the rocket in the x, y, and z directions
  * 
  * TODO: replace constant atmospheric density, CG, CP, and mass with dynamic once
  *       those functions are complete
@@ -323,11 +335,10 @@ Vector3 RungeKutta::calc_net_force(double tStamp, Vector3 vel_if) {
 }
 
 /**
- * @brief Takes in time and angulare velocity to calculate net torque
+ * @brief Takes in velocity and angular velocity to calculate net torque
  * 
- * @param vel_if 
- * @param ang_vel_if 
- * @return Vector3 
+ * @param vel_if Rocket's velocity with respect to the inertial frame
+ * @return Vector3  Vector containing the net torque on the rocket in the x, y, and z directions
  * 
  * TODO: replace constant atmospheric density, CG, CP, and mass with dynamic once
  *       those functions are complete
@@ -390,12 +401,15 @@ Vector3 RungeKutta::calc_net_torque(Vector3 vel_if, Vector3 ang_vel_if) {
 /**
  * @brief Calculates a possible rocket state based on the initial and inputed state
  * 
- * @param tStamp 
- * @param tStep 
- * @param k 
- * @return State 
+ * Method performs a basic Euler step on the velocity and angular velocity of the
+ * rocket, as well as recalculating forces, accereration, angular acceleration, and
+ * orientation, using the initial state of the rocket and the data from the state an
+ * inputed state
+ * 
+ * @param k The state of the rocket being used to calculate the next state
+ * @return RungeKuttaState  Velocity, accereration, angular velocity, and angular acceleration at a moment
  */
-State RungeKutta::calc_state(double tStamp, double tStep, State k) {
+RungeKutta::RungeKuttaState RungeKutta::calc_state(double tStamp, double tStep, RungeKuttaState k) {
     
     // the rocket's initial state (k1), regardless of which state is being calculated
     Vector3 vel_initial = rocket_.get_r_dot();
@@ -405,7 +419,7 @@ State RungeKutta::calc_state(double tStamp, double tStep, State k) {
     double inertia[9];
     rocket_.get_I(inertia);
 
-    Quaternion<double> orient = calc_orient(tStep, k.ang_vel, orient_true);
+    Quaternion<double> orient = calc_orient(orient_true, k.ang_vel, tStep);
     rocket_.set_q_ornt(orient);  // sets the orientation to the current state in order to calculate net forces
     
     // Euler Step: y = x + (dx * t)
@@ -423,18 +437,38 @@ State RungeKutta::calc_state(double tStamp, double tStep, State k) {
     return {vel_k, accel_k, ang_vel_k, ang_accel_k};  // sets the values of the State structure
 }
 
-Quaternion<double> RungeKutta::calc_orient(double tStep, Vector3 ang_vel, Quaternion<double> orient) {
-    // Create a quaternion from angular velocity
-    Quaternion<double> q_omega{0, ang_vel.x, ang_vel.y, ang_vel.z};
+/**
+ * @brief Updates the orientation quaternion of the rocket from an angular
+ * velocity vector
+ *
+ * Method creates a rotation quaternion that represents the total rotation the
+ * rocket will undergo throughout the particular timestep using the axis-angle
+ * method. It then applies this rotation to the current orientation quaterion by
+ * left-multiplying it.
+ *
+ * @param q_ornt    The current orientation quaternion
+ * @param omega_if  The angular velocity vector in inertial frame
+ * @param tStep     Simulation time step size
+ *
+ * @return Quaternion<double> Updated quaterion with the applied rotation
+ */
+Quaternion<double> RungeKutta::calc_orient(Quaternion<double> q_ornt, Vector3 omega_if, double tStep) const {
+    // Calculate half-angle traveled during this timestep
+    double half_angle = 0.5 * omega_if.magnitude() * tStep;
 
-    // quaternion first time derivative
-    Quaternion<double> q_dot = 0.5 * q_omega * orient;
+    // Normalize the axis of rotation before using in axis-angle method
+    omega_if.normalize();
 
-    // Update orientation quaternion
-    orient = orient + (q_dot * tStep);
+    // Assemble quaternion using axis-angle representation
+    Quaternion<double> q_rotation{cos(half_angle), sin(half_angle) * omega_if.x,
+                                  sin(half_angle) * omega_if.y,
+                                  sin(half_angle) * omega_if.z};
+
+    // Apply the rotation to the rocket's orientation quaternion
+    q_ornt = q_rotation * q_ornt;
 
     // Orientation quaternions must always stay at unit norm
-    orient.Normalize();
+    q_ornt.Normalize();
 
-    return orient;
+    return q_ornt;
 }
