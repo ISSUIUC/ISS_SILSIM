@@ -180,8 +180,10 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
  * @brief Updates the orientation quaternion of the rocket from an angular
  * velocity vector
  *
- * Implements the math found below:
- * ahrs.readthedocs.io/en/latest/filters/angular.html#quaternion-integration
+ * Method creates a rotation quaternion that represents the total rotation the
+ * rocket will undergo throughout the particular timestep using the axis-angle
+ * method. It then applies this rotation to the current orientation quaterion by
+ * left-multiplying it.
  *
  * @param q_ornt    The current orientation quaternion
  * @param omega_if  The angular velocity vector in inertial frame
@@ -192,14 +194,19 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
 Quaternion<double> ForwardEuler::update_quaternion(Quaternion<double> q_ornt,
                                                    Vector3 omega_if,
                                                    double tStep) const {
-    // Create a quaternion from angular velocity
-    Quaternion<double> q_omega{0, omega_if.x, omega_if.y, omega_if.z};
+    // Calculate half-angle traveled during this timestep
+    double half_angle = 0.5 * omega_if.magnitude() * tStep;
 
-    // quaternion first time derivative
-    Quaternion<double> q_dot = 0.5 * q_omega * q_ornt;
+    // Normalize the axis of rotation before using in axis-angle method
+    omega_if.normalize();
 
-    // Update orientation quaternion
-    q_ornt = q_ornt + (q_dot * tStep);
+    // Assemble quaternion using axis-angle representation
+    Quaternion<double> q_rotation{cos(half_angle), sin(half_angle) * omega_if.x,
+                                  sin(half_angle) * omega_if.y,
+                                  sin(half_angle) * omega_if.z};
+
+    // Apply the rotation to the rocket's orientation quaternion
+    q_ornt = q_rotation * q_ornt;
 
     // Orientation quaternions must always stay at unit norm
     q_ornt.Normalize();
