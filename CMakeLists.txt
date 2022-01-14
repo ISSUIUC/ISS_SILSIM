@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 
 set(LIB ${CMAKE_SOURCE_DIR}/lib)
+
+if(NOT EXISTS ${LIB}/spdlog/CMakeLists.txt)
+    message(FATAL_ERROR "Missing submodule dependencies try\ngit submodule update --init --recursive\nto download dependencies")
+endif()
+
 add_subdirectory(${LIB}/spdlog)
 
 
@@ -17,6 +22,7 @@ add_executable(ISS_SILSIM src/main.cpp
         src/Rocket.cpp
         src/Sensor.cpp
         src/Simulation.cpp
+        src/Atmosphere.cpp
         lib/quaternion/quaternion.cpp
         lib/Vector3/Vector3.cpp
         )

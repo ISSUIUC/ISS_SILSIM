@@ -32,6 +32,11 @@ logs/*
 *.out
 *.app
 
+# Vim Temporaries
+*.swp
+*.swo
+.session.vim
+
 # CMake Temporaries
 **/cmake-build-debug
 **/CMakeCache.txt
@@ -43,20 +48,16 @@ logs/*
 **/*.cbp
 **/CMakeScripts
 **/compile_commands.json
+*.make
+**/*.make
 
 main
 ISS_SILSIM
 sim_data/*.csv
 build/*
-*.gch
-**/*.gch
-*.swp
 .cache
 compile_commands.json
 bin
 .clangd
-.session.vim
 
-*.make
-**/*.make
 
