@@ -60,6 +60,9 @@ void Simulation::run(int steps) {
     bool drogue_deploy;
     bool main_deploy;
 
+    double Cd;
+    double A_ref;
+
     Quaternion<double> q_ornt;
 
     double roll, pitch, yaw;
@@ -88,6 +91,38 @@ void Simulation::run(int steps) {
         pitch = asin(2.0 * (s * y - z * x)) * RAD2DEG;
         roll = atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
                RAD2DEG;
+
+        // simulation completion criteria
+        if ((r_dot.z < -3.0) && !drogue_deploy){
+
+            std::cout << "Drogue: " << std::to_string(tStamp_) << " s" << std::endl;
+            drogue_deploy = true;
+            Cd = 1.75;
+            A_ref = 0.203; // 15" drogue chute
+
+            rocket_.set_drogue_deploy(drogue_deploy);
+            rocket_.set_Cd(Cd);
+            rocket_.set_A_ref(A_ref);
+
+        }
+
+        else if ((r_dot.z < 0) && (r_vect.z < 400.0) && !main_deploy){
+
+            std::cout << "Main: " << std::to_string(tStamp_) << " s" << std::endl;
+            main_deploy = true;
+            Cd = 1.75;
+            A_ref = 1.161; // 36" main chute
+
+            rocket_.set_main_deploy(main_deploy);
+            rocket_.set_Cd(Cd);
+            rocket_.set_A_ref(A_ref);
+
+        }
+
+        else if ((r_dot.z < 0) && (r_vect.z < 0.0)) {
+            std::cout << std::to_string(iter) << std::endl;
+            break;
+        }
 
         double alpha = acos(rocket_.i2r(r_dot).z / (r_dot.magnitude()));
         sim_log->debug("Timestamp: {}", tStamp_);
@@ -125,35 +160,6 @@ void Simulation::run(int steps) {
         dataFile << "\n";
 
         tStamp_ += tStep_;
-
-        if ((r_dot.z < -3.0) && !drogue_deploy){
-
-            drogue_deploy = true;
-            double Cd = 1.75;
-            double A_ref = 0.203; // 15" drogue chute
-
-            rocket_.set_drogue_deploy(drogue_deploy);
-            rocket_.set_Cd(Cd);
-            rocket_.set_A_ref(A_ref);
-
-        }
-
-        else if ((r_dot.z < 0) && (r_vect.z < 400.0) && !main_deploy){
-
-            main_deploy = true;
-            double Cd = 1.75;
-            double A_ref = 0.561; // 36" main chute
-
-            rocket_.set_main_deploy(main_deploy);
-            rocket_.set_Cd(Cd);
-            rocket_.set_A_ref(A_ref);
-
-        }
-
-        else if ((r_dot.z < 0) && (r_vect.z < 10.0)) {
-            std::cout << std::to_string(iter) << "\n";
-            break;
-        }
 
     }
 
