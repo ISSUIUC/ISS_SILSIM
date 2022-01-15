@@ -57,6 +57,9 @@ void Simulation::run(int steps) {
     Vector3 f_net;
     Vector3 w_net;
 
+    bool drogue_deploy;
+    bool main_deploy;
+
     Quaternion<double> q_ornt;
 
     double roll, pitch, yaw;
@@ -69,6 +72,9 @@ void Simulation::run(int steps) {
         rocket_.get_f_net(f_net);
         rocket_.get_w_vect(w_net);
         rocket_.get_q_ornt(q_ornt);
+
+        rocket_.get_drogue_deploy(drogue_deploy);
+        rocket_.get_main_deploy(main_deploy);
 
         double s = q_ornt.Gets();
         double x = q_ornt.Getx();
@@ -120,9 +126,35 @@ void Simulation::run(int steps) {
 
         tStamp_ += tStep_;
 
-        if (r_dot.z < -3.0) {
+        if ((r_dot.z < -3.0) && !drogue_deploy){
+
+            drogue_deploy = true;
+            double Cd = 1.75;
+            double A_ref = 0.203; // 15" drogue chute
+
+            rocket_.set_drogue_deploy(drogue_deploy);
+            rocket_.set_Cd(Cd);
+            rocket_.set_A_ref(A_ref);
+
+        }
+
+        else if ((r_dot.z < 0) && (r_vect.z < 400.0) && !main_deploy){
+
+            main_deploy = true;
+            double Cd = 1.75;
+            double A_ref = 0.561; // 36" main chute
+
+            rocket_.set_main_deploy(main_deploy);
+            rocket_.set_Cd(Cd);
+            rocket_.set_A_ref(A_ref);
+
+        }
+
+        else if ((r_dot.z < 0) && (r_vect.z < 10.0)) {
+            std::cout << std::to_string(iter) << "\n";
             break;
         }
+
     }
 
     dataFile.close();
