@@ -15,10 +15,11 @@
 
 #include "Sensor.h"
 
+#include <Eigen/Dense>
 #include <iostream>
 #include <string>
 
-#include "Rocket.h"
+using Eigen::Vector3d;
 
 void Sensor::update_data(double tStep) {
     (void)tStep;
@@ -28,7 +29,7 @@ void Sensor::update_data(double tStep) {
         << std::endl;
 }
 
-void Sensor::get_data(Vector3& data) {
+void Sensor::get_data(Vector3d& data) {
     (void)data;
     std::cout
         << "Function 'get_data' called on Sensor base class! "
@@ -47,7 +48,9 @@ double Sensor::get_data() {
 Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
                      double noise_mean, double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
-    data_ = Vector3();
+    data_ = {0, 0, 0};
+    noise_ = {0, 0, 0};
+    bias_ = {0, 0, 0};
 }
 
 void Gyroscope::update_data(double tStep) {
@@ -57,7 +60,7 @@ void Gyroscope::update_data(double tStep) {
         new_data_ = true;
 
         if (inject_noise_) {
-            noise_.randomize(generator_, normal_dist_);
+            noise_ = randomize_vector(generator_, normal_dist_);
             data_ += noise_;
         }
 
@@ -67,7 +70,7 @@ void Gyroscope::update_data(double tStep) {
     }
 }
 
-void Gyroscope::get_data(Vector3& data) {
+void Gyroscope::get_data(Vector3d& data) {
     data = data_;
     new_data_ = false;
 }
@@ -76,7 +79,9 @@ Accelerometer::Accelerometer(std::string name, Rocket& rocket,
                              double refresh_rate, double noise_mean,
                              double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
-    data_ = Vector3();
+    data_ = {0, 0, 0};
+    noise_ = {0, 0, 0};
+    bias_ = {0, 0, 0};
 }
 
 void Accelerometer::update_data(double tStep) {
@@ -86,7 +91,7 @@ void Accelerometer::update_data(double tStep) {
         new_data_ = true;
 
         if (inject_noise_) {
-            noise_.randomize(generator_, normal_dist_);
+            noise_ = randomize_vector(generator_, normal_dist_);
             data_ += noise_;
         }
 
@@ -96,7 +101,7 @@ void Accelerometer::update_data(double tStep) {
     }
 }
 
-void Accelerometer::get_data(Vector3& data) {
+void Accelerometer::get_data(Vector3d& data) {
     data = data_;
     new_data_ = false;
 }
@@ -104,13 +109,14 @@ void Accelerometer::get_data(Vector3& data) {
 Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
                      double noise_mean, double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
-    data_ = rocket_.get_r_vect().x;
+    data_ = rocket_.get_r_vect().x();
     bias_ = 0;
+    noise_ = 0;
 }
 
 void Barometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
-        data_ = rocket_.get_r_vect().x;
+        data_ = rocket_.get_r_vect().x();
         new_data_ = true;
 
         if (inject_noise_) {
@@ -127,4 +133,14 @@ void Barometer::update_data(double tStep) {
 double Barometer::get_data() {
     new_data_ = false;
     return data_;
+}
+
+Vector3d randomize_vector(std::default_random_engine& generator,
+                          std::normal_distribution<double>& dist) {
+    Vector3d vector;
+    vector.x() = dist(generator);
+    vector.y() = dist(generator);
+    vector.z() = dist(generator);
+
+    return vector;
 }

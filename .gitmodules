@@ -1,3 +1,6 @@
 [submodule "spdlog"]
 	path = lib/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "lib/eigen"]
+	path = lib/eigen
+	url = https://gitlab.com/libeigen/eigen

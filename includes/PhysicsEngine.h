@@ -22,7 +22,6 @@
 
 #include "Propulsion.h"
 #include "Rocket.h"
-#include "quaternion.h"
 
 class PhysicsEngine {
    public:
@@ -43,8 +42,8 @@ class ForwardEuler : public PhysicsEngine {
     void march_step(double tStamp, double tStep) override;
 
    private:
-    Quaternion<double> update_quaternion(Quaternion<double> q_ornt,
-                                         Vector3 omega_if, double tStep) const;
+    Quaterniond update_quaternion(Quaterniond q_ornt, Vector3d omega_if,
+                                  double tStep) const;
 
     std::shared_ptr<spdlog::logger> euler_logger;
 };
