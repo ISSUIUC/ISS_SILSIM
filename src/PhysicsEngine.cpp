@@ -339,7 +339,7 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
 }
 
 /**
- * @brief Takes in time and angulare velocity to calculate net torque
+ * @brief Takes in time and angular velocity to calculate net torque
  *
  * @param vel_if Rocket's velocity with respect to the inertial frame
  * @param ang_vel_if Rocket's angular velocity with respect to the inertial
