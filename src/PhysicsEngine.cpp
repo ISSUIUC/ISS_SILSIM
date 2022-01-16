@@ -465,6 +465,7 @@ RungeKutta::RungeKuttaState RungeKutta::calc_state(double tStamp, double tStep,
 Quaterniond PhysicsEngine::update_quaternion(Quaterniond q_ornt,
                                              Vector3d omega_if,
                                              double tStep) const {
+
     // Calculate half-angle traveled during this timestep
     double half_angle = 0.5 * omega_if.norm() * tStep;
 
