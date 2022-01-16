@@ -325,7 +325,7 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
 
         double drag_mag = 0.5 * drag_coef * vel_rf.squaredNorm() * area *
                           Atmosphere::get_density(pos_if.z());
-        Vector3d drag_rf(0, 0, std::copysign(drag_mag, -vel_rf.z()));
+        Vector3d drag_rf{0, 0, std::copysign(drag_mag, -vel_rf.z())};
 
         aero_force_rf = normal_force_rf + drag_rf;
     } else {
@@ -386,7 +386,7 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_if, Vector3d pos_if) {
 
         double drag_mag = 0.5 * drag_coef * vel_rf.squaredNorm() * area *
                           Atmosphere::get_density(pos_if.z());
-        Vector3d drag_rf(0, 0, -(drag_mag));
+        Vector3d drag_rf{0, 0, std::copysign(drag_mag, -vel_rf.z())};
 
         aero_force_rf = normal_force_rf + drag_rf;
         aero_torque_rf = Cp_vect_rf.cross(aero_force_rf);
