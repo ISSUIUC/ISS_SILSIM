@@ -27,7 +27,11 @@ using Eigen::Quaterniond;
 
 class Rocket {
    public:
-    Rocket();
+    Rocket() {
+        q_ornt_ = {1, 0, 0, 0};
+
+        Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
+    }
 
     /****************** Get parameters by referece ************************/
     void get_r_vect(Vector3d& vector) const { vector = r_vect_; };

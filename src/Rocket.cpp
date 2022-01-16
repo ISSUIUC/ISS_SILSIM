@@ -18,12 +18,6 @@
 using Eigen::Quaterniond;
 using Eigen::Vector3d;
 
-Rocket::Rocket() {
-    q_ornt_ = {1, 0, 0, 0};
-
-    Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
-}
-
 /**
  * @brief Obtain distance between tip of nose and the center of gravity
  *
