@@ -53,7 +53,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     Vector3 t_net_if = rocket_.get_t_net();    // net torque (Newtons*meters)
 
     // Quaternion from inertial to rocket frame
-    Quaternion<double> q_ornt = rocket_.get_q_ornt();  // orientation of rocket
+    Quaterniond q_ornt = rocket_.get_q_ornt();  // orientation of rocket
 
     // CG to Cp vector
     Vector3 Cp_vect_rf =
@@ -107,7 +107,8 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
 
         double f_D_mag = c_D * 0.5 * Atmosphere::get_density(r_vect_if.z) *
                          v_rf.magnitude2() * A_ref;
-        Vector3 f_D_rf(0, 0, -f_D_mag);
+        // make drag force apply in the opposite direction to rocket travel
+        Vector3 f_D_rf(0, 0, std::copysign(f_D_mag, -v_rf.z));
 
         f_aero_rf = f_N_rf + f_D_rf;
         t_aero_rf = Cp_vect_rf.cross(f_aero_rf);
@@ -133,18 +134,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     r_dot_if += r_ddot_if * tStep;
     r_ddot_if = f_net_if / mass;
 
-    double w_mag = w_vect_if.magnitude();
-    if (w_mag > 0.000001) {  // if the rocket is moving; numbers below this
-                             // threshold are interpreted as 0 and cause errors
-        Quaternion<double> q_rot;
-        q_rot.Set(cos(w_mag / 2.0), (w_vect_if.x / w_mag) * sin(w_mag / 2.0),
-                  (w_vect_if.y / w_mag) * sin(w_mag / 2.0),
-                  (w_vect_if.z / w_mag) * sin(w_mag / 2.0));
-
-        // Apply instantaneous rotation
-        q_ornt = q_ornt * q_rot;
-        q_ornt.Normalize();
-    }
+    q_ornt = update_quaternion(q_ornt, w_vect_if, tStep);
 
     w_vect_if += w_dot_if * tStep;
 
@@ -218,7 +208,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     Vector3 ang_vel_if = rocket_.get_w_vect();
     Vector3 ang_accel_if = rocket_.get_w_dot();
 
-    Quaternion<double> orient = rocket_.get_q_ornt();
+    Quaterniond orient = rocket_.get_q_ornt();
 
     double inertia[9];  // moments of inertia
     rocket_.get_I(inertia);
@@ -437,12 +427,12 @@ RungeKutta::RungeKuttaState RungeKutta::calc_state(double tStamp, double tStep,
     Vector3 pos_initial = rocket_.get_r_vect();
     Vector3 vel_initial = rocket_.get_r_dot();
     Vector3 ang_vel_initial = rocket_.get_w_vect();
-    Quaternion<double> orient_true = rocket_.get_q_ornt();
+    Quaterniond orient_true = rocket_.get_q_ornt();
 
     double inertia[9];
     rocket_.get_I(inertia);
 
-    Quaternion<double> orient = calc_orient(orient_true, k.ang_vel, tStep);
+    Quaterniond orient = calc_orient(orient_true, k.ang_vel, tStep);
     rocket_.set_q_ornt(orient);  // sets the orientation to the current state in
                                  // order to calculate net forces
     // Euler Step: y = x + (dx * t)
@@ -477,11 +467,11 @@ RungeKutta::RungeKuttaState RungeKutta::calc_state(double tStamp, double tStep,
  * @param omega_if  The angular velocity vector in inertial frame
  * @param tStep     Simulation time step size
  *
- * @return Quaternion<double> Updated quaterion with the applied rotation
+ * @return Quaterniond Updated quaterion with the applied rotation
  */
-Quaternion<double> RungeKutta::calc_orient(Quaternion<double> q_ornt,
-                                           Vector3 omega_if,
-                                           double tStep) const {
+Quaterniond PhysicsEngine::update_quaternion(Quaterniond q_ornt,
+                                                   Vector3 omega_if,
+                                                   double tStep) const {
     // Calculate half-angle traveled during this timestep
     double half_angle = 0.5 * omega_if.magnitude() * tStep;
 
@@ -489,7 +479,7 @@ Quaternion<double> RungeKutta::calc_orient(Quaternion<double> q_ornt,
     omega_if.normalize();
 
     // Assemble quaternion using axis-angle representation
-    Quaternion<double> q_rotation{cos(half_angle), sin(half_angle) * omega_if.x,
+    Quaterniond q_rotation{cos(half_angle), sin(half_angle) * omega_if.x,
                                   sin(half_angle) * omega_if.y,
                                   sin(half_angle) * omega_if.z};
 

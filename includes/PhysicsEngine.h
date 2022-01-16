@@ -32,6 +32,9 @@ class PhysicsEngine {
 
     virtual void march_step(double tStamp, double tStep) = 0;
 
+   private:
+    Quaternion<double> update_quaternion(Quaternion<double> q_ornt, Vector3 omega_if,
+                                   double tStep) const;
    protected:
     Rocket& rocket_;
     SolidMotor& motor_;
@@ -44,6 +47,7 @@ class ForwardEuler : public PhysicsEngine {
     void march_step(double tStamp, double tStep) override;
 
    private:
+
     std::shared_ptr<spdlog::logger> euler_logger;
 };
 
@@ -66,8 +70,6 @@ class RungeKutta : public PhysicsEngine {
     Vector3 calc_net_force(double tStamp, Vector3 pos_if, Vector3 vel_if);
     Vector3 calc_net_torque(Vector3 vel_if, Vector3 pos_if, Vector3 ang_vel_if);
     RungeKuttaState calc_state(double tStamp, double tStep, RungeKuttaState k);
-    Quaternion<double> calc_orient(Quaternion<double> q_ornt, Vector3 omega_if,
-                                   double tStep) const;
 };
 
 #endif
