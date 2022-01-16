@@ -195,8 +195,8 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
  * @return Quaternion<double> Updated quaterion with the applied rotation
  */
 Quaterniond ForwardEuler::update_quaternion(Quaterniond q_ornt,
-                                                   Vector3d omega_if,
-                                                   double tStep) const {
+                                            Vector3d omega_if,
+                                            double tStep) const {
     // Calculate half-angle traveled during this timestep
     double half_angle = 0.5 * omega_if.norm() * tStep;
 
@@ -205,8 +205,8 @@ Quaterniond ForwardEuler::update_quaternion(Quaterniond q_ornt,
 
     // Assemble quaternion using axis-angle representation
     Quaterniond q_rotation{cos(half_angle), sin(half_angle) * omega_if.x(),
-                                  sin(half_angle) * omega_if.y(),
-                                  sin(half_angle) * omega_if.z()};
+                           sin(half_angle) * omega_if.y(),
+                           sin(half_angle) * omega_if.z()};
 
     // Apply the rotation to the rocket's orientation quaternion
     q_ornt = q_rotation * q_ornt;
