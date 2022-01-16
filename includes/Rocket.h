@@ -116,15 +116,15 @@ class Rocket {
 
    private:
     // The following are in inertial frame
-    Vector3d r_vect_{};  // r vector
-    Vector3d r_dot_{};   // r-dot (velocity)
-    Vector3d r_ddot_{};  // r-double-dot (acceleration)
-    Vector3d w_vect_{};  // angular velocity (omega) vector
-    Vector3d w_dot_{};   // angular acceleration vector
+    Vector3d r_vect_{0,0,0};  // r vector
+    Vector3d r_dot_{0,0,0};   // r-dot (velocity)
+    Vector3d r_ddot_{0,0,0};  // r-double-dot (acceleration)
+    Vector3d w_vect_{0,0,0};  // angular velocity (omega) vector
+    Vector3d w_dot_{0,0,0};   // angular acceleration vector
 
     // The following are in inertial frame
-    Vector3d f_net_{};  // net force in Netwons
-    Vector3d t_net_{};  // net torque in Newton*meters
+    Vector3d f_net_{0,0,0};  // net force in Netwons
+    Vector3d t_net_{0,0,0};  // net torque in Newton*meters
 
     Quaterniond q_ornt_{};  // inertial -> rocket frame quaternion
 

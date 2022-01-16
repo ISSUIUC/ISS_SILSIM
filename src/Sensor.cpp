@@ -48,9 +48,9 @@ double Sensor::get_data() {
 Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
                      double noise_mean, double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
-    data_ = Vector3d(0, 0, 0);
-    noise_ = Vector3d(0, 0, 0);
-    bias_ = Vector3d(0, 0, 0);
+    data_ = {0, 0, 0};
+    noise_ = {0, 0, 0};
+    bias_ = {0, 0, 0};
 }
 
 void Gyroscope::update_data(double tStep) {
@@ -79,9 +79,9 @@ Accelerometer::Accelerometer(std::string name, Rocket& rocket,
                              double refresh_rate, double noise_mean,
                              double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
-    data_ = Vector3d(0, 0, 0);
-    noise_ = Vector3d(0, 0, 0);
-    bias_ = Vector3d(0, 0, 0);
+    data_ = {0, 0, 0};
+    noise_ = {0, 0, 0};
+    bias_ = {0, 0, 0};
 }
 
 void Accelerometer::update_data(double tStep) {

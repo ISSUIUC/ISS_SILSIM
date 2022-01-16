@@ -19,17 +19,9 @@ using Eigen::Quaterniond;
 using Eigen::Vector3d;
 
 Rocket::Rocket() {
-    q_ornt_ = Quaterniond(1, 0, 0, 0);
+    q_ornt_ = {1, 0, 0, 0};
 
-    Cp_vect_ = Vector3d(0, 0, -(nose_to_cp_ - nose_to_cg_));
-
-    r_vect_ = Vector3d(0, 0, 0);
-    r_dot_ = Vector3d(0, 0, 0);
-    r_ddot_ = Vector3d(0, 0, 0);
-    w_vect_ = Vector3d(0, 0, 0);
-    w_dot_ = Vector3d(0, 0, 0);
-    f_net_ = Vector3d(0, 0, 0);
-    t_net_ = Vector3d(0, 0, 0);
+    Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
 }
 
 /**
@@ -51,9 +43,7 @@ void Rocket::get_nose_to_cg(double& nose_to_cg) const {
  */
 void Rocket::set_nose_to_cg(double& nose_to_cg) {
     nose_to_cg_ = nose_to_cg;
-    Cp_vect_.x() = 0;
-    Cp_vect_.y() = 0;
-    Cp_vect_.z() = -(nose_to_cp_ - nose_to_cg_);
+    Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
 }
 
 /**
@@ -75,9 +65,7 @@ void Rocket::get_nose_to_cp(double& nose_to_cp) const {
  */
 void Rocket::set_nose_to_cp(double& nose_to_cp) {
     nose_to_cp_ = nose_to_cp;
-    Cp_vect_.x() = 0;
-    Cp_vect_.y() = 0;
-    Cp_vect_.z() = -(nose_to_cp_ - nose_to_cg_);
+    Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
 }
 
 /**
@@ -95,7 +83,7 @@ void Rocket::get_Cp_vect(Vector3d& vector) const { vector = Cp_vect_; }
  * @return Vector3d The rotated vector represented in the rocket body frame
  */
 Vector3d Rocket::i2r(Vector3d vector) {
-    Quaterniond p(0, vector.x(), vector.y(), vector.z());
+    Quaterniond p{0, vector.x(), vector.y(), vector.z()};
     p = (q_ornt_.conjugate() * p) * q_ornt_;
     return p.vec();
 }
@@ -108,7 +96,7 @@ Vector3d Rocket::i2r(Vector3d vector) {
  * @return Vector3d The rotated vector represented in the inertial frame
  */
 Vector3d Rocket::r2i(Vector3d vector) {
-    Quaterniond p(0, vector.x(), vector.y(), vector.z());
+    Quaterniond p{0, vector.x(), vector.y(), vector.z()};
     p = (q_ornt_ * p) * q_ornt_.conjugate();
 
     return p.vec();
