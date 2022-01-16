@@ -237,8 +237,8 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     Vector3d ang_vel_avg =
         (k1.ang_vel + (2 * k2.ang_vel) + (2 * k3.ang_vel) + k4.ang_vel) / 6;
     Vector3d ang_accel_avg = (k1.ang_accel + (2 * k2.ang_accel) +
-                             (2 * k3.ang_accel) + k4.ang_accel) /
-                            6;
+                              (2 * k3.ang_accel) + k4.ang_accel) /
+                             6;
 
     // calculate rocket data based on average values instaed of initial
     pos_if += tStep * vel_avg;
@@ -287,7 +287,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
  * and z directions
  */
 Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
-                                   Vector3d vel_if) {
+                                    Vector3d vel_if) {
     // {variable}_rf = rocket frame (stuck to rocket)
     // {variable}_if = inertial frame (stuck to earth)
 
@@ -312,13 +312,12 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
 
         double alpha =
             acos(vel_rf.z() / vel_rf.norm());  // angle between velocity
-                                                  // vector and rocket axis
+                                               // vector and rocket axis
         double normal_coef = c_Na * alpha;
 
         double normal_force_mag = 0.5 * normal_coef * vel_rf.squaredNorm() *
                                   area * Atmosphere::get_density(pos_if.z());
-        normal_force_rf = {(-vel_rf.x()),(-vel_rf.y()),0};
-
+        normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
 
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
@@ -329,7 +328,7 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
 
         aero_force_rf = normal_force_rf + drag_rf;
     } else {
-        aero_force_rf = {0,0,0};
+        aero_force_rf = {0, 0, 0};
     }
 
     Vector3d net_force_if = rocket_.r2i(aero_force_rf + thrust_rf);
@@ -348,7 +347,7 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
  * and z directions
  */
 Vector3d RungeKutta::calc_net_torque(Vector3d vel_if, Vector3d pos_if,
-                                    Vector3d ang_vel_if) {
+                                     Vector3d ang_vel_if) {
     /*************** Retrieve Instantaneous Rocket Parameters *****************/
 
     Vector3d Cp_vect_rf = rocket_.get_Cp_vect();
@@ -380,7 +379,7 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_if, Vector3d pos_if,
 
         double normal_force_mag = 0.5 * normal_coef * vel_rf.squaredNorm() *
                                   area * Atmosphere::get_density(pos_if.z());
-        normal_force_rf = {(-vel_rf.x()),(-vel_rf.y()),0};
+        normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
 
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
@@ -392,7 +391,7 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_if, Vector3d pos_if,
         aero_force_rf = normal_force_rf + drag_rf;
         aero_torque_rf = Cp_vect_rf.cross(aero_force_rf);
     } else {
-        aero_torque_rf = {0,0,0};
+        aero_torque_rf = {0, 0, 0};
     }
 
     Vector3d net_torque_if = rocket_.r2i(aero_torque_rf);
@@ -433,7 +432,8 @@ RungeKutta::RungeKuttaState RungeKutta::calc_state(double tStamp, double tStep,
     // dx = taken from state k
     Vector3d pos_k = pos_initial + k.vel * tStep;
     Vector3d vel_k = vel_initial + k.accel * tStep;
-    Vector3d accel_k = calc_net_force(tStamp, k.pos, k.vel) / rocket_.get_mass();
+    Vector3d accel_k =
+        calc_net_force(tStamp, k.pos, k.vel) / rocket_.get_mass();
     Vector3d ang_vel_k = ang_vel_initial + (k.ang_accel * tStep);
     Vector3d net_torque_new = calc_net_torque(k.vel, k.pos, k.ang_vel);
     Vector3d ang_accel_k;
@@ -463,8 +463,8 @@ RungeKutta::RungeKuttaState RungeKutta::calc_state(double tStamp, double tStep,
  * @return Quaterniond Updated quaterion with the applied rotation
  */
 Quaterniond PhysicsEngine::update_quaternion(Quaterniond q_ornt,
-                                                   Vector3d omega_if,
-                                                   double tStep) const {
+                                             Vector3d omega_if,
+                                             double tStep) const {
     // Calculate half-angle traveled during this timestep
     double half_angle = 0.5 * omega_if.norm() * tStep;
 
