@@ -6,11 +6,15 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(LIB ${CMAKE_SOURCE_DIR}/lib)
 
-if(NOT EXISTS ${LIB}/spdlog/CMakeLists.txt)
+if(
+        NOT EXISTS ${LIB}/spdlog/CMakeLists.txt
+        OR NOT EXISTS ${LIB}/eigen/CMakeLists.txt
+)
     message(FATAL_ERROR "Missing submodule dependencies try\ngit submodule update --init --recursive\nto download dependencies")
 endif()
 
 add_subdirectory(${LIB}/spdlog)
+add_subdirectory(${LIB}/eigen)
 
 
 
@@ -23,11 +27,11 @@ add_executable(ISS_SILSIM src/main.cpp
         src/Sensor.cpp
         src/Simulation.cpp
         src/Atmosphere.cpp
-        lib/quaternion/quaternion.cpp
-        lib/Vector3/Vector3.cpp
+        
+        
         )
 
-target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog)
+target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog Eigen3::Eigen)
 
 
 #set highest warning levels
@@ -37,4 +41,4 @@ else()
     target_compile_options(ISS_SILSIM PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-target_include_directories(ISS_SILSIM PUBLIC ${LIB}/quaternion ${LIB}/Vector3 ${CMAKE_SOURCE_DIR}/includes/)
+target_include_directories(ISS_SILSIM PUBLIC ${CMAKE_SOURCE_DIR}/includes/)
