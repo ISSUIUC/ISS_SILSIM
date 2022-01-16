@@ -317,9 +317,8 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
 
         double normal_force_mag = 0.5 * normal_coef * vel_rf.squaredNorm() *
                                   area * Atmosphere::get_density(pos_if.z());
-        normal_force_rf.x() = (-vel_rf.x());
-        normal_force_rf.y() = (-vel_rf.y());
-        normal_force_rf.z() = 0;
+        normal_force_rf = {(-vel_rf.x()),(-vel_rf.y()),0};
+
 
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
@@ -330,9 +329,7 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
 
         aero_force_rf = normal_force_rf + drag_rf;
     } else {
-        aero_force_rf.x() = 0;
-        aero_force_rf.y() = 0;
-        aero_force_rf.z() = 0;
+        aero_force_rf = {0,0,0};
     }
 
     Vector3d net_force_if = rocket_.r2i(aero_force_rf + thrust_rf);
@@ -359,7 +356,6 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_if, Vector3d pos_if,
     double inertia[9];  // moments of inertia
     rocket_.get_I(inertia);
 
-    double mass = rocket_.get_mass();
     double area = rocket_.get_A_ref();
     double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
     double drag_coef = rocket_.get_Cd();
@@ -384,9 +380,7 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_if, Vector3d pos_if,
 
         double normal_force_mag = 0.5 * normal_coef * vel_rf.squaredNorm() *
                                   area * Atmosphere::get_density(pos_if.z());
-        normal_force_rf.x() = (-vel_rf.x());
-        normal_force_rf.y() = (-vel_rf.y());
-        normal_force_rf.z() = 0;
+        normal_force_rf = {(-vel_rf.x()),(-vel_rf.y()),0};
 
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
@@ -398,9 +392,7 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_if, Vector3d pos_if,
         aero_force_rf = normal_force_rf + drag_rf;
         aero_torque_rf = Cp_vect_rf.cross(aero_force_rf);
     } else {
-        aero_torque_rf.x() = 0;
-        aero_torque_rf.y() = 0;
-        aero_torque_rf.z() = 0;
+        aero_torque_rf = {0,0,0};
     }
 
     Vector3d net_torque_if = rocket_.r2i(aero_torque_rf);
