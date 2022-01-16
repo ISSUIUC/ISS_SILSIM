@@ -72,7 +72,7 @@ def rotate_mesh(frame, quatrns):
 
 # Create a new plot
 fig = plt.figure()
-axes = mplot3d.Axes3D(fig)
+axes = plt.axes(projection='3d')
 
 # Load the STL files and add the vectors to the plot
 #original_mesh = mesh.Mesh.from_file('sim_data/doge.stl')

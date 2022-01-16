@@ -36,7 +36,6 @@ ForwardEuler::ForwardEuler(Rocket& rocket, SolidMotor& motor)
  * @param tStamp Current simulation timestamp
  * @param tStep Simulation time step size
  */
-
 void ForwardEuler::march_step(double tStamp, double tStep) {
     // {variable}_rf = rocket frame (stuck to rocket)
     // {variable}_if = inertial frame (stuck to earth)
@@ -109,7 +108,8 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
 
         double f_D_mag = c_D * 0.5 * Atmosphere::get_density(r_vect_if.z()) *
                          v_rf.squaredNorm() * A_ref;
-        Vector3d f_D_rf(0, 0, -f_D_mag);
+        // make drag force apply in the opposite direction to rocket travel
+        Vector3d f_D_rf(0, 0, std::copysign(f_D_mag, -v_rf.z()));
 
         f_aero_rf = f_N_rf + f_D_rf;
         t_aero_rf = Cp_vect_rf.cross(f_aero_rf);
@@ -135,19 +135,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     r_dot_if += r_ddot_if * tStep;
     r_ddot_if = f_net_if / mass;
 
-    double w_mag = w_vect_if.norm();
-    if (w_mag > 0.000001) {  // if the rocket is moving; numbers below this
-                             // threshold are interpreted as 0 and cause errors
-
-        Quaterniond q_rot(cos(w_mag / 2.0),
-                          (w_vect_if.x() / w_mag) * sin(w_mag / 2.0),
-                          (w_vect_if.y() / w_mag) * sin(w_mag / 2.0),
-                          (w_vect_if.z() / w_mag) * sin(w_mag / 2.0));
-
-        // Apply instantaneous rotation
-        q_ornt = q_ornt * q_rot;
-        q_ornt.normalize();
-    }
+    q_ornt = update_quaternion(q_ornt, w_vect_if, tStep);
 
     w_vect_if += w_dot_if * tStep;
 
@@ -189,4 +177,42 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     rocket_.set_f_net(f_net_if);
     rocket_.set_t_net(t_net_if);
     rocket_.set_q_ornt(q_ornt);
+}
+
+/**
+ * @brief Updates the orientation quaternion of the rocket from an angular
+ * velocity vector
+ *
+ * Method creates a rotation quaternion that represents the total rotation the
+ * rocket will undergo throughout the particular timestep using the axis-angle
+ * method. It then applies this rotation to the current orientation quaterion by
+ * left-multiplying it.
+ *
+ * @param q_ornt    The current orientation quaternion
+ * @param omega_if  The angular velocity vector in inertial frame
+ * @param tStep     Simulation time step size
+ *
+ * @return Quaternion<double> Updated quaterion with the applied rotation
+ */
+Quaterniond ForwardEuler::update_quaternion(Quaterniond q_ornt,
+                                                   Vector3d omega_if,
+                                                   double tStep) const {
+    // Calculate half-angle traveled during this timestep
+    double half_angle = 0.5 * omega_if.norm() * tStep;
+
+    // Normalize the axis of rotation before using in axis-angle method
+    omega_if.normalize();
+
+    // Assemble quaternion using axis-angle representation
+    Quaterniond q_rotation{cos(half_angle), sin(half_angle) * omega_if.x(),
+                                  sin(half_angle) * omega_if.y(),
+                                  sin(half_angle) * omega_if.z()};
+
+    // Apply the rotation to the rocket's orientation quaternion
+    q_ornt = q_rotation * q_ornt;
+
+    // Orientation quaternions must always stay at unit norm
+    q_ornt.normalize();
+
+    return q_ornt;
 }
