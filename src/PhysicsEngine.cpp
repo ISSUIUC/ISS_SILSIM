@@ -127,6 +127,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     f_net_if = rocket_.r2i(f_aero_rf + thrust_rf);
     f_net_if.z() -= (9.81 * mass);
 
+    t_net_rf = t_aero_rf;
     t_net_if = rocket_.r2i(t_aero_rf);
 
     /************************** Perform euler step ****************************/
@@ -245,7 +246,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     vel_if += tStep * accel_avg;
 
     Vector3d net_force_if = calc_net_force(tStamp, pos_if, vel_avg);
-    Vector3d net_torque_if = calc_net_torque(vel_avg, pos_if, ang_vel_avg);
+    Vector3d net_torque_if = calc_net_torque(vel_avg, pos_if);
 
     accel_if = net_force_if / mass;
 
@@ -346,8 +347,7 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
  * @return Vector3  Vector containing the net torque on the rocket in the x, y,
  * and z directions
  */
-Vector3d RungeKutta::calc_net_torque(Vector3d vel_if, Vector3d pos_if,
-                                     Vector3d ang_vel_if) {
+Vector3d RungeKutta::calc_net_torque(Vector3d vel_if, Vector3d pos_if) {
     /*************** Retrieve Instantaneous Rocket Parameters *****************/
 
     Vector3d Cp_vect_rf = rocket_.get_Cp_vect();
@@ -435,7 +435,7 @@ RungeKutta::RungeKuttaState RungeKutta::calc_state(double tStamp, double tStep,
     Vector3d accel_k =
         calc_net_force(tStamp, k.pos, k.vel) / rocket_.get_mass();
     Vector3d ang_vel_k = ang_vel_initial + (k.ang_accel * tStep);
-    Vector3d net_torque_new = calc_net_torque(k.vel, k.pos, k.ang_vel);
+    Vector3d net_torque_new = calc_net_torque(k.vel, k.pos);
     Vector3d ang_accel_k;
     ang_accel_k.x() = net_torque_new.x() / inertia[0];
     ang_accel_k.y() = net_torque_new.y() / inertia[4];
