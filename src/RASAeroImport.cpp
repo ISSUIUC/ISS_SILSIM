@@ -22,15 +22,15 @@ RASAeroImport::RASAeroImport(std::string file_path) {
 
     rapidcsv::Document csv(file_path);
 
-    auto mach = csv.GetColumn<double>("Mach");
-    auto alpha = csv.GetColumn<double>("Alpha");
-    auto protuberance = csv.GetColumn<double>("Protuberance");
-    auto cd = csv.GetColumn<double>("CD");
+    auto mach = csv.GetColumn<double>("Mach Number");
+    auto alpha = csv.GetColumn<double>("Alpha (deg)");
+    auto protuberance = csv.GetColumn<double>("Protuberance (%)");
+    auto cd_poweroff = csv.GetColumn<double>("CD Power-Off");
+    auto cd_poweron = csv.GetColumn<double>("CD Power-On");
     auto ca_poweroff = csv.GetColumn<double>("CA Power-Off");
     auto ca_poweron = csv.GetColumn<double>("CA Power-On");
-    auto cn = csv.GetColumn<double>("CN");
-    auto cp = csv.GetColumn<double>("CP");
-    auto cd_protuberance = csv.GetColumn<double>("Protuberance Drag");
+    auto cn = csv.GetColumn<double>("CN Total");
+    auto cp = csv.GetColumn<double>("CP Total");
     
     int n_data = mach.size();
 
@@ -47,42 +47,50 @@ RASAeroImport::RASAeroImport(std::string file_path) {
        aero_table_(i, 0) = mach[i];
        aero_table_(i, 1) = alpha[i];
        aero_table_(i, 2) = protuberance[i];
-       aero_table_(i, 3) = cd[i];
-       aero_table_(i, 4) = ca_poweroff[i];
-       aero_table_(i, 5) = ca_poweron[i];
-       aero_table_(i, 6) = cn[i];
-       aero_table_(i, 7) = cp[i];
-       aero_table_(i, 8) = cd_protuberance[i];
+       aero_table_(i, 3) = cd_poweroff[i];
+       aero_table_(i, 4) = cd_poweron[i];
+       aero_table_(i, 5) = ca_poweroff[i];
+       aero_table_(i, 6) = ca_poweron[i];
+       aero_table_(i, 7) = cn[i];
+       aero_table_(i, 8) = cp[i];
     }
-
 
     std::cout << aero_table_ << std::endl;
 
+    set_mach_number_params();
+    set_alpha_params();
+    set_protuberance_params();
 }
 
-void RASAeroImport::set_mach_number_instances() {
-    auto col = aero_table_.col(0);
-    mach_number_instances_ = std::set<double> (col.begin(), col.end()).size();
+void RASAeroImport::set_mach_number_params() {
+    auto column = aero_table_.col(0);
+    auto vec = std::vector<double> (column.begin(), column.end());
+    sort(vec.begin(), vec.end());
+    vec.erase(unique(vec.begin(),vec.end()), vec.end());
+    mach_number_instances_ = vec.size();
+    mach_number_fidelity_ = fabs(vec[0] - vec[1]);
+    std::cout << mach_number_instances_ << std::endl;
+    std::cout << mach_number_fidelity_ << std::endl;
 }
 
-void RASAeroImport::set_alpha_instances() {
-    auto col = aero_table_.col(1);
-    alpha_instances_ = std::set<double> (col.begin(), col.end()).size();
+void RASAeroImport::set_alpha_params() {
+    auto column = aero_table_.col(1);
+    auto vec = std::vector<double> (column.begin(), column.end());
+    sort(vec.begin(), vec.end());
+    vec.erase(unique(vec.begin(),vec.end()), vec.end());
+    alpha_instances_ = vec.size();
+    alpha_fidelity_ = fabs(vec[0] - vec[1]);
+    std::cout << alpha_instances_ << std::endl;
+    std::cout << alpha_fidelity_ << std::endl;
 }
 
-void RASAeroImport::set_protuberance_instances() {
-    auto col = aero_table_.col(2);
-    protuberance_instances_ = std::set<double> (col.begin(), col.end()).size();
-}
-
-void RASAeroImport::set_mach_number_fidelity() {
-    mach_number_fidelity_ = fabs(aero_table_(0, 0) - aero_table_(1, 0));
-}
-
-void RASAeroImport::set_alpha_fidelity() {
-    alpha_fidelity_ = fabs(aero_table_(0, 1) - aero_table_(1, 1));
-}
-
-void RASAeroImport::set_protuberance_fidelity() {
-    protuberance_fidelity_ = fabs(aero_table_(0, 2) - aero_table_(1, 2));
+void RASAeroImport::set_protuberance_params() {
+    auto column = aero_table_.col(2);
+    auto vec = std::vector<double> (column.begin(), column.end());
+    sort(vec.begin(), vec.end());
+    vec.erase(unique(vec.begin(),vec.end()), vec.end());
+    protuberance_instances_ = vec.size();
+    protuberance_fidelity_ = fabs(vec[0] - vec[1]);
+    std::cout << protuberance_instances_ << std::endl;
+    std::cout << protuberance_fidelity_ << std::endl;
 }

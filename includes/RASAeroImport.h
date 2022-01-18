@@ -35,12 +35,9 @@ class RASAeroImport {
                                double protuberance_percent);
 
     /************************ Set Parameters **********************************/
-    void set_mach_number_instances();
-    void set_alpha_instances();
-    void set_protuberance_instances();
-    void set_mach_number_fidelity();
-    void set_alpha_fidelity();
-    void set_protuberance_fidelity();
+    void set_mach_number_params();
+    void set_alpha_params();
+    void set_protuberance_params();
 
    private:
 
