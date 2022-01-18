@@ -14,6 +14,7 @@
 
 #include <Eigen/Dense>
 #include <string>
+#include <vector>
 
 class RASAeroImport {
    public:
@@ -30,7 +31,16 @@ class RASAeroImport {
     double get_CD_protuberance(double mach, double alpha,
                                double protuberance_percent);
 
+    /************************ Set Parameters **********************************/
+    void set_mach_number_instances();
+    void set_alpha_instances();
+    void set_protuberance_instances();
+    void set_mach_number_fidelity();
+    void set_alpha_fidelity();
+    void set_protuberance_fidelity();
+
    private:
+
     // Some metadata useful for interpolation
     int mach_number_instances_;    // Number of mach numbers in the table
     double mach_number_fidelity_;  // Distance between mach numbers in table
