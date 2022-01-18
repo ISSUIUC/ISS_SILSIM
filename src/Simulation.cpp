@@ -64,6 +64,12 @@ void Simulation::run(int steps) {
     double Cd;
     double A_ref;
 
+    bool drogue_deploy;
+    bool main_deploy;
+
+    double Cd;
+    double A_ref;
+
     Quaternion<double> q_ornt;
 
     double roll, pitch, yaw;
