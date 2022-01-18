@@ -7,7 +7,7 @@ Non-linear 6DOF rocket trajectory simulation utility
 
 ## Installation and Setup Instructions
 
-First time setup
+First time setup (linux and mac only, windows users see windows specific instructions below)
 
 ```
 git clone https://github.com/ISSUIUC/ISS_SILSIM
@@ -68,6 +68,12 @@ When installing visual studio install the c++ desktop development package
 Once visual studio finishes installing clone the repo
 
 `git clone https://github.com/ISSUIUC/ISS_SILSIM`
+
+Download dependencies
+
+`cd ISS_SILSIM`
+
+`git submodule update --init --recursive`
 
 In visual studio choose "Open a local folder" and open the cloned repo
 
