@@ -75,7 +75,7 @@ double Atmosphere::get_temperature(double altitude) {
             1000 - 640 * exp(-0.01875 * ((altitude_z - 120) * (6356.766 + 120) /
                                          (6356.766 + altitude_z)));
     } else {
-        throw std::runtime_error("exceeding caculatable altitude");
+        throw std::runtime_error("exceeding calculatable altitude");
     }
     return temperature;
 }

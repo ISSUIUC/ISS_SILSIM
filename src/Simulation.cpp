@@ -58,6 +58,12 @@ void Simulation::run(int steps) {
     Vector3d f_net{};
     Vector3d w_net{};
 
+    bool drogue_deploy;
+    bool main_deploy;
+
+    double Cd;
+    double A_ref;
+
     Quaterniond q_ornt{};
 
     double roll, pitch, yaw;
@@ -70,6 +76,9 @@ void Simulation::run(int steps) {
         rocket_.get_f_net(f_net);
         rocket_.get_w_vect(w_net);
         rocket_.get_q_ornt(q_ornt);
+
+        rocket_.get_drogue_deploy(drogue_deploy);
+        rocket_.get_main_deploy(main_deploy);
 
         double s = q_ornt.w();
         double x = q_ornt.x();
@@ -84,14 +93,43 @@ void Simulation::run(int steps) {
         roll = atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
                RAD2DEG;
 
+        // simulation completion criteria
+        if ((r_dot.z() < -3.0) && !drogue_deploy){
+
+            std::cout << "Drogue: " << std::to_string(tStamp_) << " s" << std::endl;
+            drogue_deploy = true;
+            Cd = 1.75;
+            A_ref = 0.203; // 15" drogue chute
+
+            rocket_.set_drogue_deploy(drogue_deploy);
+            rocket_.set_Cd(Cd);
+            rocket_.set_A_ref(A_ref);
+
+        }
+
+        else if ((r_dot.z() < 0) && (r_vect.z() < 400.0) && !main_deploy){
+
+            std::cout << "Main: " << std::to_string(tStamp_) << " s" << std::endl;
+            main_deploy = true;
+            Cd = 1.75;
+            A_ref = 1.161; // 36" main chute
+
+            rocket_.set_main_deploy(main_deploy);
+            rocket_.set_Cd(Cd);
+            rocket_.set_A_ref(A_ref);
+
+        }
+
+        else if ((r_dot.z() < 0) && (r_vect.z() < 0.0)) {
+            std::cout << std::to_string(iter) << std::endl;
+            break;
+        }
+
         double alpha = acos(rocket_.i2r(r_dot).z() / (r_dot.norm()));
         sim_log->debug("Timestamp: {}", tStamp_);
-        sim_log->debug("R-Vector: <{}, {}, {}>", r_vect.x(), r_vect.y(),
-                       r_vect.z());
-        sim_log->debug("Velocity: <{}, {}, {}>", r_dot.x(), r_dot.y(),
-                       r_dot.z());
-        sim_log->debug("Accel: <{}, {}, {}>", r_ddot.x(), r_ddot.y(),
-                       r_ddot.z());
+        sim_log->debug("R-Vector: <{}, {}, {}>", r_vect.x(), r_vect.y(), r_vect.z());
+        sim_log->debug("Velocity: <{}, {}, {}>", r_dot.x(), r_dot.y(), r_dot.z());
+        sim_log->debug("Accel: <{}, {}, {}>", r_ddot.x(), r_ddot.y(), r_ddot.z());
         sim_log->debug("F-Net: <{}, {}, {}>", f_net.x(), f_net.y(), f_net.z());
         sim_log->debug("W-Net: <{}, {}, {}>", w_net.x(), w_net.y(), w_net.z());
         sim_log->debug("ROLL: {} PITCH: {} YAW: {}  [deg]", roll, pitch, yaw);
@@ -124,9 +162,6 @@ void Simulation::run(int steps) {
 
         tStamp_ += tStep_;
 
-        if (r_dot.z() < -3.0) {
-            break;
-        }
     }
 
     dataFile.close();

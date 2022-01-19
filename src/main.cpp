@@ -48,8 +48,8 @@ int main() {
 
     std::cout << "Running Sim!" << std::endl;
 
-    // run 10000 steps
-    sim.run(10000);
+    // run 50000 steps
+    sim.run(50000);
 
     return 0;
 }
