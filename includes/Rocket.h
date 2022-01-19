@@ -65,9 +65,6 @@ class Rocket {
     void get_drogue_deploy(bool& drogue_deploy) const { drogue_deploy = drogue_deploy_; };
     void get_main_deploy(bool& main_deploy) const { main_deploy = main_deploy_; };
 
-    void get_drogue_deploy(bool& drogue_deploy) const { drogue_deploy = drogue_deploy_; };
-    void get_main_deploy(bool& main_deploy) const { main_deploy = main_deploy_; };
-
     /************ Get parameters by value (return by value) ***************/
     Vector3d get_r_vect() const { return r_vect_; };
     Vector3d get_r_dot() const { return r_dot_; };
@@ -90,9 +87,6 @@ class Rocket {
     double get_nose_to_cp() const { return nose_to_cp_; };
 
     Vector3d get_Cp_vect() const { return Cp_vect_; };
-
-    bool get_drogue_deploy() const { return drogue_deploy_; };
-    bool get_main_deploy() const { return main_deploy_; };
 
     bool get_drogue_deploy() const { return drogue_deploy_; };
     bool get_main_deploy() const { return main_deploy_; };
