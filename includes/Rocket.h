@@ -62,8 +62,12 @@ class Rocket {
 
     void get_Cp_vect(Vector3d& vector) const;
 
-    void get_drogue_deploy(bool& drogue_deploy) const { drogue_deploy = drogue_deploy_; };
-    void get_main_deploy(bool& main_deploy) const { main_deploy = main_deploy_; };
+    void get_drogue_deploy(bool& drogue_deploy) const {
+        drogue_deploy = drogue_deploy_;
+    };
+    void get_main_deploy(bool& main_deploy) const {
+        main_deploy = main_deploy_;
+    };
 
     /************ Get parameters by value (return by value) ***************/
     Vector3d get_r_vect() const { return r_vect_; };
@@ -118,7 +122,9 @@ class Rocket {
     void set_nose_to_cg(double& nose_to_cg);
     void set_nose_to_cp(double& nose_to_cp);
 
-    void set_drogue_deploy(bool& drogue_deploy) { drogue_deploy_ = drogue_deploy; };
+    void set_drogue_deploy(bool& drogue_deploy) {
+        drogue_deploy_ = drogue_deploy;
+    };
     void set_main_deploy(bool& main_deploy) { main_deploy_ = main_deploy; };
 
     // Converts vector from inertial frame to rocket reference frame
