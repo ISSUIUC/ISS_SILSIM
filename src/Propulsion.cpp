@@ -13,6 +13,10 @@
 
 #include "Propulsion.h"
 
+#include <Eigen/Dense>
+
+using Eigen::Vector3d;
+
 /**
  * @brief Transitions state of SolidMotor to ignited (producing thrust)
  *
@@ -31,39 +35,39 @@ void SolidMotor::ignite(double tStamp) {
  * @param tStamp Current simulation timestamp
  * @param vector Vector reference to overwrite with motor's thrust vector
  */
-void SolidMotor::get_thrust(double tStamp, Vector3& vector) const {
+void SolidMotor::get_thrust(double tStamp, Vector3d& vector) const {
     if (ignition_) {
         if ((tStamp - ignition_tStamp_) <= max_burn_duration_) {
-            vector.x = 0.0;
-            vector.y = 0.0;
-            vector.z = current_thrust_;
+            vector.x() = 0.0;
+            vector.y() = 0.0;
+            vector.z() = current_thrust_;
             return;
         }
     }
-    vector.x = 0.0;
-    vector.y = 0.0;
-    vector.z = 0.0;
+    vector.x() = 0.0;
+    vector.y() = 0.0;
+    vector.z() = 0.0;
 }
 
 /**
  * @brief Thrust vector getter function (by value)
  *
  * @param tStamp Current simulation timestamp
- * @return Vector3 The motor's current thrust vector
+ * @return Vector3d The motor's current thrust vector
  */
-Vector3 SolidMotor::get_thrust(double tStamp) const {
-    Vector3 vector;
+Vector3d SolidMotor::get_thrust(double tStamp) const {
+    Vector3d vector;
     if (ignition_) {
         if ((tStamp - ignition_tStamp_) <= max_burn_duration_) {
-            vector.x = 0.0;
-            vector.y = 0.0;
-            vector.z = current_thrust_;
+            vector.x() = 0.0;
+            vector.y() = 0.0;
+            vector.z() = current_thrust_;
             return vector;
         }
     }
-    vector.x = 0.0;
-    vector.y = 0.0;
-    vector.z = 0.0;
+    vector.x() = 0.0;
+    vector.y() = 0.0;
+    vector.z() = 0.0;
 
     return vector;
 }
