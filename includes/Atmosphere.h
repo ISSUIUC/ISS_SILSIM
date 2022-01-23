@@ -20,6 +20,8 @@ class Atmosphere {
     static double get_pressure(double altitude);
     static double get_density(double altitude);
     static double get_geometric_to_geopotential(double altitude);
+    static double get_wind_direction(double altitude);
+    static double get_wind_speed(double altitude);
 };
 
 #endif

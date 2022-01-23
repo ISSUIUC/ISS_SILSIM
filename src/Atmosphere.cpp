@@ -293,3 +293,11 @@ double Atmosphere::get_geometric_to_geopotential(double altitude) {
 
     return geopotential;
 }
+
+double Atmosphere::get_wind_direction(double altitude) {
+    return;
+}
+
+double Atmosphere::get_wind_speed(double altitude) {
+    return;
+}
