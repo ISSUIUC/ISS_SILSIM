@@ -4,3 +4,6 @@
 [submodule "lib/eigen"]
 	path = lib/eigen
 	url = https://gitlab.com/libeigen/eigen
+[submodule "lib/winds-aloft"]
+	path = lib/winds-aloft
+	url = https://github.com/FAA-Aviation-Data-Portal/winds-aloft
