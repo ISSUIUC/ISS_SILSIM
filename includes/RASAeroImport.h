@@ -16,11 +16,24 @@
 #include <string>
 #include <vector>
 
+struct RASAeroCoefficients {
+    double cd_poweroff;
+    double cd_poweron;
+    double ca_poweroff;
+    double ca_poweron;
+    double cn_total;
+    double cp_total;
+    double cd_protuberance;
+};
+
 class RASAeroImport {
    public:
     RASAeroImport(std::string file_path);
 
     /**************** Retrieve Aero Parameters of Rocket **********************/
+    RASAeroCoefficients get_aero_coefficients(double mach, double alpha,
+                                              double protuberance_percent);
+
     double get_CD_poweroff(double mach, double alpha,
                            double protuberance_percent);
     double get_CD_poweron(double mach, double alpha,
@@ -40,7 +53,6 @@ class RASAeroImport {
     void set_protuberance_params();
 
    private:
-
     // Some metadata useful for interpolation
     int mach_number_instances_;    // Number of mach numbers in the table
     double mach_number_fidelity_;  // Distance between mach numbers in table

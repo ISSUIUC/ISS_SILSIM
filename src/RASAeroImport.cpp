@@ -14,12 +14,11 @@
 #include <rapidcsv.h>
 
 #include <cmath>
-#include <string>
 #include <iostream>
 #include <set>
+#include <string>
 
 RASAeroImport::RASAeroImport(std::string file_path) {
-
     rapidcsv::Document csv(file_path);
 
     auto mach = csv.GetColumn<double>("Mach Number");
@@ -31,28 +30,28 @@ RASAeroImport::RASAeroImport(std::string file_path) {
     auto ca_poweron = csv.GetColumn<double>("CA Power-On");
     auto cn = csv.GetColumn<double>("CN Total");
     auto cp = csv.GetColumn<double>("CP Total");
-    
+
     int n_data = mach.size();
 
     /*
     std::cout << "Number of Mach points = " << mach.size() << std::endl;
     std::cout << "Number of Alpha points = " << alpha.size() << std::endl;
-    std::cout << "Number of protub points = " << protuberance.size() << std::endl;
-    std::cout << "Number of cd points = " << cd.size() << std::endl;
+    std::cout << "Number of protub points = " << protuberance.size() <<
+    std::endl; std::cout << "Number of cd points = " << cd.size() << std::endl;
     */
 
     aero_table_.resize(n_data, 9);
 
     for (int i = 0; i < n_data; i++) {
-       aero_table_(i, 0) = mach[i];
-       aero_table_(i, 1) = alpha[i];
-       aero_table_(i, 2) = protuberance[i];
-       aero_table_(i, 3) = cd_poweroff[i];
-       aero_table_(i, 4) = cd_poweron[i];
-       aero_table_(i, 5) = ca_poweroff[i];
-       aero_table_(i, 6) = ca_poweron[i];
-       aero_table_(i, 7) = cn[i];
-       aero_table_(i, 8) = cp[i];
+        aero_table_(i, 0) = mach[i];
+        aero_table_(i, 1) = alpha[i];
+        aero_table_(i, 2) = protuberance[i];
+        aero_table_(i, 3) = cd_poweroff[i];
+        aero_table_(i, 4) = cd_poweron[i];
+        aero_table_(i, 5) = ca_poweroff[i];
+        aero_table_(i, 6) = ca_poweron[i];
+        aero_table_(i, 7) = cn[i];
+        aero_table_(i, 8) = cp[i];
     }
 
     std::cout << aero_table_ << std::endl;
@@ -64,33 +63,30 @@ RASAeroImport::RASAeroImport(std::string file_path) {
 
 void RASAeroImport::set_mach_number_params() {
     auto column = aero_table_.col(0);
-    auto vec = std::vector<double> (column.begin(), column.end());
+    auto vec = std::vector<double>(column.begin(), column.end());
     sort(vec.begin(), vec.end());
-    vec.erase(unique(vec.begin(),vec.end()), vec.end());
+    vec.erase(unique(vec.begin(), vec.end()), vec.end());
     mach_number_instances_ = vec.size();
     mach_number_fidelity_ = fabs(vec[0] - vec[1]);
-    std::cout << mach_number_instances_ << std::endl;
-    std::cout << mach_number_fidelity_ << std::endl;
 }
 
 void RASAeroImport::set_alpha_params() {
     auto column = aero_table_.col(1);
-    auto vec = std::vector<double> (column.begin(), column.end());
+    auto vec = std::vector<double>(column.begin(), column.end());
     sort(vec.begin(), vec.end());
-    vec.erase(unique(vec.begin(),vec.end()), vec.end());
+    vec.erase(unique(vec.begin(), vec.end()), vec.end());
     alpha_instances_ = vec.size();
     alpha_fidelity_ = fabs(vec[0] - vec[1]);
-    std::cout << alpha_instances_ << std::endl;
-    std::cout << alpha_fidelity_ << std::endl;
 }
 
 void RASAeroImport::set_protuberance_params() {
     auto column = aero_table_.col(2);
-    auto vec = std::vector<double> (column.begin(), column.end());
+    auto vec = std::vector<double>(column.begin(), column.end());
     sort(vec.begin(), vec.end());
-    vec.erase(unique(vec.begin(),vec.end()), vec.end());
+    vec.erase(unique(vec.begin(), vec.end()), vec.end());
     protuberance_instances_ = vec.size();
     protuberance_fidelity_ = fabs(vec[0] - vec[1]);
-    std::cout << protuberance_instances_ << std::endl;
-    std::cout << protuberance_fidelity_ << std::endl;
 }
+
+RASAeroCoefficients get_aero_coefficients(double mach, double alpha,
+                                          double protuberance_percent) {}
