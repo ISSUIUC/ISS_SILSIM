@@ -18,6 +18,7 @@
  * Grace Robbins
  */
 
+#include "../../../../includes/CpuThread.h"
 #include <Arduino.h>
 #include <ChRt.h>
 #include <PWMServo.h>
@@ -75,66 +76,72 @@ static THD_WORKING_AREA(mpuComm_WA, 512);
 /******************************************************************************/
 /* ROCKET FINITE STATE MACHINE THREAD                                         */
 
-static THD_FUNCTION(rocket_FSM, arg) {
-    struct pointers *pointer_struct = (struct pointers *)arg;
+class Rocket_FMS : public CpuThread {
+    struct pointers *pointer_struct;
+    static rocketFSM stateMachine;
 
-    static rocketFSM stateMachine(pointer_struct);
-
-    while (true) {
+    void setup(void *arg) override {
+        pointer_struct = (struct pointers *)arg;
+        rocketFSM = {pointer_struct};
+    }
+    double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### Rocket FSM thread entrance");
 #endif
-
         stateMachine.tickFSM();
-
-        chThdSleepMilliseconds(6);  // FSM runs at 100 Hz
+        return 6.0;  // FSM runs at 100 Hz
     }
-}
+};
 
 /******************************************************************************/
 /* LOW G IMU THREAD                                                           */
 
-static THD_FUNCTION(lowgIMU_THD, arg) {
-    // Load outside variables into the function
-    struct pointers *pointer_struct = (struct pointers *)arg;
+class LowgIMU_THD : public CpuThread {
+    struct pointers *pointer_struct;
 
-    while (true) {
+    void setup(void *arg) override {
+        pointer_struct = (struct pointers *)arg;
+    }
+    double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### Low G IMU thread entrance");
 #endif
 
         lowGimuTickFunction(pointer_struct);
 
-        chThdSleepMilliseconds(6);
+        return 6.0;
     }
-}
+};
 
 /******************************************************************************/
 /* HIGH G IMU THREAD                                                          */
 
-static THD_FUNCTION(highgIMU_THD, arg) {
-    // Load outside variables into the function
-    struct pointers *pointer_struct = (struct pointers *)arg;
+class HighgIMU_THD : public CpuThread {
+    struct pointers *pointer_struct;
 
-    while (true) {
+    void setup(void *arg) override {
+        pointer_struct = (struct pointers *)arg;
+    }
+    double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### High G IMU thread entrance");
 #endif
 
         highGimuTickFunction(pointer_struct);
 
-        chThdSleepMilliseconds(6);
+        return 6.0;
     }
-}
+};
 
 /******************************************************************************/
 /* GPS THREAD                                                                 */
+class Gps_THD : public CpuThread {
+    struct pointers *pointer_struct;
 
-static THD_FUNCTION(gps_THD, arg) {
-    // Load outside variables into the function
-    struct pointers *pointer_struct = (struct pointers *)arg;
-
-    while (true) {
+    void setup(void *arg) override {
+        pointer_struct = (struct pointers *)arg;
+    }
+    double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### GPS thread entrance");
 #endif
@@ -145,12 +152,31 @@ static THD_FUNCTION(gps_THD, arg) {
         Serial.println("### GPS thread exit");
 #endif
 
-        chThdSleepMilliseconds(6);  // Sensor DAQ @ ~100 Hz
+        return 6.0;  // Sensor DAQ @ ~100 Hz
     }
-}
+};
 
 /******************************************************************************/
 /* SERVO CONTROL THREAD                                                       */
+
+class Gps_THD : public CpuThread {
+    struct pointers *pointer_struct;
+    bool active_control;
+
+    void setup(void *arg) override {
+        pointer_struct = (struct pointers *)arg;
+        active_control = false;
+    }
+    double loop() override {
+#ifdef THREAD_DEBUG
+        Serial.println("### Servo thread entrance");
+#endif
+
+        servoTickFunction(pointer_struct, &servo_cw, &servo_ccw);
+
+        chThdSleepMilliseconds(6);  // FSM runs at 100 Hz
+    }
+};
 
 static THD_FUNCTION(servo_THD, arg) {
     struct pointers *pointer_struct = (struct pointers *)arg;
