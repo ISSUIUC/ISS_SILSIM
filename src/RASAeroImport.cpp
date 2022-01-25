@@ -89,4 +89,15 @@ void RASAeroImport::set_protuberance_params() {
 }
 
 RASAeroCoefficients get_aero_coefficients(double mach, double alpha,
-                                          double protuberance_percent) {}
+                                          double protuberance_percent) 
+{double closest_mach;
+    double mach_below = ((int)(mach/mach_number_fidelity_)) * mach_number_fidelity_;
+    if ((mach - mach_below) <= (mach_number_fidelity_ / 2)){
+        closest_mach = mach_below;
+        } else {
+            closest_mach = (mach_below + mach_number_fidelity_);
+        }
+    }
+    std::cout << "closest_mach = " << cloest_mach << std::endl;
+    return {};
+}

@@ -14,6 +14,7 @@ constexpr double deg2rad = 3.14159265 / 180.0;
 int main() {
 
     RASAeroImport import("utils/RASAero_fetch/output/RASAero.csv");
+    RASAeroCoefficients data = import.get_aero_coefficients(0.043, 0.0, 0.0);
 
     /*
     spdlog::set_level(spdlog::level::debug);
