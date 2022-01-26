@@ -108,14 +108,48 @@ void LSM9DS1::calibrate(bool autoCalc) {}
 void LSM9DS1::calibrateMag(bool loadIn) {}
 void LSM9DS1::magOffset(uint8_t axis, int16_t offset) {}
 void LSM9DS1::readGyro() {
+    Eigen::Vector3d data;
+    context.gyroscope_pointer->get_data(data);
+    float gScale = 0.00875;
 
+    Eigen::Vector3d scaled = data * gScale;
+    x_gyro = scaled.x();
+    y_gyro = scaled.y();
+    z_gyro = scaled.z();
 }
-void LSM9DS1::readAccel() {}
-float LSM9DS1::calcGyro(int16_t gyro) { return 0; }
-float LSM9DS1::calcAccel(int16_t accel) { return 0; }
+void LSM9DS1::readAccel() {
+    Eigen::Vector3d data;
+    context.accelerometer_pointer->get_data(data);
+    float aScale = 0.000061;
+
+    Eigen::Vector3d scaled = data * aScale;
+    x_accel = scaled.x();
+    y_accel = scaled.y();
+    z_accel = scaled.z();
+}
+float LSM9DS1::calcGyro(int16_t gyro) {
+    float gScale = 0.00875;
+    return gyro * gScale;
+}
+float LSM9DS1::calcAccel(int16_t accel) {
+    float aScale = 0.000061;
+    return accel * aScale;
+}
 void LSM9DS1::setAccelScale(uint8_t aScl) {}
-void LSM9DS1::readMag() {}
-float LSM9DS1::calcMag(int16_t mag) { return 0; }
+void LSM9DS1::readMag() {
+    Eigen::Vector3d data;
+    context.magnetometer_pointer->get_data(data);
+    float mScale = 0.00014;
+
+    Eigen::Vector3d scaled = data * mScale;
+    x_mag = scaled.x();
+    y_mag = scaled.y();
+    z_mag = scaled.z();
+}
+float LSM9DS1::calcMag(int16_t mag) {
+    float mScale = 0.00014;
+    return mag * mScale;
+}
 
 MS5611::MS5611(uint8_t pin){}
 void MS5611::init(){}
@@ -132,6 +166,16 @@ SPIClass SPI{};
 void SPIClass::begin() {}
 
 bool SFE_UBLOX_GNSS::getPVT(uint16_t maxWait){
+    Eigen::Vector3d data;
+    context.gps_pointer->get_data(data);
+
+    double BigDegrees = data.x / 111036.53;  //converted meters to 'rough' degrees @ 40.1164 degrees latitude
+    double BigDegrees = data.y / 85269.13;  //converted meters to 'rough' degrees @ 40.1164 degrees latitude
+    double FatHeight = data.z * 1000 ; //converted meters to millimeters
+    _Longitude = BigDegrees * 10E+7;
+    _Latitude = BigDegrees * 10E+7;
+    _Altitude = FatHeight;
+
     _isFresh = true;
     _isFreshAltitude = true;
     _isFreshLatitude = true;
@@ -139,16 +183,25 @@ bool SFE_UBLOX_GNSS::getPVT(uint16_t maxWait){
     return true;
 }
 int32_t SFE_UBLOX_GNSS::getLatitude(uint16_t maxWait){
+    if(!_isFreshLatitude){
+        getPVT(maxWait);
+    }
     _isFreshLatitude = false;
     _isFresh = false;
     return _Latitude;
 }
 int32_t SFE_UBLOX_GNSS::getLongitude(uint16_t maxWait){
+    if(!_isFreshLongitude){
+        getPVT(maxWait);
+    }
     _isFreshLongitude = false;
     _isFresh = false;
     return _Longitude;
 }
 int32_t SFE_UBLOX_GNSS::getAltitude(uint16_t maxWait){
+    if(!_isFreshAltitude){
+        getPVT(maxWait);
+    }
     _isFreshAltitude = false;
     _isFresh = false;
     return _Altitude;

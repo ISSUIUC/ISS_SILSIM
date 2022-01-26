@@ -49,6 +49,7 @@ struct CpuStateContext {
     Barometer* barometer_pointer;
     GPSSensor* gps_pointer;
     Thermometer* thermometer_pointer;
+    Magnetometer* magnetometer_pointer;
 };
 
 #endif  // SILSIM_CPUSTATECONTEXT_H
