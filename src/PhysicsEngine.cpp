@@ -213,7 +213,6 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     std::array<double, 9> inertia = rocket_.get_I();  // moment of inertia
 
-
     double mass = rocket_.get_mass();
 
     /******************** Calculate Intermediate States **********************/

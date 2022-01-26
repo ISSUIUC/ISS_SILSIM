@@ -65,7 +65,7 @@ class Rocket {
 
     void set_q_ornt(Quaterniond quatrn) { q_ornt_ = quatrn; };
 
-    void set_I(const std::array<double, 9> & array) { I_ = array;};
+    void set_I(const std::array<double, 9>& array) { I_ = array; };
 
     void set_w_vect(Vector3d vector) { w_vect_ = vector; };
     void set_w_dot(Vector3d vector) { w_dot_ = vector; };
@@ -78,11 +78,11 @@ class Rocket {
     void set_A_ref(double A_ref) { A_ref_ = A_ref; };
     void set_Cna(double Cna) { Cna_ = Cna; };
     void set_Cd(double Cd) { Cd_ = Cd; };
-    void set_nose_to_cg(double nose_to_cg){
+    void set_nose_to_cg(double nose_to_cg) {
         nose_to_cg_ = nose_to_cg;
         Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
     };
-    void set_nose_to_cp(double nose_to_cp){
+    void set_nose_to_cp(double nose_to_cp) {
         nose_to_cp_ = nose_to_cp;
         Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
     };
