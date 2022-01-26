@@ -16,23 +16,29 @@
 #ifndef _ROCKET_H_
 #define _ROCKET_H_
 
+#include <Eigen/Dense>
 #include <array>
 #include <string>
 #include <vector>
 
-#include <Vector3.h>
-#include <quaternion.h>
+using Eigen::Vector3d;
+
+using Eigen::Quaterniond;
 
 class Rocket {
    public:
-    Rocket();
+    Rocket() {
+        q_ornt_ = {1, 0, 0, 0};
+
+        Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
+    }
 
     /****************** Get parameters by referece ************************/
-    void get_r_vect(Vector3& vector) const { vector = r_vect_; };
-    void get_r_dot(Vector3& vector) const { vector = r_dot_; };
-    void get_r_ddot(Vector3& vector) const { vector = r_ddot_; };
+    void get_r_vect(Vector3d& vector) const { vector = r_vect_; };
+    void get_r_dot(Vector3d& vector) const { vector = r_dot_; };
+    void get_r_ddot(Vector3d& vector) const { vector = r_ddot_; };
 
-    void get_q_ornt(Quaternion<double>& quatrn) const { quatrn = q_ornt_; };
+    void get_q_ornt(Quaterniond& quatrn) const { quatrn = q_ornt_; };
 
     void get_I(double (&array)[9]) const {
         for (int i = 0; i < 9; ++i) {
@@ -40,11 +46,11 @@ class Rocket {
         }
     };
 
-    void get_w_vect(Vector3& vector) const { vector = w_vect_; };
-    void get_w_dot(Vector3& vector) const { vector = w_dot_; };
+    void get_w_vect(Vector3d& vector) const { vector = w_vect_; };
+    void get_w_dot(Vector3d& vector) const { vector = w_dot_; };
 
-    void get_f_net(Vector3& vector) const { vector = f_net_; };
-    void get_t_net(Vector3& vector) const { vector = t_net_; };
+    void get_f_net(Vector3d& vector) const { vector = f_net_; };
+    void get_t_net(Vector3d& vector) const { vector = t_net_; };
 
     void get_mass(double& mass) const { mass = mass_; };
     void get_d_ref(double& d_ref) const { d_ref = d_ref_; };
@@ -54,20 +60,20 @@ class Rocket {
     void get_nose_to_cg(double& nose_to_cg) const;
     void get_nose_to_cp(double& nose_to_cp) const;
 
-    void get_Cp_vect(Vector3& vector) const;
+    void get_Cp_vect(Vector3d& vector) const;
 
     /************ Get parameters by value (return by value) ***************/
-    Vector3 get_r_vect() const { return r_vect_; };
-    Vector3 get_r_dot() const { return r_dot_; };
-    Vector3 get_r_ddot() const { return r_ddot_; };
+    Vector3d get_r_vect() const { return r_vect_; };
+    Vector3d get_r_dot() const { return r_dot_; };
+    Vector3d get_r_ddot() const { return r_ddot_; };
 
-    Quaternion<double> get_q_ornt() const { return q_ornt_; };
+    Quaterniond get_q_ornt() const { return q_ornt_; };
 
-    Vector3 get_w_vect() const { return w_vect_; };
-    Vector3 get_w_dot() const { return w_dot_; };
+    Vector3d get_w_vect() const { return w_vect_; };
+    Vector3d get_w_dot() const { return w_dot_; };
 
-    Vector3 get_f_net() const { return f_net_; };
-    Vector3 get_t_net() const { return t_net_; };
+    Vector3d get_f_net() const { return f_net_; };
+    Vector3d get_t_net() const { return t_net_; };
 
     double get_mass() const { return mass_; };
     double get_d_ref() const { return d_ref_; };
@@ -77,14 +83,14 @@ class Rocket {
     double get_nose_to_cg() const { return nose_to_cg_; };
     double get_nose_to_cp() const { return nose_to_cp_; };
 
-    Vector3 get_Cp_vect() const { return Cp_vect_; };
+    Vector3d get_Cp_vect() const { return Cp_vect_; };
 
     /************* Set parameters (all passed by reference) ***************/
-    void set_r_vect(Vector3& vector) { r_vect_ = vector; };
-    void set_r_dot(Vector3& vector) { r_dot_ = vector; };
-    void set_r_ddot(Vector3& vector) { r_ddot_ = vector; };
+    void set_r_vect(Vector3d& vector) { r_vect_ = vector; };
+    void set_r_dot(Vector3d& vector) { r_dot_ = vector; };
+    void set_r_ddot(Vector3d& vector) { r_ddot_ = vector; };
 
-    void set_q_ornt(Quaternion<double>& quatrn) { q_ornt_ = quatrn; };
+    void set_q_ornt(Quaterniond& quatrn) { q_ornt_ = quatrn; };
 
     void set_I(double (&array)[9]) {
         for (int i = 0; i < 9; ++i) {
@@ -92,11 +98,11 @@ class Rocket {
         }
     };
 
-    void set_w_vect(Vector3& vector) { w_vect_ = vector; };
-    void set_w_dot(Vector3& vector) { w_dot_ = vector; };
+    void set_w_vect(Vector3d& vector) { w_vect_ = vector; };
+    void set_w_dot(Vector3d& vector) { w_dot_ = vector; };
 
-    void set_f_net(Vector3& vector) { f_net_ = vector; };
-    void set_t_net(Vector3& vector) { t_net_ = vector; };
+    void set_f_net(Vector3d& vector) { f_net_ = vector; };
+    void set_t_net(Vector3d& vector) { t_net_ = vector; };
 
     void set_mass(double& mass) { mass_ = mass; };
     void set_d_ref(double& d_ref) { d_ref_ = d_ref; };
@@ -107,27 +113,27 @@ class Rocket {
     void set_nose_to_cp(double& nose_to_cp);
 
     // Converts vector from inertial frame to rocket reference frame
-    Vector3 i2r(Vector3 vector);
+    Vector3d i2r(Vector3d vector);
 
     // Converts vector from rocket frame to inertial reference frame
-    Vector3 r2i(Vector3 vector);
+    Vector3d r2i(Vector3d vector);
 
    private:
     // The following are in inertial frame
-    Vector3 r_vect_;  // r vector
-    Vector3 r_dot_;   // r-dot (velocity)
-    Vector3 r_ddot_;  // r-double-dot (acceleration)
-    Vector3 w_vect_;  // angular velocity (omega) vector
-    Vector3 w_dot_;   // angular acceleration vector
+    Vector3d r_vect_{0, 0, 0};  // r vector
+    Vector3d r_dot_{0, 0, 0};   // r-dot (velocity)
+    Vector3d r_ddot_{0, 0, 0};  // r-double-dot (acceleration)
+    Vector3d w_vect_{0, 0, 0};  // angular velocity (omega) vector
+    Vector3d w_dot_{0, 0, 0};   // angular acceleration vector
 
     // The following are in inertial frame
-    Vector3 f_net_;  // net force in Netwons
-    Vector3 t_net_;  // net torque in Newton*meters
+    Vector3d f_net_{0, 0, 0};  // net force in Netwons
+    Vector3d t_net_{0, 0, 0};  // net torque in Newton*meters
 
-    Quaternion<double> q_ornt_;  // inertial -> rocket frame quaternion
+    Quaterniond q_ornt_{};  // inertial -> rocket frame quaternion
 
     // The following are in rocket frame
-    Vector3 Cp_vect_;  // CG to Cp vector
+    Vector3d Cp_vect_{};  // CG to Cp vector
 
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
 

@@ -19,6 +19,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
+#include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
 #include <string>
@@ -28,10 +29,10 @@
 #include "Propulsion.h"
 #include "Rocket.h"
 #include "Sensor.h"
-#include "Vector3.h"
-#include "quaternion.h"
 
 #define RAD2DEG (180.0 / 3.14159265)
+
+using Eigen::Vector3d;
 
 Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
                        SolidMotor& motor, CpuState& cpu, std::string filename
@@ -51,13 +52,13 @@ Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
 void Simulation::run(int steps) {
     std::ofstream dataFile(filename_);
 
-    Vector3 r_vect;
-    Vector3 r_dot;
-    Vector3 r_ddot;
-    Vector3 f_net;
-    Vector3 w_net;
+    Vector3d r_vect{};
+    Vector3d r_dot{};
+    Vector3d r_ddot{};
+    Vector3d f_net{};
+    Vector3d w_net{};
 
-    Quaternion<double> q_ornt;
+    Quaterniond q_ornt{};
 
     double roll, pitch, yaw;
 
@@ -70,10 +71,10 @@ void Simulation::run(int steps) {
         rocket_.get_w_vect(w_net);
         rocket_.get_q_ornt(q_ornt);
 
-        double s = q_ornt.Gets();
-        double x = q_ornt.Getx();
-        double y = q_ornt.Gety();
-        double z = q_ornt.Getz();
+        double s = q_ornt.w();
+        double x = q_ornt.x();
+        double y = q_ornt.y();
+        double z = q_ornt.z();
 
         // eqns from
         // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
@@ -83,16 +84,19 @@ void Simulation::run(int steps) {
         roll = atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
                RAD2DEG;
 
-        double alpha = acos(rocket_.i2r(r_dot).z / (r_dot.magnitude()));
+        double alpha = acos(rocket_.i2r(r_dot).z() / (r_dot.norm()));
         sim_log->debug("Timestamp: {}", tStamp_);
-        sim_log->debug("R-Vector: <{}, {}, {}>", r_vect.x, r_vect.y, r_vect.z);
-        sim_log->debug("Velocity: <{}, {}, {}>", r_dot.x, r_dot.y, r_dot.z);
-        sim_log->debug("Accel: <{}, {}, {}>", r_ddot.x, r_ddot.y, r_ddot.z);
-        sim_log->debug("F-Net: <{}, {}, {}>", f_net.x, f_net.y, f_net.z);
-        sim_log->debug("W-Net: <{}, {}, {}>", w_net.x, w_net.y, w_net.z);
+        sim_log->debug("R-Vector: <{}, {}, {}>", r_vect.x(), r_vect.y(),
+                       r_vect.z());
+        sim_log->debug("Velocity: <{}, {}, {}>", r_dot.x(), r_dot.y(),
+                       r_dot.z());
+        sim_log->debug("Accel: <{}, {}, {}>", r_ddot.x(), r_ddot.y(),
+                       r_ddot.z());
+        sim_log->debug("F-Net: <{}, {}, {}>", f_net.x(), f_net.y(), f_net.z());
+        sim_log->debug("W-Net: <{}, {}, {}>", w_net.x(), w_net.y(), w_net.z());
         sim_log->debug("ROLL: {} PITCH: {} YAW: {}  [deg]", roll, pitch, yaw);
         sim_log->debug("alphaSIM: {}  [deg]", alpha * RAD2DEG);
-        Vector3 rocket_axis(0, 0, 1);
+        Vector3d rocket_axis(0, 0, 1);
         rocket_axis = rocket_.r2i(rocket_axis);
 
         engine_->march_step(tStamp_, tStep_);
@@ -102,25 +106,25 @@ void Simulation::run(int steps) {
         cpu_.tick(tStamp_);
 
         dataFile << tStamp_ << ",";
-        dataFile << r_vect.x << "," << r_vect.y << "," << r_vect.z << ",";
-        dataFile << r_dot.x << "," << r_dot.y << "," << r_dot.z << ",";
-        dataFile << r_ddot.x << "," << r_ddot.y << "," << r_ddot.z << ",";
-        dataFile << f_net.x << "," << f_net.y << "," << f_net.z << ",";
+        dataFile << r_vect.x() << "," << r_vect.y() << "," << r_vect.z() << ",";
+        dataFile << r_dot.x() << "," << r_dot.y() << "," << r_dot.z() << ",";
+        dataFile << r_ddot.x() << "," << r_ddot.y() << "," << r_ddot.z() << ",";
+        dataFile << f_net.x() << "," << f_net.y() << "," << f_net.z() << ",";
         dataFile << s << "," << x << "," << y << "," << z << ",";
         dataFile << roll << "," << pitch << "," << yaw << ",";
-        dataFile << rocket_axis.x << "," << rocket_axis.y << ","
-                 << rocket_axis.z << ",";
+        dataFile << rocket_axis.x() << "," << rocket_axis.y() << ","
+                 << rocket_axis.z() << ",";
 
-        Vector3 sensor_data;
+        Vector3d sensor_data;
         sensors_[0]->get_data(sensor_data);
-        dataFile << sensor_data.x << "," << sensor_data.y << ","
-                 << sensor_data.z;
+        dataFile << sensor_data.x() << "," << sensor_data.y() << ","
+                 << sensor_data.z();
 
         dataFile << "\n";
 
         tStamp_ += tStep_;
 
-        if (r_dot.z < -3.0) {
+        if (r_dot.z() < -3.0) {
             break;
         }
     }

@@ -6,22 +6,22 @@
 #ifndef SILSIM_CPUTHREAD_H
 #define SILSIM_CPUTHREAD_H
 
-#define THD_FUNCTION(name, arg) void; \
-    struct name : public CpuThread { double real_tick(void*); }; \
-    double name::real_tick(void*arg)
+#define THD_WORKING
+//#define THD_FUNCTION(name, arg)
 
 class CpuThread {
    public:
     // returns sleep time
     double tick(CpuStateContext& context) {
         // some checks
-        return real_tick(&context);
+        return loop();
     }
     virtual ~CpuThread() = default;
 
    private:
+    virtual void setup(void* args) = 0;
     // returns sleep time
-    virtual double real_tick(void*) = 0;
+    virtual double loop() = 0;
 };
 
 #endif  // SILSIM_CPUTHREAD_H
