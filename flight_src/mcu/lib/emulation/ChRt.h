@@ -28,7 +28,7 @@ using std::max;
 #define TIME_I2MS(x) (((systime_t)(x) * (systime_t)(1000) + CH_CFG_ST_FREQUENCY - 1) / CH_CFG_ST_FREQUENCY)
 #define chThdCreateStatic(working_area, sizeof_working_area, priority, thread_name, sensor_pointers)
 
-char * itoa(int x, char * buffer, int radix){
+inline char * itoa(int x, char * buffer, int radix){
     std::to_chars(buffer, buffer + 16, x, radix);
 }
 
