@@ -22,6 +22,7 @@
 #include <rocketFSM.h>
 #include <sensors.h>
 #include <ServoControl.h>
+#include "Sensor.h"
 
 
 struct CpuStateContext {
@@ -42,6 +43,11 @@ struct CpuStateContext {
     pointers sensor_pointers;
 
     uint8_t mpu_data[71];
+
+    Gyroscope* gyroscope_pointer;
+    Accelerometer* accelerometer_pointer;
+    Barometer* barometer_pointer;
+
 };
 
 #endif  // SILSIM_CPUSTATECONTEXT_H

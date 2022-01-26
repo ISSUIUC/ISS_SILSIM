@@ -78,10 +78,10 @@ void dataLoggerTickFunction(pointers* pointer_struct) {
  * duplicate file existed) and .csv file extension.
  */
 char* sd_file_namer(char* fileName, char* fileExtensionParam) {
-    char fileExtension[strlen(fileExtensionParam) + 1];
+    char fileExtension[1024];
     strcpy(fileExtension, fileExtensionParam);
 
-    char inputName[strlen(fileName) + 1];
+    char inputName[1024];
     strcpy(inputName, fileName);
 
     strcat(fileName, fileExtension);
@@ -106,7 +106,7 @@ char* sd_file_namer(char* fileName, char* fileExtensionParam) {
             __itoa(i, iStr, 10);
 
             // writes "(sensor)_data(number).csv to fileNameTemp"
-            char fileNameTemp[strlen(inputName) + strlen(iStr) + 6];
+            char fileNameTemp[1024];
             strcpy(fileNameTemp, inputName);
             strcat(fileNameTemp, iStr);
             strcat(fileNameTemp, fileExtension);

@@ -13,6 +13,9 @@ struct MS5611 {
     int read(uint8_t bits = 8);
     uint32_t getPressure() const;
     int32_t getTemperature() const;
+
+    double _temperature;
+    double _pressure;
 };
 
 #endif  // SILSIM_MS5611_H

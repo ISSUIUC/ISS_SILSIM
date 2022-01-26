@@ -12,6 +12,7 @@
 #include "SD.h"
 
 
+
 CpuStateContext context;
 //context.system_time
 
@@ -78,7 +79,9 @@ uint16_t LSM9DS1::beginSPI(uint8_t ag_CS_pin, uint8_t m_CS_pin) { return 0; }
 void LSM9DS1::calibrate(bool autoCalc) {}
 void LSM9DS1::calibrateMag(bool loadIn) {}
 void LSM9DS1::magOffset(uint8_t axis, int16_t offset) {}
-void LSM9DS1::readGyro() {}
+void LSM9DS1::readGyro() {
+
+}
 void LSM9DS1::readAccel() {}
 float LSM9DS1::calcGyro(int16_t gyro) { return 0; }
 float LSM9DS1::calcAccel(int16_t accel) { return 0; }
@@ -88,9 +91,12 @@ float LSM9DS1::calcMag(int16_t mag) { return 0; }
 
 MS5611::MS5611(uint8_t pin){}
 void MS5611::init(){}
-int MS5611::read(uint8_t bits){}
-uint32_t MS5611::getPressure() const {}
-int32_t MS5611::getTemperature() const {}
+int MS5611::read(uint8_t bits) {
+    //_temperature = context.barometer_pointer ...
+    _pressure = context.barometer_pointer->get_data();
+    }
+    uint32_t MS5611::getPressure() const { return _pressure * 100; } //millibar to pascal conversion
+int32_t MS5611::getTemperature() const { return 0; }
 
 SPIClass SPI{};
 void SPIClass::begin() {}
