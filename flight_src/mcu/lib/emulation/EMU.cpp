@@ -120,19 +120,39 @@ float LSM9DS1::calcMag(int16_t mag) { return 0; }
 MS5611::MS5611(uint8_t pin){}
 void MS5611::init(){}
 int MS5611::read(uint8_t bits) {
-    //_temperature = context.barometer_pointer ...
+    double tempKelvins = context.barometer_pointer->get_data(); //init data is in Kelvins
+    double tempCelsius = tempKelvins - 273.15;                  //first convert to celsius
+    _temperature = tempCelsius * 100;                           //finally convert celsius to hundreths of degrees celsius
     _pressure = context.barometer_pointer->get_data();
-    }
-    uint32_t MS5611::getPressure() const { return _pressure * 100; } //millibar to pascal conversion
-int32_t MS5611::getTemperature() const { return 0; }
+}
+uint32_t MS5611::getPressure() const { return _pressure; } 
+int32_t MS5611::getTemperature() const { return _temperature; }
 
 SPIClass SPI{};
 void SPIClass::begin() {}
 
-bool SFE_UBLOX_GNSS::getPVT(uint16_t maxWait){return false;}
-int32_t SFE_UBLOX_GNSS::getLatitude(uint16_t maxWait){return 0;}
-int32_t SFE_UBLOX_GNSS::getLongitude(uint16_t maxWait){return 0;}
-int32_t SFE_UBLOX_GNSS::getAltitude(uint16_t maxWait){return 0;}
+bool SFE_UBLOX_GNSS::getPVT(uint16_t maxWait){
+    _isFresh = true;
+    _isFreshAltitude = true;
+    _isFreshLatitude = true;
+    _isFreshLongitude = true;
+    return true;
+}
+int32_t SFE_UBLOX_GNSS::getLatitude(uint16_t maxWait){
+    _isFreshLatitude = false;
+    _isFresh = false;
+    return _Latitude;
+}
+int32_t SFE_UBLOX_GNSS::getLongitude(uint16_t maxWait){
+    _isFreshLongitude = false;
+    _isFresh = false;
+    return _Longitude;
+}
+int32_t SFE_UBLOX_GNSS::getAltitude(uint16_t maxWait){
+    _isFreshAltitude = false;
+    _isFresh = false;
+    return _Altitude;
+}
 uint8_t SFE_UBLOX_GNSS::getFixType(uint16_t maxWait){return 0;}
 uint8_t SFE_UBLOX_GNSS::getSIV(uint16_t maxWait){return 0;}
 bool SFE_UBLOX_GNSS::begin(SPIClass &spiPort, uint8_t csPin, uint32_t spiSpeed){return false;}

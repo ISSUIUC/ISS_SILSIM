@@ -27,6 +27,14 @@ struct SFE_UBLOX_GNSS {
     bool setPortOutput(uint8_t portID, uint8_t comSettings, uint16_t maxWait = (uint16_t)1100U);
     bool saveConfigSelective(uint32_t configMask, uint16_t maxWait = (uint16_t)1100U);
     bool setNavigationFrequency(uint8_t navFreq, uint16_t maxWait = (uint16_t)1100U);
+
+    int32_t _Latitude;
+    int32_t _Longitude;
+    int32_t _Altitude;
+    bool _isFreshLatitude;
+    bool _isFreshLongitude;
+    bool _isFreshAltitude;
+    bool _isFresh;
 };
 
 #endif  // SILSIM_SPARKFUN_U_BLOX_GNSS_ARDUINO_LIBRARY_H
