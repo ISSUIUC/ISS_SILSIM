@@ -29,7 +29,7 @@ using std::max;
 #define chThdCreateStatic(working_area, sizeof_working_area, priority, thread_name, sensor_pointers)
 
 inline char * itoa(int x, char * buffer, int radix){
-    std::to_chars(buffer, buffer + 16, x, radix);
+    return std::to_chars(buffer, buffer + 16, x, radix).ptr;
 }
 
 #define __itoa itoa
