@@ -14,8 +14,8 @@ struct MS5611 {
     uint32_t getPressure() const;
     int32_t getTemperature() const;
 
-    double _temperature;
-    double _pressure;
+    int32_t _temperature;
+    uint32_t _pressure;
 };
 
 #endif  // SILSIM_MS5611_H
