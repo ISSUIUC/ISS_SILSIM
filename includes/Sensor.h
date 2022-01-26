@@ -85,6 +85,18 @@ class Gyroscope : public Sensor {
     Vector3d bias_;  // Constant bias vector to be added to measurement
 };
 
+class Thermometer : public Sensor {
+   public:
+    Thermometer(std::string name, Rocket& rocket, double refresh_rate, double noise_mean = 0.0f, double noise_stddev = 0.1f);
+    void update_data(double tStep) override;
+    double get_data() override;
+
+   private:
+    double data_;
+    double bias_;
+    double noise_;
+};
+
 class Accelerometer : public Sensor {
    public:
     Accelerometer(std::string name, Rocket& rocket, double refresh_rate,

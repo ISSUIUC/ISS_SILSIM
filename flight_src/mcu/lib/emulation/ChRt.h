@@ -9,6 +9,7 @@
 #include <mutex>
 #include <cstring>
 #include <cmath>
+#include <charconv>
 #include <memory>
 
 #define SEMAPHORE_DECL(name, n) std::atomic<size_t> name{n};
@@ -26,7 +27,12 @@ using std::max;
 #define CH_CFG_ST_FREQUENCY 100000
 #define TIME_I2MS(x) (((systime_t)(x) * (systime_t)(1000) + CH_CFG_ST_FREQUENCY - 1) / CH_CFG_ST_FREQUENCY)
 #define chThdCreateStatic(working_area, sizeof_working_area, priority, thread_name, sensor_pointers)
-#define __itoa _itoa
+
+inline char * itoa(int x, char * buffer, int radix){
+    std::to_chars(buffer, buffer + 16, x, radix);
+}
+
+#define __itoa itoa
 #define TIME_IMMEDIATE (sysinterval_t)0
 #define MSG_OK (msg_t)0
 #define NORMALPRIO ((unsigned char)128)

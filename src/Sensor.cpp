@@ -18,6 +18,7 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include <string>
+#include <Atmosphere.h>
 
 using Eigen::Vector3d;
 
@@ -109,7 +110,7 @@ void Accelerometer::get_data(Vector3d& data) {
 Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
                      double noise_mean, double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
-    data_ = rocket_.get_r_vect().x();
+    data_ = Atmosphere::get_pressure(rocket.get_r_vect().z());
     bias_ = 0;
     noise_ = 0;
 }
@@ -144,3 +145,21 @@ Vector3d randomize_vector(std::default_random_engine& generator,
 
     return vector;
 }
+Thermometer::Thermometer(std::string name, Rocket& rocket, double refresh_rate,
+                         double noise_mean, double noise_stddev): Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {}
+void Thermometer::update_data(double tStep) {
+    if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
+        data_ = Atmosphere::get_temperature(rocket_.get_r_vect().z());
+        new_data_ = true;
+
+        if (inject_noise_) {
+            noise_ = normal_dist_(generator_);
+            data_ += noise_;
+        }
+
+        if (inject_bias_) {
+            data_ += bias_;
+        }
+    }
+}
+double Thermometer::get_data() { return data_; }
