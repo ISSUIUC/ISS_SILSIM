@@ -47,7 +47,8 @@ struct CpuStateContext {
     Gyroscope* gyroscope_pointer;
     Accelerometer* accelerometer_pointer;
     Barometer* barometer_pointer;
-
+    GPSSensor* gps_pointer;
+    Thermometer* thermometer_pointer;
 };
 
 #endif  // SILSIM_CPUSTATECONTEXT_H

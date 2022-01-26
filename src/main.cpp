@@ -35,6 +35,7 @@ int main() {
     Gyroscope gyroscope("LSM9_gyro", rocket, 100);
     Thermometer thermometer("MS5611_thermometer", rocket, 100);
     Barometer barometer("MS5611_barometer", rocket, 100);
+    GPSSensor gps("ZOEM8Q_gps", rocket, 10);
 
     // 3.5 second burn time @ 4000 Newton constant thrust (L ish motor I think)
     SolidMotor motor(3.5, 4000.0);

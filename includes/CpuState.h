@@ -11,7 +11,13 @@
 #include "CpuThread.h"
 class CpuState {
    public:
-    CpuState() {}
+    CpuState(Accelerometer* accelerometer, Thermometer* thermometer, Barometer* barometer, Gyroscope* gyroscope, GPSSensor* gps): context() {
+        context.accelerometer_pointer = accelerometer;
+        context.barometer_pointer = barometer;
+        context.gyroscope_pointer = gyroscope;
+        context.gps_pointer = gps;
+        context.thermometer_pointer = thermometer;
+    }
 
     void add_thread(std::unique_ptr<CpuThread> thread);
     void tick(double timestamp);

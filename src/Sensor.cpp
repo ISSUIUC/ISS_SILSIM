@@ -163,3 +163,30 @@ void Thermometer::update_data(double tStep) {
     }
 }
 double Thermometer::get_data() { return data_; }
+
+GPSSensor::GPSSensor(std::string name, Rocket& rocket, double refresh_rate, double noise_mean, double noise_stddev)
+    : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {}
+
+void GPSSensor::update_data(double tStep) {
+    if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
+        data_ = rocket_.get_r_vect();
+        new_data_ = true;
+
+        if (inject_noise_) {
+            noise_.x() = normal_dist_(generator_);
+            noise_.y() = normal_dist_(generator_);
+            noise_.z() = normal_dist_(generator_);
+            data_ += noise_;
+        }
+
+        if (inject_bias_) {
+            data_ += bias_;
+        }
+    }
+}
+
+void GPSSensor::get_data(Vector3d& data){
+    data = data_;
+}
+
+
