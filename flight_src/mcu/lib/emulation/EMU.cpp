@@ -12,7 +12,7 @@
 #include "SD.h"
 
 
-CpuStateContext context;
+extern CpuStateContext context;
 //context.system_time
 
 

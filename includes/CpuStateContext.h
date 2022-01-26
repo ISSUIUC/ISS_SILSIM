@@ -22,6 +22,7 @@
 #include <rocketFSM.h>
 #include <sensors.h>
 #include <ServoControl.h>
+#include "Sensor.h"
 
 
 struct CpuStateContext {

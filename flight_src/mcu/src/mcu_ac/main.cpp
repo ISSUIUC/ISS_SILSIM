@@ -159,7 +159,7 @@ class Gps_THD : public CpuThread {
 /******************************************************************************/
 /* SERVO CONTROL THREAD                                                       */
 
-class Gps_THD : public CpuThread {
+class Servo_THD : public CpuThread {
     struct pointers *pointer_struct;
     bool active_control;
 
@@ -174,7 +174,7 @@ class Gps_THD : public CpuThread {
 
         servoTickFunction(pointer_struct, &servo_cw, &servo_ccw);
 
-        chThdSleepMilliseconds(6);  // FSM runs at 100 Hz
+        return 6.0;  // FSM runs at 100 Hz
     }
 };
 
@@ -377,4 +377,26 @@ void setup() {
 
 void loop() {
     // not used
+}
+
+
+void thread1(){
+    print("hi");
+    sleep(2);
+    print("bye");
+}
+
+void thread2(){
+    print("cool");
+    sleep(1);
+    print("yo");
+}
+
+int main(){
+    thread(thread1);
+    thread(thread2);
+    cool
+    hi
+    yo
+    bye
 }

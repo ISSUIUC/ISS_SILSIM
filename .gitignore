@@ -32,6 +32,11 @@ logs/*
 *.out
 *.app
 
+# Vim Temporaries
+*.swp
+*.swo
+.session.vim
+
 # CMake Temporaries
 cmake-*
 **/cmake-build-debug
@@ -44,18 +49,18 @@ cmake-*
 **/*.cbp
 **/CMakeScripts
 **/compile_commands.json
+*.make
+**/*.make
 
 main
 ISS_SILSIM
 sim_data/*.csv
 build/*
-*.gch
-**/*.gch
-*.swp
 .cache
 compile_commands.json
 bin
 .clangd
+<<<<<<< HEAD
 .session.vim
 .idea
 .vs
@@ -63,4 +68,7 @@ bin
 out/
 *.make
 **/*.make
+=======
+
+>>>>>>> master
 

@@ -4,3 +4,6 @@
 [submodule "flight_src/mcu/lib/eigen"]
 	path = flight_src/mcu/lib/eigen
 	url = https://gitlab.com/libeigen/eigen
+[submodule "lib/eigen"]
+	path = lib/eigen
+	url = https://gitlab.com/libeigen/eigen
