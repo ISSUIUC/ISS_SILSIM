@@ -52,24 +52,14 @@ Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
 void Simulation::run(int steps) {
     std::ofstream dataFile(filename_);
 
-    Vector3d r_vect{};
-    Vector3d r_dot{};
-    Vector3d r_ddot{};
-    Vector3d f_net{};
-    Vector3d w_net{};
-
-    Quaterniond q_ornt{};
-
-    double roll, pitch, yaw;
-
     motor_.ignite(tStamp_);
     for (int iter = 0; iter < steps; ++iter) {
-        rocket_.get_r_vect(r_vect);
-        rocket_.get_r_dot(r_dot);
-        rocket_.get_r_ddot(r_ddot);
-        rocket_.get_f_net(f_net);
-        rocket_.get_w_vect(w_net);
-        rocket_.get_q_ornt(q_ornt);
+        Vector3d r_vect = rocket_.get_r_vect();
+        Vector3d r_dot = rocket_.get_r_dot();
+        Vector3d r_ddot = rocket_.get_r_ddot();
+        Vector3d f_net = rocket_.get_f_net();
+        Vector3d w_net = rocket_.get_w_vect();
+        Quaterniond q_ornt = rocket_.get_q_ornt();
 
         double s = q_ornt.w();
         double x = q_ornt.x();
@@ -78,10 +68,10 @@ void Simulation::run(int steps) {
 
         // eqns from
         // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-        yaw =
+        double yaw =
             atan2(2.0 * (s * x + z * y), 1.0 - 2.0 * (x * x + y * y)) * RAD2DEG;
-        pitch = asin(2.0 * (s * y - z * x)) * RAD2DEG;
-        roll = atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
+        double pitch = asin(2.0 * (s * y - z * x)) * RAD2DEG;
+        double roll = atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
                RAD2DEG;
 
         double alpha = acos(rocket_.i2r(r_dot).z() / (r_dot.norm()));

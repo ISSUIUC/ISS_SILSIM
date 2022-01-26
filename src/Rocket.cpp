@@ -19,57 +19,6 @@ using Eigen::Quaterniond;
 using Eigen::Vector3d;
 
 /**
- * @brief Obtain distance between tip of nose and the center of gravity
- *
- * @param nose_to_cg Reference to double to overwrite with calculated distance
- */
-void Rocket::get_nose_to_cg(double& nose_to_cg) const {
-    nose_to_cg = nose_to_cg_;
-}
-
-/**
- * @brief Set the distance between tip of nose and the center of gravity
- *
- * Currently assumes the CG is perfectly aligned with the axis of the rocket.
- * i.e. the x and y position of the CG is zero in the body frame
- *
- * @param nose_to_cg Distance between tip of nosecone and CG
- */
-void Rocket::set_nose_to_cg(double& nose_to_cg) {
-    nose_to_cg_ = nose_to_cg;
-    Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
-}
-
-/**
- * @brief Obtain distance between tip of nose and the center of pressure
- *
- * @param nose_to_cp Reference to double to overwrite with calculated distance
- */
-void Rocket::get_nose_to_cp(double& nose_to_cp) const {
-    nose_to_cp = nose_to_cp_;
-}
-
-/**
- * @brief Set the distance between tip of nose and the center of pressure
- *
- * Currently assumes the CP is perfectly aligned with the axis of the rocket.
- * i.e. the x and y position of the CP is zero in the body frame
- *
- * @param nose_to_cg Distance between tip of nosecone and CG
- */
-void Rocket::set_nose_to_cp(double& nose_to_cp) {
-    nose_to_cp_ = nose_to_cp;
-    Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
-}
-
-/**
- * @brief Obtain vector pointing from CG -> CP
- *
- * @param vector Reference to a vector to overwrite with CG-to-CP vector
- */
-void Rocket::get_Cp_vect(Vector3d& vector) const { vector = Cp_vect_; }
-
-/**
  * @brief Performs a quaternion rotation to translate a vector from the inertial
  * frame to the rocket body frame.
  *
