@@ -113,9 +113,9 @@ void LSM9DS1::readGyro() {
     float gScale = 0.00875;
 
     Eigen::Vector3d scaled = data * gScale;
-    x_gyro = scaled.x();
-    y_gyro = scaled.y();
-    z_gyro = scaled.z();
+    gx = scaled.x();
+    gy = scaled.y();
+    gz = scaled.z();
 }
 void LSM9DS1::readAccel() {
     Eigen::Vector3d data;
@@ -123,9 +123,9 @@ void LSM9DS1::readAccel() {
     float aScale = 0.000061;
 
     Eigen::Vector3d scaled = data * aScale;
-    x_accel = scaled.x();
-    y_accel = scaled.y();
-    z_accel = scaled.z();
+    ax = scaled.x();
+    ay = scaled.y();
+    az = scaled.z();
 }
 float LSM9DS1::calcGyro(int16_t gyro) {
     float gScale = 0.00875;
@@ -142,9 +142,9 @@ void LSM9DS1::readMag() {
     float mScale = 0.00014;
 
     Eigen::Vector3d scaled = data * mScale;
-    x_mag = scaled.x();
-    y_mag = scaled.y();
-    z_mag = scaled.z();
+    mx = scaled.x();
+    my = scaled.y();
+    mz = scaled.z();
 }
 float LSM9DS1::calcMag(int16_t mag) {
     float mScale = 0.00014;
