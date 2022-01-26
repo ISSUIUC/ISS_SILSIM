@@ -56,10 +56,9 @@ void KX134::update_data() {
     context.accelerometer_pointer->get_data(data);
 
     Eigen::Vector3d scaled = data * 2048;
-    Eigen::Vector<int16_t, 3> intified = scaled;
-    x_accel = intified.x();
-    y_accel = intified.y();
-    z_accel = intified.z();
+    x_accel = scaled.x();
+    y_accel = scaled.y();
+    z_accel = scaled.z();
 }
 int16_t KX134::binary_to_decimal(int16_t) { return 0; }
 void KX134::init() {}
