@@ -51,18 +51,48 @@ void delay(uint32_t ms) {
 
 
 KX134::KX134() {}
-void KX134::update_data() {}
+void KX134::update_data() {
+    Eigen::Vector3d data;
+    context.accelerometer_pointer->get_data(data);
+
+    Eigen::Vector3d scaled = data * 2048;
+    Eigen::Vector<int16_t, 3> intified = scaled;
+    x_accel = intified.x();
+    y_accel = intified.y();
+    z_accel = intified.z();
+}
 int16_t KX134::binary_to_decimal(int16_t) { return 0; }
 void KX134::init() {}
-int16_t KX134::get_x_accel_raw() { return 0; }
-int16_t KX134::get_y_accel_raw() { return 0; }
-int16_t KX134::get_z_accel_raw() { return 0; }
-float KX134::get_x_gforce() { return 0; }
-float KX134::get_y_gforce() { return 0; }
-float KX134::get_z_gforce() { return 0; }
-float KX134::get_x_accel() { return 0; }
-float KX134::get_y_accel() { return 0; }
-float KX134::get_z_accel() { return 0; }
+int16_t KX134::get_x_accel_raw() { return x_accel; }
+int16_t KX134::get_y_accel_raw() { return y_accel; }
+int16_t KX134::get_z_accel_raw() { return z_accel; }
+float KX134::get_x_gforce() {
+    int16_t decimal = get_x_accel_raw();
+    float gForce = (float)decimal / 2048;
+    return gForce;
+}
+float KX134::get_y_gforce() {
+    int16_t decimal = get_y_accel_raw();
+    float gForce = (float)decimal / 2048;
+    return gForce;
+}
+float KX134::get_z_gforce() {
+    int16_t decimal = get_z_accel_raw();
+    float gForce = (float)decimal / 2048;
+    return gForce;
+}
+float KX134::get_x_accel() {
+    float gForce = get_x_gforce();
+    return gForce * 9.8;
+}
+float KX134::get_y_accel() {
+    float gForce = get_y_gforce();
+    return gForce * 9.8;
+}
+float KX134::get_z_accel() {
+    float gForce = get_z_gforce();
+    return gForce * 9.8;
+}
 
 PWMServo::PWMServo() {}
 uint8_t PWMServo::attach(int pinArg, int min, int max) { return 0; }
