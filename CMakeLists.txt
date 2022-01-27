@@ -23,7 +23,7 @@ add_executable(ISS_SILSIM src/main.cpp
         )
 
 #Linking raylib library
-add_executable(visualizer sim_data/draw_rocket.cpp) #Change file to whatever is needed
+add_executable(visualizer visualizer/draw_rocket.cpp) #Change file to whatever is needed
 add_subdirectory(lib/rapidcsv)
 add_subdirectory(lib/raylib)
 target_link_libraries(visualizer raylib rapidcsv)
