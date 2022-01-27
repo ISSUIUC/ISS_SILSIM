@@ -98,6 +98,17 @@ RASAeroCoefficients get_aero_coefficients(double mach, double alpha,
             closest_mach = (mach_below + mach_number_fidelity_);
         }
     }
-    std::cout << "closest_mach = " << cloest_mach << std::endl;
+    std::cout << "closest_mach = " << closest_mach << std::endl;
+    double alpha_below = ((int)(alpha/alpha_number_fidelity_)) * alpha_number_fidelity_;
+    double alpha_above = alpha_below + alpha_number_fidelity_;
+    
+    
+    double protuberance_percent_below = ((int)(protuberance_percent/protuberance_percent_number_fidelity)) * protuberance_percent_number_fidelity_;
+    double protuberance_percent_above = protuberance_percent_below + protuberance_percent_number_fidelity_;
+    
+    int mach_start_index = ((closest_mach / mach_number_fidelity) - 1) * (alpha_instances - mach_number_instances);
+    int row_a_offset_index = (alpha / alpha_fidelity) * (protuberance_instances_);
+    std::cout << "mach start index = " << mach_start_index << std::end1;
+    std:cout << "row offset index = " << row_offset_index << std::end2;
     return {};
 }
