@@ -1,16 +1,3 @@
-/*******************************************************************************************
-*
-*   raylib [models] example - Plane rotations (yaw, pitch, roll)
-*
-*   This example has been created using raylib 1.8 (www.raylib.com)
-*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
-*
-*   Example contributed by Berni (@Berni8k) and reviewed by Ramon Santamaria (@raysan5)
-*
-*   Copyright (c) 2017-2021 Berni (@Berni8k) and Ramon Santamaria (@raysan5)
-*
-********************************************************************************************/
-
 #include "raylib.h"
 
 #include "raymath.h"        // Required for: MatrixRotateXYZ()
@@ -103,8 +90,6 @@ int main(void)
             DrawText(pos_buf, 40, 400, 10, DARKGRAY);
             DrawText(vel_buf, 40, 420, 10, DARKGRAY);
 
-//            DrawText("Roll controlled with: KEY_LEFT / KEY_RIGHT", 40, 400, 10, DARKGRAY);
-//            DrawText("Yaw controlled with: KEY_A / KEY_S", 40, 420, 10, DARKGRAY);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
