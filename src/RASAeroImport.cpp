@@ -88,7 +88,7 @@ void RASAeroImport::set_protuberance_params() {
     protuberance_fidelity_ = fabs(vec[0] - vec[1]);
 }
 
-RASAeroCoefficients get_aero_coefficients(double mach, double alpha,
+RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach, double alpha,
                                           double protuberance_percent) 
 {double closest_mach;
     double mach_below = ((int)(mach/mach_number_fidelity_)) * mach_number_fidelity_;
@@ -99,12 +99,12 @@ RASAeroCoefficients get_aero_coefficients(double mach, double alpha,
         }
     }
     std::cout << "closest_mach = " << closest_mach << std::endl;
-    double alpha_below = ((int)(alpha/alpha_number_fidelity_)) * alpha_number_fidelity_;
-    double alpha_above = alpha_below + alpha_number_fidelity_;
+    double alpha_below = ((int)(alpha/alpha_fidelity_)) * alpha_fidelity_;
+    double alpha_above = alpha_below + alpha_fidelity_;
     
     
-    double protuberance_percent_below = ((int)(protuberance_percent/protuberance_percent_number_fidelity)) * protuberance_percent_number_fidelity_;
-    double protuberance_percent_above = protuberance_percent_below + protuberance_percent_number_fidelity_;
+    double protuberance_percent_below = ((int)(protuberance_percent/protuberance_fidelity)) * protuberance_fidelity_;
+    double protuberance_percent_above = protuberance_percent_below + protuberance_idelity_;
     
     int mach_start_index = ((closest_mach / mach_number_fidelity) - 1) * (alpha_instances - mach_number_instances);
     int row_a_offset_index = (alpha / alpha_fidelity) * (protuberance_instances_);
