@@ -4,16 +4,17 @@
 #include <iostream>
 
 #include "CpuState.h"
+#include "RASAeroImport.h"
 #include "Rocket.h"
 #include "Sensor.h"
 #include "Simulation.h"
-#include "RASAeroImport.h"
 
 constexpr double deg2rad = 3.14159265 / 180.0;
 
 int main() {
 
     RASAeroImport import("utils/RASAero_fetch/output/RASAero.csv");
+
     RASAeroCoefficients data = import.get_aero_coefficients(0.043, 2.87, 0.46);
 
     /*

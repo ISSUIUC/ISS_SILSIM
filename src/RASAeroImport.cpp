@@ -54,7 +54,7 @@ RASAeroImport::RASAeroImport(std::string file_path) {
         aero_table_(i, 8) = cp[i];
     }
 
-    std::cout << aero_table_ << std::endl;
+    // std::cout << aero_table_ << std::endl;
 
     set_mach_number_params();
     set_alpha_params();
@@ -88,27 +88,40 @@ void RASAeroImport::set_protuberance_params() {
     protuberance_fidelity_ = fabs(vec[0] - vec[1]);
 }
 
-RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach, double alpha,
-                                          double protuberance_percent) 
-{double closest_mach;
-    double mach_below = ((int)(mach/mach_number_fidelity_)) * mach_number_fidelity_;
-    if ((mach - mach_below) <= (mach_number_fidelity_ / 2)){
+RASAeroCoefficients RASAeroImport::get_aero_coefficients(
+    double mach, double alpha, double protuberance_percent) {
+    std::cout << "Debug!!" << std::endl;
+
+    double closest_mach;
+    double mach_below =
+        ((int)(mach / mach_number_fidelity_)) * mach_number_fidelity_;
+
+    if ((mach - mach_below) <= (mach_number_fidelity_ / 2)) {
         closest_mach = mach_below;
-        } else {
-            closest_mach = (mach_below + mach_number_fidelity_);
-        }
+    } else {
+        closest_mach = (mach_below + mach_number_fidelity_);
     }
+
     std::cout << "closest_mach = " << closest_mach << std::endl;
-    double alpha_below = ((int)(alpha/alpha_fidelity_)) * alpha_fidelity_;
+
+    double alpha_below = ((int)(alpha / alpha_fidelity_)) * alpha_fidelity_;
     double alpha_above = alpha_below + alpha_fidelity_;
-    
-    
-    double protuberance_percent_below = ((int)(protuberance_percent/protuberance_fidelity)) * protuberance_fidelity_;
-    double protuberance_percent_above = protuberance_percent_below + protuberance_idelity_;
-    
-    int mach_start_index = ((closest_mach / mach_number_fidelity) - 1) * (alpha_instances - mach_number_instances);
-    int row_a_offset_index = (alpha / alpha_fidelity) * (protuberance_instances_);
-    std::cout << "mach start index = " << mach_start_index << std::end1;
-    std:cout << "row offset index = " << row_offset_index << std::end2;
+
+    double protuberance_percent_below =
+        ((int)(protuberance_percent / protuberance_fidelity_)) *
+        protuberance_fidelity_;
+
+    double protuberance_percent_above =
+        protuberance_percent_below + protuberance_fidelity_;
+
+    int mach_start_index = ((closest_mach / mach_number_fidelity_) - 1) *
+                           (alpha_instances_ * protuberance_instances_);
+    int row_a_offset_index =
+        (alpha_below / alpha_fidelity_) * (protuberance_instances_);
+
+    std::cout << "mach_number_fidelity_ = " << mach_number_fidelity_ << std::endl;
+    std::cout << "mach start index = " << mach_start_index << std::endl;
+    std::cout << "row offset index = " << row_a_offset_index << std::endl;
+
     return {};
 }
