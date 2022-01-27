@@ -13,6 +13,7 @@
 #include "Atmosphere.h"
 
 #include <math.h>
+#include <Eigen/Dense> // Needed for lookup table for wind data
 
 #include <iostream>
 #include <string>
