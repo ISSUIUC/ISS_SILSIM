@@ -37,9 +37,9 @@ int main(void)
     camera.fovy = 30.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;             // Camera type
 
-    Model model = LoadModel("sim_data/rocket.obj");                  // Load model
-    // Texture2D texture = LoadTexture("resources/models/obj/plane_diffuse.png");  // Load model texture
-    // model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;            // Set map diffuse texture
+    Model model = LoadModel("visualizer/rocket.obj");                  // Load model
+    Texture2D texture = LoadTexture("visualizer/carbon-fibre.png");  // Load model texture
+    model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;            // Set map diffuse texture
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
