@@ -42,7 +42,7 @@ int main() {
 
     // ForwardEuler engine(rocket, motor);
     RungeKutta engine(rocket, motor);
-    CpuState cpu;
+    CpuState cpu(&accelerometer, &thermometer, &barometer, &gyroscope, &gps);
 
     Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
 

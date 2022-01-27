@@ -12,6 +12,19 @@
 #include "SD.h"
 
 
+//Define Table for resolutions (for aRes, gRes, mRes)
+#define SENSITIVITY_ACCELEROMETER_2  0.000061
+#define SENSITIVITY_ACCELEROMETER_4  0.000122
+#define SENSITIVITY_ACCELEROMETER_8  0.000244
+#define SENSITIVITY_ACCELEROMETER_16 0.000732
+#define SENSITIVITY_GYROSCOPE_245    0.00875
+#define SENSITIVITY_GYROSCOPE_500    0.0175
+#define SENSITIVITY_GYROSCOPE_2000   0.07
+#define SENSITIVITY_MAGNETOMETER_4   0.00014
+#define SENSITIVITY_MAGNETOMETER_8   0.00029
+#define SENSITIVITY_MAGNETOMETER_12  0.00043
+#define SENSITIVITY_MAGNETOMETER_16  0.00058
+
 extern CpuStateContext context;
 //context.system_time
 
@@ -120,35 +133,69 @@ void LSM9DS1::readGyro() {
 void LSM9DS1::readAccel() {
     Eigen::Vector3d data;
     context.accelerometer_pointer->get_data(data);
-    float aScale = 0.000061;
 
-    Eigen::Vector3d scaled = data * aScale;
+    Eigen::Vector3d scaled = data * aRes;
     ax = scaled.x();
     ay = scaled.y();
     az = scaled.z();
 }
 float LSM9DS1::calcGyro(int16_t gyro) {
-    float gScale = 0.00875;
-    return gyro * gScale;
+    return gyro * gRes;
 }
 float LSM9DS1::calcAccel(int16_t accel) {
-    float aScale = 0.000061;
-    return accel * aScale;
+    return accel * aRes;
 }
-void LSM9DS1::setAccelScale(uint8_t aScl) {}
+void LSM9DS1::setAccelScale(uint8_t aScl) {
+    if (aScl == 2) {
+        aRes = SENSITIVITY_ACCELEROMETER_2;
+    } else if (aScl == 4) {
+        aRes = SENSITIVITY_ACCELEROMETER_4;
+    } else if (aScl == 8) {
+        aRes = SENSITIVITY_ACCELEROMETER_8;
+    } else if (aScl == 16) {
+        aRes = SENSITIVITY_ACCELEROMETER_16;
+    } else {
+        aRes = SENSITIVITY_ACCELEROMETER_2;
+    }
+}
+
+void LSM9DS1::setMagScale(uint8_t mScl) {
+    if (mScl == 12) {
+        mRes = SENSITIVITY_MAGNETOMETER_12;
+    } else if (mScl == 4) {
+        mRes = SENSITIVITY_MAGNETOMETER_4;
+    } else if (mScl == 8) {
+        mRes = SENSITIVITY_MAGNETOMETER_8;
+    } else if (mScl == 16) {
+        mRes = SENSITIVITY_MAGNETOMETER_16;
+    } else {
+        mRes = SENSITIVITY_MAGNETOMETER_4;
+    }
+}
+
+void LSM9DS1::setGyroScale(uint16_t gScl) {
+    if (gScl == 245) {
+        gRes = SENSITIVITY_GYROSCOPE_245;
+    } else if (gScl == 500) {
+        gRes = SENSITIVITY_GYROSCOPE_500;
+    } else if (gScl == 2000) {
+        gRes = SENSITIVITY_GYROSCOPE_2000;
+    } else {
+        gRes = SENSITIVITY_GYROSCOPE_245;
+    }
+}
+
 void LSM9DS1::readMag() {
     Eigen::Vector3d data;
     context.magnetometer_pointer->get_data(data);
-    float mScale = 0.00014;
 
-    Eigen::Vector3d scaled = data * mScale;
+    Eigen::Vector3d scaled = data * mRes;
     mx = scaled.x();
     my = scaled.y();
     mz = scaled.z();
 }
 float LSM9DS1::calcMag(int16_t mag) {
-    float mScale = 0.00014;
-    return mag * mScale;
+    return mag * mRes;
 }
 
 MS5611::MS5611(uint8_t pin){}
@@ -158,6 +205,7 @@ int MS5611::read(uint8_t bits) {
     double tempCelsius = tempKelvins - 273.15;                  //first convert to celsius
     _temperature = tempCelsius * 100;                           //finally convert celsius to hundreths of degrees celsius
     _pressure = context.barometer_pointer->get_data();
+    return 0;
 }
 uint32_t MS5611::getPressure() const { return _pressure; } 
 int32_t MS5611::getTemperature() const { return _temperature; }
@@ -169,11 +217,11 @@ bool SFE_UBLOX_GNSS::getPVT(uint16_t maxWait){
     Eigen::Vector3d data;
     context.gps_pointer->get_data(data);
 
-    double BigDegrees = data.x / 111036.53;  //converted meters to 'rough' degrees @ 40.1164 degrees latitude
-    double BigDegrees = data.y / 85269.13;  //converted meters to 'rough' degrees @ 40.1164 degrees latitude
-    double FatHeight = data.z * 1000 ; //converted meters to millimeters
-    _Longitude = BigDegrees * 10E+7;
-    _Latitude = BigDegrees * 10E+7;
+    double BigLatDegrees = data.x() / 111036.53;  //converted meters to 'rough' degrees @ 40.1164 degrees latitude
+    double BigLongDegrees = data.y() / 85269.13;  //converted meters to 'rough' degrees @ 40.1164 degrees latitude
+    double FatHeight = data.z() * 1000 ; //converted meters to millimeters
+    _Longitude = BigLongDegrees * 10E+7;
+    _Latitude = BigLatDegrees * 10E+7;
     _Altitude = FatHeight;
 
     _isFresh = true;
