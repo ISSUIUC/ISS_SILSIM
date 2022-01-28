@@ -264,9 +264,23 @@ bool SFE_UBLOX_GNSS::setNavigationFrequency(uint8_t navFreq, uint16_t maxWait){r
 
 
 SDClass SD{};
-bool SDClass::exists(const char *fileName) { return false; }
-bool SDClass::begin(uint8_t csPin) { return false; }
-File SDClass::open(const char *file_path, uint8_t mode) { return File(); }
+bool SDClass::exists(const char *fileName) {
+    /*
+       Returns true if the supplied file path exists.
+    */
+   return true;
+}
+bool SDClass::begin(uint8_t csPin) {
+    /*
+      Performs the initialisation required by the sdfatlib library.
+      Return true if initialization succeeds, false otherwise.
+    */
+   return true;
+}
+File SDClass::open(const char *file_path, uint8_t mode) {
+    
+    return File(); 
+}
 
 
 
