@@ -33,7 +33,7 @@ class Rocket {
         Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
     }
 
-    /************ Get parameters by value (return by value) ***************/
+    /************ Get parameters ***************/
     Vector3d get_r_vect() const { return r_vect_; };
     Vector3d get_r_dot() const { return r_dot_; };
     Vector3d get_r_ddot() const { return r_ddot_; };
@@ -58,7 +58,7 @@ class Rocket {
 
     std::array<double, 9> get_I() const { return I_; };
 
-    /************* Set parameters (all passed by reference) ***************/
+    /************* Set parameters ***************/
     void set_r_vect(Vector3d vector) { r_vect_ = vector; };
     void set_r_dot(Vector3d vector) { r_dot_ = vector; };
     void set_r_ddot(Vector3d vector) { r_ddot_ = vector; };
