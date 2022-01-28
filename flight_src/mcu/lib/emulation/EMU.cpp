@@ -117,8 +117,8 @@ uint8_t PWMServo::attached() { return 0; }
 
 
 LSM9DS1::LSM9DS1() {}
-uint16_t LSM9DS1::begin(uint8_t agAddress, uint8_t mAddress, TwoWire &wirePort) {return 0;}
-uint16_t LSM9DS1::beginSPI(uint8_t ag_CS_pin, uint8_t m_CS_pin) { return 0; }
+uint16_t LSM9DS1::begin(uint8_t agAddress, uint8_t mAddress, TwoWire &wirePort) {return 1;}
+uint16_t LSM9DS1::beginSPI(uint8_t ag_CS_pin, uint8_t m_CS_pin) { return 1; }
 void LSM9DS1::calibrate(bool autoCalc) {}
 void LSM9DS1::calibrateMag(bool loadIn) {}
 void LSM9DS1::magOffset(uint8_t axis, int16_t offset) {}

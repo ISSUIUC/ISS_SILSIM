@@ -4,4 +4,4 @@
 
 #include<CpuStateContext.h>
 
-CpuStateContext context;
+CpuStateContext* global_context{};

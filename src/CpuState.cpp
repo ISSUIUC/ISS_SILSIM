@@ -19,7 +19,20 @@
  * @param timestamp Current time in absolute time
  */
 
+/*
+ * start function for the emulated flight code
+ * it calls add_thread to add emulated threads to the emulated cpu
+ */
+void emu_setup();
+
+extern CpuStateContext* global_context;
+
 void CpuState::tick(double timestamp) {
+    global_context = &context;
+    if(!has_started){
+        has_started = true;
+        emu_setup();
+    }
     if(threads_.empty()) return;
     context.system_time = timestamp;
     while(true){
@@ -31,7 +44,7 @@ void CpuState::tick(double timestamp) {
                                            );
 
         if(min_thread->second > timestamp) break;
-        min_thread->second += min_thread->first->tick(context);
+        min_thread->second += min_thread->first->tick();
     }
 }
 

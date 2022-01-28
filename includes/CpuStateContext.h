@@ -5,35 +5,27 @@
 #ifndef SILSIM_CPUSTATECONTEXT_H
 #define SILSIM_CPUSTATECONTEXT_H
 
-#include <vector>
-#include <Arduino.h>
-#include <ChRt.h>
-#include <PWMServo.h>
-#include <SD.h>
-#include <SPI.h>
-#include <Wire.h>
-
-#include <KX134-1211.h>       //High-G IMU Library
-#include <SparkFunLSM9DS1.h>  //Low-G IMU Library
-#include <acShared.h>
 #include <dataLog.h>
-#include <hybridShared.h>
-#include <pins.h>
-#include <rocketFSM.h>
-#include <sensors.h>
-#include <ServoControl.h>
+#include <PWMServo.h>
 #include "Sensor.h"
-
+#include <functional>
 
 struct CpuStateContext {
+    //function to add executable thread to the cpu
+    std::function<void(void*)> add_thread;
+
     double system_time;
     sensorDataStruct_t sensorData;
 
     FSM_State rocketState = STATE_INIT;
 
+    SerialClass Serial;
+    SerialClass Serial1;
+
     KX134 highGimu;
     LSM9DS1 lowGimu;
     SFE_UBLOX_GNSS gps;
+    MS5611 barometer;
 
     PWMServo servo_cw;   // Servo that induces clockwise roll moment
     PWMServo servo_ccw;  // Servo that counterclockwisei roll moment

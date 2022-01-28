@@ -17,6 +17,9 @@ class CpuState {
         context.gyroscope_pointer = gyroscope;
         context.gps_pointer = gps;
         context.thermometer_pointer = thermometer;
+        context.add_thread = [&](void * thd_class){
+            add_thread(std::unique_ptr<CpuThread>(static_cast<CpuThread*>(thd_class)));
+        };
     }
 
     void add_thread(std::unique_ptr<CpuThread> thread);
@@ -27,6 +30,7 @@ class CpuState {
     CpuStateContext context;
     std::vector<std::pair<std::unique_ptr<CpuThread>, double>> threads_;
     // thead, when the threads_ should next run in absolute time
+    bool has_started{};
 };
 
 #endif  // SILSIM_CPUSTATE_H

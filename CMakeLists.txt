@@ -26,7 +26,8 @@ add_executable(ISS_SILSIM src/main.cpp
 if(MSVC)
     target_compile_options(ISS_SILSIM PRIVATE /W3)
 else()
-    target_compile_options(ISS_SILSIM PRIVATE -Wall -Wextra -Wpedantic)
+#    -Wno-unknown-pragmas to silence eigen pragma warnings
+    target_compile_options(ISS_SILSIM PRIVATE -Wall -Wextra -Wpedantic -Wno-unknown-pragmas)
 endif()
 
 target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog flight_emu)

@@ -11,16 +11,14 @@
 
 class CpuThread {
    public:
+    CpuThread(uint8_t priority): priority(priority){}
     // returns sleep time
-    double tick(CpuStateContext& context) {
-        // some checks
-        return loop();
-    }
+    double tick();
     virtual ~CpuThread() = default;
 
    private:
-    virtual void setup(void* args) = 0;
     // returns sleep time
+    uint8_t priority;
     virtual double loop() = 0;
 };
 

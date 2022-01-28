@@ -53,14 +53,9 @@
 /******************************************************************************/
 /* ROCKET FINITE STATE MACHINE THREAD                                         */
 
-class Rocket_FMS : public CpuThread {
-    struct pointers *pointer_struct;
-    static rocketFSM stateMachine;
-
-    void setup(void *arg) override {
-        pointer_struct = (struct pointers *)arg;
-        stateMachine = {pointer_struct};
-    }
+class rocket_FSM : public CpuThread {
+   public:
+    rocket_FSM(void * arg, uint8_t prio) : CpuThread(prio), pointer_struct((struct pointers *)arg), stateMachine(pointer_struct){}
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### Rocket FSM thread entrance");
@@ -68,15 +63,17 @@ class Rocket_FMS : public CpuThread {
         stateMachine.tickFSM();
         return 6.0;  // FSM runs at 100 Hz
     }
+   private:
+    pointers *pointer_struct;
+    rocketFSM stateMachine;
 };
 
 /******************************************************************************/
 /* LOW G IMU THREAD                                                           */
 
-class LowgIMU_THD : public CpuThread {
-    struct pointers *pointer_struct;
-
-    void setup(void *arg) override { pointer_struct = (struct pointers *)arg; }
+class lowgIMU_THD : public CpuThread {
+   public:
+    lowgIMU_THD(void* arg, uint8_t prio): CpuThread(prio), pointer_struct((struct pointers *)arg){}
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### Low G IMU thread entrance");
@@ -86,15 +83,18 @@ class LowgIMU_THD : public CpuThread {
 
         return 6.0;
     }
+   private:
+    struct pointers *pointer_struct;
+
 };
 
 /******************************************************************************/
 /* HIGH G IMU THREAD                                                          */
 
-class HighgIMU_THD : public CpuThread {
-    struct pointers *pointer_struct;
+class highgIMU_THD : public CpuThread {
+   public:
+    highgIMU_THD(void* arg, uint8_t prio): CpuThread(prio), pointer_struct((struct pointers *)arg){}
 
-    void setup(void *arg) override { pointer_struct = (struct pointers *)arg; }
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### High G IMU thread entrance");
@@ -104,14 +104,17 @@ class HighgIMU_THD : public CpuThread {
 
         return 6.0;
     }
+   private:
+    struct pointers *pointer_struct;
+
 };
 
 /******************************************************************************/
 /* GPS THREAD                                                                 */
-class Gps_THD : public CpuThread {
-    struct pointers *pointer_struct;
+class gps_THD : public CpuThread {
+   public:
+    gps_THD(void* arg, uint8_t prio): CpuThread(prio), pointer_struct((struct pointers *)arg){}
 
-    void setup(void *arg) override { pointer_struct = (struct pointers *)arg; }
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### GPS thread entrance");
@@ -125,20 +128,18 @@ class Gps_THD : public CpuThread {
 
         return 6.0;  // Sensor DAQ @ ~100 Hz
     }
+
+   private:
+    struct pointers *pointer_struct;
+
 };
 
 /******************************************************************************/
 /* SERVO CONTROL THREAD                                                       */
 
-class Servo_THD : public CpuThread {
-    pointers *pointer_struct;
-
-    ActiveControl ac;
-
-    void setup(void *arg) override {
-        pointer_struct = (struct pointers *)arg;
-        ac = {pointer_struct, &servo_cw, &servo_ccw};
-    }
+class servo_THD : public CpuThread {
+   public:
+    servo_THD(void *arg, uint8_t prio): CpuThread(prio), pointer_struct((struct pointers *)arg), ac(pointer_struct, &servo_cw, &servo_ccw) {}
 
     double loop() override {
 #ifdef THREAD_DEBUG
@@ -149,14 +150,19 @@ class Servo_THD : public CpuThread {
 
         return 6.0;  // FSM runs at 100 Hz
     }
+
+   private:
+    pointers *pointer_struct;
+
+    ActiveControl ac;
 };
 
 /******************************************************************************/
 /* MPU COMMUNICATION THREAD                                                   */
 
 class mpuComm_THD : public CpuThread {
-    void setup(void *args) override {
-        (void)args;
+    public:
+    mpuComm_THD(void* arg, uint8_t prio): CpuThread(prio) {
         Serial1.begin(115200);
     }
     double loop() override {
@@ -208,10 +214,9 @@ class mpuComm_THD : public CpuThread {
 /* DATA LOGGER THREAD                                                   */
 
 class dataLogger_THD : public CpuThread {
-    pointers *pointer_struct;
-    void setup(void *args) override {
-        pointer_struct = (struct pointers *)args;
-    }
+   public:
+    dataLogger_THD(void *arg, uint8_t prio): CpuThread(prio), pointer_struct((struct pointers *)arg) {}
+
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("Data Logging thread entrance");
@@ -221,6 +226,9 @@ class dataLogger_THD : public CpuThread {
 
         return 6.0;
     }
+   private:
+    pointers *pointer_struct;
+
 };
 
 /**
@@ -246,7 +254,7 @@ void chSetup() {
                       NULL);
 }
 
-void setup() {
+void emu_setup() {
     int32_t temperature;
 
 #if defined(THREAD_DEBUG) || defined(LOWGIMU_DEBUG) ||     \
@@ -284,8 +292,7 @@ void setup() {
     {
         digitalWrite(LED_RED, HIGH);
         Serial.println("Failed to communicate with LSM9DS1. Stalling Program");
-        while (true)
-            ;
+        return;
     }
 
     lowGimu.setAccelScale(16);
@@ -295,8 +302,7 @@ void setup() {
         digitalWrite(LED_RED, HIGH);
         Serial.println(
             "Failed to communicate with ZOEM8Q0 gps. Stalling Program");
-        while (true)
-            ;
+        return;
     }
     gps.setPortOutput(COM_PORT_SPI,
                       COM_TYPE_UBX);  // Set the SPI port to output UBX only
@@ -331,8 +337,7 @@ void setup() {
     } else {
         digitalWrite(LED_RED, HIGH);
         Serial.println("SD Begin Failed. Stalling Program");
-        while (true)
-            ;
+        return;
     }
 
     // Servo Setup
@@ -341,6 +346,4 @@ void setup() {
 
     Serial.println("Starting ChibiOS");
     chBegin(chSetup);
-    while (true)
-        ;
 }
