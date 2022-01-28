@@ -18,7 +18,6 @@
  * Grace Robbins
  */
 
-#include "../../../../includes/CpuThread.h"
 #include <Arduino.h>
 #include <ChRt.h>
 #include <PWMServo.h>
@@ -26,16 +25,22 @@
 #include <SPI.h>
 #include <Wire.h>
 
-#include "KX134-1211.h"       //High-G IMU Library
-#include "SparkFunLSM9DS1.h"  //Low-G IMU Library
-#include "ZOEM8Q0.hpp"        //GPS Library
+#include "ActiveControl.h"
+#include "KX134-1211.h"  //High-G IMU Library
+#include "MS5611.h"      //Barometer library
+#include "ServoControl.h"
+#include "SparkFunLSM9DS1.h"                       //Low-G IMU Library
+#include "SparkFun_u-blox_GNSS_Arduino_Library.h"  //GPS Library
 #include "acShared.h"
 #include "dataLog.h"
 #include "hybridShared.h"
 #include "pins.h"
 #include "rocketFSM.h"
 #include "sensors.h"
-#include "servoControl.h"
+
+// emulation for global variables
+#include <CpuThread.h>
+#include "GlobalVars.h"
 
 // datalogger_THD datalogger_THD_vars;
 
@@ -44,34 +49,6 @@
 //#define HIGHGIMU_DEBUG
 //#define GPS_DEBUG
 //#define SERVO_DEBUG
-
-// Create a data struct to hold data from the sensors
-sensorDataStruct_t sensorData;
-
-FSM_State rocketState = STATE_INIT;
-
-KX134 highGimu;
-LSM9DS1 lowGimu;
-ZOEM8Q0 gps = ZOEM8Q0();
-
-PWMServo servo_cw;   // Servo that induces clockwise roll moment
-PWMServo servo_ccw;  // Servo that counterclockwisei roll moment
-
-// Create a struct that holds pointers to all the important objects needed by
-// the threads
-pointers sensor_pointers;
-
-uint8_t mpu_data[71];
-
-static THD_WORKING_AREA(gps_WA, 512);
-static THD_WORKING_AREA(rocket_FSM_WA, 512);
-static THD_WORKING_AREA(lowgIMU_WA, 512);
-static THD_WORKING_AREA(highgIMU_WA, 512);
-static THD_WORKING_AREA(servo_WA, 512);
-static THD_WORKING_AREA(lowg_dataLogger_WA, 512);
-static THD_WORKING_AREA(highg_dataLogger_WA, 512);
-static THD_WORKING_AREA(gps_dataLogger_WA, 512);
-static THD_WORKING_AREA(mpuComm_WA, 512);
 
 /******************************************************************************/
 /* ROCKET FINITE STATE MACHINE THREAD                                         */
@@ -82,7 +59,7 @@ class Rocket_FMS : public CpuThread {
 
     void setup(void *arg) override {
         pointer_struct = (struct pointers *)arg;
-        rocketFSM = {pointer_struct};
+        stateMachine = {pointer_struct};
     }
     double loop() override {
 #ifdef THREAD_DEBUG
@@ -99,9 +76,7 @@ class Rocket_FMS : public CpuThread {
 class LowgIMU_THD : public CpuThread {
     struct pointers *pointer_struct;
 
-    void setup(void *arg) override {
-        pointer_struct = (struct pointers *)arg;
-    }
+    void setup(void *arg) override { pointer_struct = (struct pointers *)arg; }
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### Low G IMU thread entrance");
@@ -119,9 +94,7 @@ class LowgIMU_THD : public CpuThread {
 class HighgIMU_THD : public CpuThread {
     struct pointers *pointer_struct;
 
-    void setup(void *arg) override {
-        pointer_struct = (struct pointers *)arg;
-    }
+    void setup(void *arg) override { pointer_struct = (struct pointers *)arg; }
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### High G IMU thread entrance");
@@ -138,9 +111,7 @@ class HighgIMU_THD : public CpuThread {
 class Gps_THD : public CpuThread {
     struct pointers *pointer_struct;
 
-    void setup(void *arg) override {
-        pointer_struct = (struct pointers *)arg;
-    }
+    void setup(void *arg) override { pointer_struct = (struct pointers *)arg; }
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### GPS thread entrance");
@@ -160,49 +131,35 @@ class Gps_THD : public CpuThread {
 /* SERVO CONTROL THREAD                                                       */
 
 class Servo_THD : public CpuThread {
-    struct pointers *pointer_struct;
-    bool active_control;
+    pointers *pointer_struct;
+
+    ActiveControl ac;
 
     void setup(void *arg) override {
         pointer_struct = (struct pointers *)arg;
-        active_control = false;
+        ac = {pointer_struct, &servo_cw, &servo_ccw};
     }
+
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### Servo thread entrance");
 #endif
 
-        servoTickFunction(pointer_struct, &servo_cw, &servo_ccw);
+        ac.acTickFunction();
 
         return 6.0;  // FSM runs at 100 Hz
     }
 };
 
-static THD_FUNCTION(servo_THD, arg) {
-    struct pointers *pointer_struct = (struct pointers *)arg;
-    bool active_control = false;
-
-    while (true) {
-#ifdef THREAD_DEBUG
-        Serial.println("### Servo thread entrance");
-#endif
-
-        servoTickFunction(pointer_struct, &servo_cw, &servo_ccw);
-
-        chThdSleepMilliseconds(6);  // FSM runs at 100 Hz
-    }
-}
-
 /******************************************************************************/
 /* MPU COMMUNICATION THREAD                                                   */
 
-static THD_FUNCTION(mpuComm_THD, arg) {
-    // first 3 bytes of packet need to be iss
-    (void)arg;
-
-    Serial1.begin(115200);  // Serial interface between MPU and MCU
-
-    while (true) {
+class mpuComm_THD : public CpuThread {
+    void setup(void *args) override {
+        (void)args;
+        Serial1.begin(115200);
+    }
+    double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### mpuComm thread entrance");
 #endif
@@ -214,7 +171,7 @@ static THD_FUNCTION(mpuComm_THD, arg) {
 
         // write transmission code here
         unsigned i = 3;  // because the first 3 indices are already set to be
-                         // ISS
+        // ISS
 
         uint8_t *data =
             (uint8_t *)&sensor_pointers.sensorDataPointer->lowG_data;
@@ -228,7 +185,7 @@ static THD_FUNCTION(mpuComm_THD, arg) {
 
         for (; i < 3 + sizeof(data); i++) {
             mpu_data[i] = *data;  // de-references to match data types, not sure
-                                  // if correct, might send only the first byte
+            // if correct, might send only the first byte
             data++;
         }
 
@@ -243,27 +200,28 @@ static THD_FUNCTION(mpuComm_THD, arg) {
               }
               Serial.printf("\n\n"); */
 
-        chThdSleepMilliseconds(
-            6);  // Set equal sleep time as the other threads, can change
+        return 6.0;
     }
-}
+};
 
 /******************************************************************************/
 /* DATA LOGGER THREAD                                                   */
 
-static THD_FUNCTION(dataLogger_THD, arg) {
-    struct pointers *pointer_struct = (struct pointers *)arg;
-
-    while (true) {
+class dataLogger_THD : public CpuThread {
+    pointers *pointer_struct;
+    void setup(void *args) override {
+        pointer_struct = (struct pointers *)args;
+    }
+    double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("Data Logging thread entrance");
 #endif
 
         dataLoggerTickFunction(pointer_struct);
 
-        chThdSleepMilliseconds(6);
+        return 6.0;
     }
-}
+};
 
 /**
  * @brief Starts all of the threads.
@@ -286,23 +244,18 @@ void chSetup() {
                       NORMALPRIO, dataLogger_THD, &sensor_pointers);
     chThdCreateStatic(mpuComm_WA, sizeof(mpuComm_WA), NORMALPRIO, mpuComm_THD,
                       NULL);
-
-    while (true)
-        ;
 }
 
-/**
- * @brief Handles all configuration necessary before the threads start.
- *
- */
 void setup() {
-#if defined(THREAD_DEBUG) || defined(LOWGIMU_DEBUG) || \
-    defined(HIGHGIMU_DEBUG) || defined(GPS_DEBUG) || defined(SERVO_DEBUG)
+    int32_t temperature;
+
+#if defined(THREAD_DEBUG) || defined(LOWGIMU_DEBUG) ||     \
+    defined(BAROMETER_DEBUG) || defined(HIGHGIMU_DEBUG) || \
+    defined(GPS_DEBUG) || defined(SERVO_DEBUG)
     Serial.begin(115200);
     while (!Serial) {
     }
 #endif
-
     pinMode(LED_BLUE, OUTPUT);
     pinMode(LED_RED, OUTPUT);
     pinMode(LED_ORANGE, OUTPUT);
@@ -316,8 +269,14 @@ void setup() {
 
     sensor_pointers.lowGimuPointer = &lowGimu;
     sensor_pointers.highGimuPointer = &highGimu;
+    sensor_pointers.barometerPointer = &barometer;
     sensor_pointers.GPSPointer = &gps;
     sensor_pointers.sensorDataPointer = &sensorData;
+
+    SPI.begin();
+
+    // Initialize barometer
+    barometer.init();
 
     // lowGimu setup
     if (lowGimu.beginSPI(LSM9DS1_AG_CS, LSM9DS1_M_CS) ==
@@ -332,7 +291,20 @@ void setup() {
     lowGimu.setAccelScale(16);
 
     // GPS Setup
-    gps.beginSPI(ZOEM8Q0_CS);
+    if (!gps.begin(SPI, ZOEM8Q0_CS, 4000000)) {
+        digitalWrite(LED_RED, HIGH);
+        Serial.println(
+            "Failed to communicate with ZOEM8Q0 gps. Stalling Program");
+        while (true)
+            ;
+    }
+    gps.setPortOutput(COM_PORT_SPI,
+                      COM_TYPE_UBX);  // Set the SPI port to output UBX only
+    // (turn off NMEA noise)
+    gps.saveConfigSelective(
+        VAL_CFG_SUBSEC_IOPORT);  // Save (only) the communications port settings
+    // to flash and BBR
+    gps.setNavigationFrequency(10);  // set sampling rate to 10hz
 
     // SD Card Setup
     if (SD.begin(BUILTIN_SDCARD)) {
@@ -356,7 +328,6 @@ void setup() {
             "rocketState,ts_RS");
         sensor_pointers.dataloggerTHDVarsPointer.dataFile.flush();
         // Serial.println(lowg_datalogger_THD_vars.dataFile.name());
-
     } else {
         digitalWrite(LED_RED, HIGH);
         Serial.println("SD Begin Failed. Stalling Program");
@@ -365,38 +336,11 @@ void setup() {
     }
 
     // Servo Setup
-    servo_cw.attach(BALL_VALVE_1_PIN, 770,
-                    2250);  // TODO: MAKE SURE TO CHANGE PINS
-    servo_ccw.attach(BALL_VALVE_2_PIN, 770, 2250);
+    servo_cw.attach(SERVO_CW_PIN, 770, 2250);
+    servo_ccw.attach(SERVO_CCW_PIN, 770, 2250);
 
     Serial.println("Starting ChibiOS");
     chBegin(chSetup);
     while (true)
         ;
-}
-
-void loop() {
-    // not used
-}
-
-
-void thread1(){
-    print("hi");
-    sleep(2);
-    print("bye");
-}
-
-void thread2(){
-    print("cool");
-    sleep(1);
-    print("yo");
-}
-
-int main(){
-    thread(thread1);
-    thread(thread2);
-    cool
-    hi
-    yo
-    bye
 }

@@ -21,7 +21,7 @@ class ServoControl {
     void servoActuation(float length_one, float length_two);
 
    private:
-    const float radius = 0.0127;  // pitch radius of gear
+    float radius = 0.0127;  // pitch radius of gear
     PWMServo* servo_cw_;
     PWMServo* servo_ccw_;
 

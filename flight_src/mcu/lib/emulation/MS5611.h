@@ -8,6 +8,7 @@
 #include<cstdint>
 
 struct MS5611 {
+    MS5611();
     MS5611(uint8_t pin);
     void init();
     int read(uint8_t bits = 8);

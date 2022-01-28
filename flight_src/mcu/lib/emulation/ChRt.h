@@ -37,15 +37,6 @@ inline char * itoa(int x, char * buffer, int radix){
 #define MSG_OK (msg_t)0
 #define NORMALPRIO ((unsigned char)128)
 
-struct SerialClass{
-    static void println(const char *);
-    static void begin(uint32_t frequency);
-    static void write(void * data, uint32_t size);
-};
-
-extern SerialClass Serial;
-extern SerialClass Serial1;
-
 uint32_t chVTGetSystemTime();
 
 void chMtxLock(mutex_t * mtx);
