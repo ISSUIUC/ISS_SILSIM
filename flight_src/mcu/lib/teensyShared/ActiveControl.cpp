@@ -16,9 +16,10 @@ ActiveControl::ActiveControl(struct pointers* pointer_struct, PWMServo* ccw,
 
     // Flaps go in and out upon initializing for testing purposes
     activeControlServos.servoActuation(0, 0);
-    chThdSleepMilliseconds(1000);
+    //disable to work in simulator
+//    chThdSleepMilliseconds(1000);
     activeControlServos.servoActuation(1, 1);
-    chThdSleepMilliseconds(1000);
+//    chThdSleepMilliseconds(1000);
     activeControlServos.servoActuation(0, 0);
 }
 

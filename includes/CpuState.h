@@ -11,12 +11,13 @@
 #include "CpuThread.h"
 class CpuState {
    public:
-    CpuState(Accelerometer* accelerometer, Thermometer* thermometer, Barometer* barometer, Gyroscope* gyroscope, GPSSensor* gps): context() {
+    CpuState(Accelerometer* accelerometer, Thermometer* thermometer, Barometer* barometer, Gyroscope* gyroscope, GPSSensor* gps, Magnetometer* mag): context() {
         context.accelerometer_pointer = accelerometer;
         context.barometer_pointer = barometer;
         context.gyroscope_pointer = gyroscope;
         context.gps_pointer = gps;
         context.thermometer_pointer = thermometer;
+        context.magnetometer_pointer = mag;
         context.add_thread = [&](void * thd_class){
             add_thread(std::unique_ptr<CpuThread>(static_cast<CpuThread*>(thd_class)));
         };

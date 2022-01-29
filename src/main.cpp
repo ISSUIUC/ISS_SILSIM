@@ -11,7 +11,7 @@
 constexpr double deg2rad = 3.14159265 / 180.0;
 
 int main() {
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::critical);
     // comment below is used if we want to change the format of the logging
     // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
 
@@ -36,13 +36,14 @@ int main() {
     Thermometer thermometer("MS5611_thermometer", rocket, 100);
     Barometer barometer("MS5611_barometer", rocket, 100);
     GPSSensor gps("ZOEM8Q_gps", rocket, 10);
+    Magnetometer magnetometer("LSM9_magnetometer", rocket, 100);
 
     // 3.5 second burn time @ 4000 Newton constant thrust (L ish motor I think)
     SolidMotor motor(3.5, 4000.0);
 
     // ForwardEuler engine(rocket, motor);
     RungeKutta engine(rocket, motor);
-    CpuState cpu(&accelerometer, &thermometer, &barometer, &gyroscope, &gps);
+    CpuState cpu(&accelerometer, &thermometer, &barometer, &gyroscope, &gps, &magnetometer);
 
     Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
 

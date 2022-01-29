@@ -189,4 +189,15 @@ void GPSSensor::get_data(Vector3d& data){
     data = data_;
 }
 
+//TODO implement magnetometer
+Magnetometer::Magnetometer(std::string name, Rocket& rocket,
+                           double refresh_rate, double noise_mean,
+                           double noise_stddev)
+    : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {}
+void Magnetometer::update_data(double tStep) {
 
+}
+
+void Magnetometer::get_data(Vector3d& data) {
+    data = {};
+}

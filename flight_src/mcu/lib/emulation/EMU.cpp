@@ -25,7 +25,7 @@
 #define SENSITIVITY_MAGNETOMETER_12  0.00043
 #define SENSITIVITY_MAGNETOMETER_16  0.00058
 
-extern CpuStateContext global_context;
+extern CpuStateContext* global_context;
 //context.system_time
 
 
@@ -38,7 +38,7 @@ void chMtxUnlock(mutex_t * mtx){
 }
 
 uint32_t chVTGetSystemTime(){
-    return global_context.system_time / 1000;
+    return global_context->system_time / 1000;
 }
 void chThdSleepMilliseconds(uint32_t ms) {
     throw std::runtime_error("chThdSleepMilliseconds needs to be replaced to run within the simulator");
@@ -68,7 +68,7 @@ void delay(uint32_t ms) {
 KX134::KX134() {}
 void KX134::update_data() {
     Eigen::Vector3d data;
-    global_context.accelerometer_pointer->get_data(data);
+    global_context->accelerometer_pointer->get_data(data);
 
     Eigen::Vector3d scaled = data * 2048;
     x_accel = scaled.x();
@@ -124,7 +124,7 @@ void LSM9DS1::calibrateMag(bool loadIn) {}
 void LSM9DS1::magOffset(uint8_t axis, int16_t offset) {}
 void LSM9DS1::readGyro() {
     Eigen::Vector3d data;
-    global_context.gyroscope_pointer->get_data(data);
+    global_context->gyroscope_pointer->get_data(data);
     float gScale = 0.00875;
 
     Eigen::Vector3d scaled = data * gScale;
@@ -134,7 +134,7 @@ void LSM9DS1::readGyro() {
 }
 void LSM9DS1::readAccel() {
     Eigen::Vector3d data;
-    global_context.accelerometer_pointer->get_data(data);
+    global_context->accelerometer_pointer->get_data(data);
 
     Eigen::Vector3d scaled = data * aRes;
     ax = scaled.x();
@@ -189,7 +189,7 @@ void LSM9DS1::setGyroScale(uint16_t gScl) {
 
 void LSM9DS1::readMag() {
     Eigen::Vector3d data;
-    global_context.magnetometer_pointer->get_data(data);
+    global_context->magnetometer_pointer->get_data(data);
 
     Eigen::Vector3d scaled = data * mRes;
     mx = scaled.x();
@@ -203,10 +203,10 @@ float LSM9DS1::calcMag(int16_t mag) {
 MS5611::MS5611(uint8_t pin){}
 void MS5611::init(){}
 int MS5611::read(uint8_t bits) {
-    double tempKelvins = global_context.barometer_pointer->get_data(); //init data is in Kelvins
+    double tempKelvins = global_context->barometer_pointer->get_data(); //init data is in Kelvins
     double tempCelsius = tempKelvins - 273.15;                  //first convert to celsius
     _temperature = tempCelsius * 100;                           //finally convert celsius to hundreths of degrees celsius
-    _pressure = global_context.barometer_pointer->get_data();
+    _pressure = global_context->barometer_pointer->get_data();
     return 0;
 }
 uint32_t MS5611::getPressure() const { return _pressure; } 
@@ -218,7 +218,7 @@ void SPIClass::begin() {}
 
 bool SFE_UBLOX_GNSS::getPVT(uint16_t maxWait){
     Eigen::Vector3d data;
-    global_context.gps_pointer->get_data(data);
+    global_context->gps_pointer->get_data(data);
 
     double BigLatDegrees = data.x() / 111036.53;  //converted meters to 'rough' degrees @ 40.1164 degrees latitude
     double BigLongDegrees = data.y() / 85269.13;  //converted meters to 'rough' degrees @ 40.1164 degrees latitude
@@ -259,7 +259,7 @@ int32_t SFE_UBLOX_GNSS::getAltitude(uint16_t maxWait){
 }
 uint8_t SFE_UBLOX_GNSS::getFixType(uint16_t maxWait){return 0;}
 uint8_t SFE_UBLOX_GNSS::getSIV(uint16_t maxWait){return 0;}
-bool SFE_UBLOX_GNSS::begin(SPIClass &spiPort, uint8_t csPin, uint32_t spiSpeed){return false;}
+bool SFE_UBLOX_GNSS::begin(SPIClass &spiPort, uint8_t csPin, uint32_t spiSpeed){return true;}
 bool SFE_UBLOX_GNSS::setPortOutput(uint8_t portID, uint8_t comSettings, uint16_t maxWait){return false;}
 bool SFE_UBLOX_GNSS::saveConfigSelective(uint32_t configMask, uint16_t maxWait){return false;}
 bool SFE_UBLOX_GNSS::setNavigationFrequency(uint8_t navFreq, uint16_t maxWait){return false;}
@@ -287,6 +287,8 @@ File SDClass::open(const char *file_path, uint8_t mode) {
 
 
 
-void File::write(const uint8_t *data, size_t size) {}
+void File::write(const uint8_t *data, size_t size) {
+    printf("Wrote %d bytes to file\n", size);
+}
 void File::flush() {}
-size_t File::println(const char *s) { return 0; }
+size_t File::println(const char *s) { printf("file log: %s\n", s); return strlen(s);}
