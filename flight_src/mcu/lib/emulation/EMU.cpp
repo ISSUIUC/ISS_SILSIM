@@ -281,21 +281,35 @@ bool SDClass::begin(uint8_t csPin) {
    return true;
 }
 File SDClass::open(const char *file_path, uint8_t mode) {
-    if (mode == O_CREAT) {
+    if (mode & O_CREAT) {
         if (map.find(file_path) != map.end()) {
             map.erase(file_path);
             map.emplace(file_path, FileStorage(mode));
             File temp = File(&map.find(file_path)->second);
             return temp;
         }
+        else {
+            map.emplace(file_path, FileStorage(mode));
+            File temp = File(&map.find(file_path)->second);
+            return temp;
+        }
     }
-    return File(nullptr); 
+    else {
+        throw std::runtime_error("OTHER MODES NOT IMPLEMENTED");
+    }
 }
 
+File::File() { storage_ = nullptr; }
 
+File::File(FileStorage *storage) { storage_ = storage; }
 
 void File::write(const uint8_t *data, size_t size) {
-    printf("Wrote %d bytes to file\n", size);
+    const uint8_t *data_end = data + size;
+    storage_->vect.insert(storage_->vect.end(), data, data_end);
 }
 void File::flush() {}
-size_t File::println(const char *s) { printf("file log: %s\n", s); return strlen(s);}
+size_t File::println(const char *s) { 
+    write((const uint8_t*)s, strlen(s));
+    write((const uint8_t*)"\n", 1);
+    return strlen(s);
+}

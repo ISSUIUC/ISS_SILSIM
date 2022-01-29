@@ -24,7 +24,7 @@ struct File {
     void write(const uint8_t * data, size_t size);
     void flush();
     size_t println(const char * s);
-    FileStorage* storage;
+    FileStorage* storage_;
 };
 
 
