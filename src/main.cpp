@@ -48,7 +48,11 @@ int main() {
     Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
 
     sim.add_sensor(&accelerometer);
-    // sim.add_sensor(&gyro1);
+    sim.add_sensor(&gyroscope);
+    sim.add_sensor(&thermometer);
+    sim.add_sensor(&barometer);
+    sim.add_sensor(&gps);
+    sim.add_sensor(&magnetometer);
 
     std::cout << "Running Sim!" << std::endl;
 
