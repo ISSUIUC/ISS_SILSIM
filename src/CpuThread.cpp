@@ -4,6 +4,6 @@ extern CpuStateContext* global_context;
 
 double CpuThread::tick() {
     assert(global_context != nullptr);
-    // some checks
-    return loop();
+    // convert sleep time to seconds
+    return loop() / 1000.0;
 }

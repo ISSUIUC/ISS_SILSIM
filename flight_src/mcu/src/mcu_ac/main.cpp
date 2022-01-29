@@ -44,7 +44,7 @@
 
 // datalogger_THD datalogger_THD_vars;
 
-#define THREAD_DEBUG
+//#define THREAD_DEBUG
 //#define LOWGIMU_DEBUG
 //#define HIGHGIMU_DEBUG
 //#define GPS_DEBUG
@@ -126,7 +126,7 @@ class gps_THD : public CpuThread {
         Serial.println("### GPS thread exit");
 #endif
 
-        return 6.0;  // Sensor DAQ @ ~100 Hz
+        return 80.0;
     }
 
    private:
