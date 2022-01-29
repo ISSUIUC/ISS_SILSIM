@@ -20,5 +20,6 @@ extern CpuStateContext* global_context;
 #define gps (global_context->gps)
 #define sensorData (global_context->sensorData)
 #define barometer (global_context->barometer)
+#define SD (global_context->SD)
 
 #endif  // SILSIM_GLOBALVARS_H

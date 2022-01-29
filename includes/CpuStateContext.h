@@ -30,6 +30,7 @@ struct CpuStateContext {
     PWMServo servo_cw;   // Servo that induces clockwise roll moment
     PWMServo servo_ccw;  // Servo that counterclockwisei roll moment
 
+    SDClass SD;
     // Create a struct that holds pointers to all the important objects needed by
     // the threads
     pointers sensor_pointers;

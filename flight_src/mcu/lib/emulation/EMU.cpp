@@ -271,7 +271,7 @@ bool SDClass::exists(const char *fileName) {
     /*
        Returns true if the supplied file path exists.
     */
-   return true;
+    return map.find(fileName) != map.end();
 }
 bool SDClass::begin(uint8_t csPin) {
     /*

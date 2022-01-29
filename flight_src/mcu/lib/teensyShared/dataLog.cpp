@@ -7,6 +7,7 @@
 #include <SD.h>
 #include <stdio.h>
 
+#include "GlobalVars.h"
 #include "sensors.h"
 
 MUTEX_DECL(SD_Card_Mutex);

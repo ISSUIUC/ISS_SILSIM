@@ -42,6 +42,4 @@ struct SDClass{
     std::unordered_map<std::string, FileStorage> map;
 };
 
-extern SDClass SD;
-
 #endif  // SILSIM_SD_H
