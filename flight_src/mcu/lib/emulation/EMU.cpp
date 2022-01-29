@@ -281,8 +281,15 @@ bool SDClass::begin(uint8_t csPin) {
    return true;
 }
 File SDClass::open(const char *file_path, uint8_t mode) {
-    
-    return File(); 
+    if (mode == O_CREAT) {
+        if (map.find(file_path) != map.end()) {
+            map.erase(file_path);
+            map.emplace(file_path, FileStorage(mode));
+            File temp = File(&map.find(file_path)->second);
+            return temp;
+        }
+    }
+    return File(nullptr); 
 }
 
 
