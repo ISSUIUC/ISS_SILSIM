@@ -127,7 +127,7 @@ void LSM9DS1::readGyro() {
     global_context->gyroscope_pointer->get_data(data);
     float gScale = 0.00875;
 
-    Eigen::Vector3d scaled = data * gScale;
+    Eigen::Vector3d scaled = data / gScale;
     gx = scaled.x();
     gy = scaled.y();
     gz = scaled.z();
@@ -136,7 +136,7 @@ void LSM9DS1::readAccel() {
     Eigen::Vector3d data;
     global_context->accelerometer_pointer->get_data(data);
 
-    Eigen::Vector3d scaled = data * aRes;
+    Eigen::Vector3d scaled = data / aRes;
     ax = scaled.x();
     ay = scaled.y();
     az = scaled.z();
@@ -191,7 +191,7 @@ void LSM9DS1::readMag() {
     Eigen::Vector3d data;
     global_context->magnetometer_pointer->get_data(data);
 
-    Eigen::Vector3d scaled = data * mRes;
+    Eigen::Vector3d scaled = data / mRes;
     mx = scaled.x();
     my = scaled.y();
     mz = scaled.z();
@@ -203,7 +203,7 @@ float LSM9DS1::calcMag(int16_t mag) {
 MS5611::MS5611(uint8_t pin){}
 void MS5611::init(){}
 int MS5611::read(uint8_t bits) {
-    double tempKelvins = global_context->barometer_pointer->get_data(); //init data is in Kelvins
+    double tempKelvins = global_context->thermometer_pointer->get_data(); //init data is in Kelvins
     double tempCelsius = tempKelvins - 273.15;                  //first convert to celsius
     _temperature = tempCelsius * 100;                           //finally convert celsius to hundreths of degrees celsius
     _pressure = global_context->barometer_pointer->get_data();

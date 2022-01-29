@@ -89,6 +89,29 @@ class lowgIMU_THD : public CpuThread {
 };
 
 /******************************************************************************/
+/* BAROMETER THREAD                                                           */
+
+class barometer_THD : public CpuThread{
+   public:
+    barometer_THD(void* arg, uint8_t prio): CpuThread(prio), pointer_struct((struct pointers *)arg){}
+    // Load outside variables into the function
+
+    double loop() override {
+#ifdef THREAD_DEBUG
+        Serial.println("### Barometer thread entrance");
+#endif
+
+        barometerTickFunction(pointer_struct);
+
+        return 6.0;
+    }
+
+   private:
+    struct pointers *pointer_struct;
+};
+
+
+/******************************************************************************/
 /* HIGH G IMU THREAD                                                          */
 
 class highgIMU_THD : public CpuThread {
@@ -242,6 +265,8 @@ void chSetup() {
                       rocket_FSM, &sensor_pointers);
     chThdCreateStatic(gps_WA, sizeof(gps_WA), NORMALPRIO, gps_THD,
                       &sensor_pointers);
+    chThdCreateStatic(barometer_WA, sizeof(barometer_WA), NORMALPRIO + 1,
+                      barometer_THD, &sensor_pointers);
     chThdCreateStatic(lowgIMU_WA, sizeof(lowgIMU_WA), NORMALPRIO, lowgIMU_THD,
                       &sensor_pointers);
     chThdCreateStatic(highgIMU_WA, sizeof(highgIMU_WA), NORMALPRIO,
