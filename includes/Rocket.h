@@ -94,9 +94,6 @@ class Rocket {
 
     Vector3d get_Cp_vect() const { return Cp_vect_; };
 
-    bool get_drogue_deploy() const { return drogue_deploy_; };
-    bool get_main_deploy() const { return main_deploy_; };
-
     /************* Set parameters (all passed by reference) ***************/
     void set_r_vect(Vector3d& vector) { r_vect_ = vector; };
     void set_r_dot(Vector3d& vector) { r_dot_ = vector; };
@@ -123,11 +120,6 @@ class Rocket {
     void set_Cd(double& Cd) { Cd_ = Cd; };
     void set_nose_to_cg(double& nose_to_cg);
     void set_nose_to_cp(double& nose_to_cp);
-
-    void set_drogue_deploy(bool& drogue_deploy) {
-        drogue_deploy_ = drogue_deploy;
-    };
-    void set_main_deploy(bool& main_deploy) { main_deploy_ = main_deploy; };
 
     void update_parachutes();
 
@@ -171,10 +163,6 @@ class Rocket {
     double Cd_ = 0.630;         // drag coefficient
     double nose_to_cg_ = 3.59;  // nosecone tip to CG distance in m
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
-
-    // Parachute deployment flags
-    bool drogue_deploy_ = false;
-    bool main_deploy_ = false;
 };
 
 #endif
