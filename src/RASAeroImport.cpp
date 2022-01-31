@@ -229,8 +229,8 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
         (row_r * ((protuberance - prot_below) / (prot_above - prot_below)));
 
     // Contemplate the meaning of life
-    RASAeroCoefficients result{row_z(3), row_z(4), row_z(5), row_z(6),
-                               row_z(7), row_z(8)};
+    RASAeroCoefficients result{row_z(3), row_z(4), row_z(5),
+                               row_z(6), row_z(7), row_z(8)};
 
 #ifdef RASAERO_DEBUG
     std::cout << std::endl;
