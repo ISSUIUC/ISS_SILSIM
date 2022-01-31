@@ -61,9 +61,6 @@ void Simulation::run(int steps) {
     bool drogue_deploy;
     bool main_deploy;
 
-    double Cd;
-    double A_ref;
-
     Quaterniond q_ornt{};
 
     double roll, pitch, yaw;
@@ -93,35 +90,8 @@ void Simulation::run(int steps) {
         roll = atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
                RAD2DEG;
 
-        // simulation completion criteria
-        if ((r_dot.z() < -3.0) && !drogue_deploy) {
-            std::cout << "Drogue: " << std::to_string(tStamp_) << " s"
-                      << std::endl;
-            drogue_deploy = true;
-            Cd = 1.75;
-            A_ref = 0.203;  // 15" drogue chute
-
-            rocket_.set_drogue_deploy(drogue_deploy);
-            rocket_.set_Cd(Cd);
-            rocket_.set_A_ref(A_ref);
-
-        }
-
-        else if ((r_dot.z() < 0) && (r_vect.z() < 400.0) && !main_deploy) {
-            std::cout << "Main: " << std::to_string(tStamp_) << " s"
-                      << std::endl;
-            main_deploy = true;
-            Cd = 1.75;
-            A_ref = 1.161;  // 36" main chute
-
-            rocket_.set_main_deploy(main_deploy);
-            rocket_.set_Cd(Cd);
-            rocket_.set_A_ref(A_ref);
-
-        }
-
-        else if ((r_dot.z() < 0) && (r_vect.z() < 0.0)) {
-            std::cout << std::to_string(iter) << std::endl;
+        if ((r_dot.z() < 0) && (r_vect.z() < -1.0)) {
+            sim_log->info("Sim done at iteration {}", iter);
             break;
         }
 
@@ -141,9 +111,8 @@ void Simulation::run(int steps) {
         rocket_axis = rocket_.r2i(rocket_axis);
 
         engine_->march_step(tStamp_, tStep_);
-
+        rocket_.update_parachutes();
         update_sensors();
-
         cpu_.tick(tStamp_);
 
         dataFile << tStamp_ << ",";

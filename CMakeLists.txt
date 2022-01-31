@@ -27,9 +27,7 @@ add_executable(ISS_SILSIM src/main.cpp
         src/Sensor.cpp
         src/Simulation.cpp
         src/Atmosphere.cpp
-        
-        
-        )
+        src/Parachute.cpp)
 
 target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog Eigen3::Eigen)
 
