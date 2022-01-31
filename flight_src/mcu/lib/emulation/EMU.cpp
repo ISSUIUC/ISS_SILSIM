@@ -38,7 +38,7 @@ void chMtxUnlock(mutex_t * mtx){
 }
 
 uint32_t chVTGetSystemTime(){
-    return global_context->system_time / 1000;
+    return global_context->system_time * CH_CFG_ST_FREQUENCY;
 }
 void chThdSleepMilliseconds(uint32_t ms) {
     throw std::runtime_error("chThdSleepMilliseconds needs to be replaced to run within the simulator");

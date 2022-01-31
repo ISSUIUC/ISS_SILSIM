@@ -25,6 +25,9 @@ class CpuState {
 
     void add_thread(std::unique_ptr<CpuThread> thread);
     void tick(double timestamp);
+    std::unordered_map<std::string, FileStorage> const& get_filesystem() const{
+        return context.SD.map;
+    }
 
    private:
 

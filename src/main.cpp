@@ -59,5 +59,11 @@ int main() {
     // run 10000 steps
     sim.run(10000);
 
+    auto data = cpu.get_filesystem().at("data.dat");
+
+    auto data_dat = std::ofstream("sim_data/data_synth.dat");
+
+    data_dat.write(data.vect.data(), data.vect.size());
+
     return 0;
 }

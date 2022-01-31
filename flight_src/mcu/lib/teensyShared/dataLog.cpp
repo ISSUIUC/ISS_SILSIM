@@ -7,8 +7,9 @@
 #include <SD.h>
 #include <stdio.h>
 
-#include "GlobalVars.h"
+#include "pins.h"
 #include "sensors.h"
+#include "GlobalVars.h"
 
 MUTEX_DECL(SD_Card_Mutex);
 
@@ -48,11 +49,15 @@ void dataLoggerTickFunction(pointers* pointer_struct) {
         current_data.has_barometer_data =
             buffers.barometerFifo.pop(&current_data.barometer_data);
 
+        current_data.has_flap_data =
+            buffers.flapFifo.pop(&current_data.flap_data);
+
         // check if any buffers have data
         bool any_have_data =
             current_data.has_gps_data || current_data.has_highG_data ||
             current_data.has_lowG_data || current_data.has_rocketState_data ||
-            current_data.has_state_data || current_data.has_barometer_data;
+            current_data.has_state_data || current_data.has_barometer_data ||
+            current_data.has_flap_data;
 
         if (!any_have_data) {
             return;
@@ -78,10 +83,10 @@ void dataLoggerTickFunction(pointers* pointer_struct) {
  * duplicate file existed) and .csv file extension.
  */
 char* sd_file_namer(char* fileName, char* fileExtensionParam) {
-    char fileExtension[2024];
+    char fileExtension[strlen(fileExtensionParam) + 1];
     strcpy(fileExtension, fileExtensionParam);
 
-    char inputName[2024];
+    char inputName[strlen(fileName) + 1];
     strcpy(inputName, fileName);
 
     strcat(fileName, fileExtension);
@@ -106,7 +111,7 @@ char* sd_file_namer(char* fileName, char* fileExtensionParam) {
             __itoa(i, iStr, 10);
 
             // writes "(sensor)_data(number).csv to fileNameTemp"
-            char fileNameTemp[2024];
+            char fileNameTemp[strlen(inputName) + strlen(iStr) + 6];
             strcpy(fileNameTemp, inputName);
             strcat(fileNameTemp, iStr);
             strcat(fileNameTemp, fileExtension);
@@ -133,7 +138,39 @@ char* sd_file_namer(char* fileName, char* fileExtensionParam) {
 int32_t flush_iterator = 0;
 void logData(File* dataFile, sensorDataStruct_t* data) {
     // Write raw bytes to SD card.
+    digitalWrite(LED_WHITE, HIGH);
     dataFile->write((const uint8_t*)data, sizeof(*data));
+    digitalWrite(LED_WHITE, LOW);
+//     dataFile->print(data->has_lowG_data);
+//     dataFile->print(" ");
+//     dataFile->print(data->lowG_data.ax);
+//     dataFile->print(" ");
+//     dataFile->print(data->lowG_data.ay);
+//     dataFile->print(" ");
+//     dataFile->print(data->lowG_data.az);
+//     dataFile->print(" ");
+//     dataFile->print(data->lowG_data.gx);
+//     dataFile->print(" ");
+//     dataFile->print(data->lowG_data.gy);
+//     dataFile->print(" ");
+//     dataFile->print(data->lowG_data.gz);
+//     dataFile->print(" ");
+//     dataFile->print(data->has_barometer_data);
+//     dataFile->print(" ");
+//     dataFile->print(data->barometer_data.temperature);
+//     dataFile->print(" ");
+//     dataFile->print(data->barometer_data.pressure);
+//     dataFile->print(" ");
+//     dataFile->print(data->has_gps_data);
+//     dataFile->print(" ");
+//     dataFile->print(data->gps_data.altitude);
+//     dataFile->print(" ");
+//     dataFile->print(data->gps_data.posLock);
+//     dataFile->print(" ");
+//     dataFile->print(data->has_rocketState_data);
+//     dataFile->print(" ");
+//     dataFile->print(data->rocketState_data.rocketState);
+//     dataFile->println();
 
     // Flush data once for every 1000 writes (this keeps the ring buffer in sync
     // with data collection)
