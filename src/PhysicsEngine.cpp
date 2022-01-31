@@ -335,6 +335,14 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
     Vector3d net_force_if = rocket_.r2i(aero_force_rf + thrust_rf);
     net_force_if.z() -= (9.81 * mass);
 
+
+    //account for the pressure of the sunlight
+
+    Vector3d SolarRadiationForce{0.000000001, 0.0000002, 0.000000001};
+
+    //add solar radiation force to the net force
+    net_force_if + SolarRadiationForce
+
     return net_force_if;
 }
 
