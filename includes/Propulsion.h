@@ -15,10 +15,11 @@
 #ifndef _PROPULSION_H_
 #define _PROPULSION_H_
 
+#include <Eigen/Dense>
 #include <string>
 #include <vector>
 
-#include "Vector3.h"
+using Eigen::Vector3d;
 
 class SolidMotor {
    public:
@@ -28,8 +29,8 @@ class SolidMotor {
           thrust_value_(thrust_value){};
 
     void ignite(double tStamp);
-    void get_thrust(double tStamp, Vector3& vector) const;
-    Vector3 get_thrust(double tStamp) const;
+    void get_thrust(double tStamp, Vector3d& vector) const;
+    Vector3d get_thrust(double tStamp) const;
 
    private:
     bool ignition_;

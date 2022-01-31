@@ -7,15 +7,25 @@ Non-linear 6DOF rocket trajectory simulation utility
 
 ## Installation and Setup Instructions
 
-Modify parameters in `src/main.cpp` as desired, then run the following:
+First time setup (linux and mac only, windows users see windows specific instructions below)
 
 ```
+git clone https://github.com/ISSUIUC/ISS_SILSIM
+cd ISS_SILSIM
 git submodule update --init --recursive
-cmake .
-make
-./ISS_SILSIM
-python3 sim_data/plotter.py
+mkdir build
+cd build
+cmake ..
+cd ..
+make -C build ISS_SILSIM
+./build/ISS_SILSIM
 ```
+
+Note that this will build the executable in the build directory
+
+After initial setup running
+`make -C build ISS_SILSIM`
+will rebuild the project
 
 #### MacOS Installation
 
@@ -59,9 +69,19 @@ Once visual studio finishes installing clone the repo
 
 `git clone https://github.com/ISSUIUC/ISS_SILSIM`
 
+Download dependencies
+
+`cd ISS_SILSIM`
+
+`git submodule update --init --recursive`
+
 In visual studio choose "Open a local folder" and open the cloned repo
 
 After visual studio finishes loading the project go to "Select Startup Item" in the top center of the screen and select "ISS_SILSIM.exe" from the dropdown
+
+By default visual studio will run the program in out/build/<build-type>. To make silsim run in the correct directory go to "Debug" > "Debug and launch settings for ISS_SILSIM".
+
+Add `"currentDir": "${workspaceRoot}"` to the json under the `"name"` property in configurations
 
 Build and run the project by clicking the run button or by pressing "F5"
 
