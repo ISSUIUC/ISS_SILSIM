@@ -246,7 +246,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     vel_if += tStep * accel_avg;
 
     Vector3d net_force_if = calc_net_force(tStamp, rocket_);
-    Vector3d net_torque_if = calc_net_torque(rocket_);
+    Vector3d net_torque_if = calc_net_torque(tStamp, rocket_);
 
     accel_if = net_force_if / mass;
 
@@ -280,13 +280,13 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 }
 
 /**
- * @brief Takes in time and velocity to calculate net force
+ * @brief Takes in time and rocket to calculate net force
  *
  * @param tStamp Specific time stamp in the simulation
- * @param vel_if Rocket's velocity with respect to the inertial frame
- * @return Vector3  Vector containing the net force on the rocket in the x, y,
- * and z directions
+ * @param rocket Rocket to calculate net force on
+ * @return Vector3  Vector containing the net force on the rocket inertial frame
  */
+
 Vector3d RungeKutta::calc_net_force(double tStamp, const Rocket& rocket) {
     auto thrust_rf = motor_.get_thrust(tStamp);
     auto drag_rf = rocket.calculate_drag_rf();
@@ -294,28 +294,21 @@ Vector3d RungeKutta::calc_net_force(double tStamp, const Rocket& rocket) {
 }
 
 /**
- * @brief Takes in time and angular velocity to calculate net torque
+ * @brief Takes a rocket and timestamp calculates net torque on that rocket at the timestamp
  *
- * @param vel_if Rocket's velocity with respect to the inertial frame
- * @param ang_vel_if Rocket's angular velocity with respect to the inertial
+ * @param tStamp Timestamp in seconds
+ * @param rocket Rocket state to calculate torque on
  * frame
- * @return Vector3  Vector containing the net torque on the rocket in the x, y,
- * and z directions
+ * @return Vector3  Vector containing the net torque on the rocket represented as an axis angle vector in the inertial frame
  */
-Vector3d RungeKutta::calc_net_torque(const Rocket& rocket) {
-    /*************** Retrieve Instantaneous Rocket Parameters *****************/
+Vector3d RungeKutta::calc_net_torque(double tStamp, const Rocket& rocket) {
 
-    Vector3d Cp_vect_rf = rocket.get_Cp_vect();
-
-
-    /************************ Calculate Net Torque ***************************/
-
+    (void)tStamp;
+    auto Cp_vect_rf = rocket.get_Cp_vect();
     auto aero_force_rf = rocket.calculate_drag_rf();
     auto aero_torque_rf = Cp_vect_rf.cross(aero_force_rf);
 
-    Vector3d net_torque_if = rocket.r2i(aero_torque_rf);
-
-    return net_torque_if;
+    return rocket.r2i(aero_torque_rf);
 }
 
 /**
@@ -354,7 +347,7 @@ RungeKutta::RungeKuttaState RungeKutta::calc_state(double tStamp, double tStep,
     Vector3d accel_k =
         calc_net_force(tStamp, rocket_) / rocket_.get_mass();
     Vector3d ang_vel_k = ang_vel_initial + (k.ang_accel * tStep);
-    Vector3d net_torque_new = calc_net_torque(rocket_);
+    Vector3d net_torque_new = calc_net_torque(tStamp, rocket_);
     Vector3d ang_accel_k;
     ang_accel_k.x() = net_torque_new.x() / inertia[0];
     ang_accel_k.y() = net_torque_new.y() / inertia[4];
