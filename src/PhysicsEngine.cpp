@@ -338,10 +338,10 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
 
     //account for the pressure of the sunlight
 
-    Vector3d SolarRadiationForce{0.000000001, 0.0000002, 0.000000001};
+    Vector3d SolerRadiationForce{0.000000001, 0.0000002, 0.000000001};
 
     //add solar radiation force to the net force
-    net_force_if + SolarRadiationForce
+    net_force_if + SolerRadiationForce
 
     return net_force_if;
 }
