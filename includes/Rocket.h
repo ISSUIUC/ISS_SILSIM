@@ -64,13 +64,6 @@ class Rocket {
 
     void get_Cp_vect(Vector3d& vector) const;
 
-    void get_drogue_deploy(bool& drogue_deploy) const {
-        drogue_deploy = drogue_deploy_;
-    };
-    void get_main_deploy(bool& main_deploy) const {
-        main_deploy = main_deploy_;
-    };
-
     /************ Get parameters by value (return by value) ***************/
     Vector3d get_r_vect() const { return r_vect_; };
     Vector3d get_r_dot() const { return r_dot_; };
