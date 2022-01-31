@@ -137,6 +137,11 @@ class Rocket {
 
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
 
+    //The following are in Geocentric frame
+    Vector3d r_geod_{0, 0, 0};
+    Vector3d r_ecef_{0, 0, 0};
+
+
     // Default scalar parameters from OpenRocket
     double mass_ = 41.034;      // in Kg
     double d_ref_ = 0.0157;     // ref length in m
