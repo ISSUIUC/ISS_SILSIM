@@ -230,7 +230,7 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
 
     // Contemplate the meaning of life
     RASAeroCoefficients result{row_z(3), row_z(4), row_z(5), row_z(6),
-                               row_z(7), row_z(8), row_z(9)};
+                               row_z(7), row_z(8)};
 
 #ifdef RASAERO_DEBUG
     std::cout << std::endl;

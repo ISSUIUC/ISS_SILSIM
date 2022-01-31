@@ -25,7 +25,6 @@ struct RASAeroCoefficients {
     double ca_poweron;
     double cn_total;
     double cp_total;
-    double cd_protuberance;
 };
 
 class RASAeroImport {
@@ -36,6 +35,7 @@ class RASAeroImport {
     RASAeroCoefficients get_aero_coefficients(double mach, double alpha,
                                               double protuberance_percent);
 
+    /* TODO: Implement individual getter functions
     double get_CD_poweroff(double mach, double alpha,
                            double protuberance_percent);
     double get_CD_poweron(double mach, double alpha,
@@ -48,6 +48,7 @@ class RASAeroImport {
     double get_CP_total(double mach, double alpha, double protuberance_percent);
     double get_CD_protuberance(double mach, double alpha,
                                double protuberance_percent);
+   */
 
    private:
     /************************** Set Parameters ********************************/
