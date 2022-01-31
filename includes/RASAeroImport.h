@@ -47,12 +47,13 @@ class RASAeroImport {
     double get_CD_protuberance(double mach, double alpha,
                                double protuberance_percent);
 
-    /************************ Set Parameters **********************************/
+   private:
+
+    /************************** Set Parameters ********************************/
     void set_mach_number_params();
     void set_alpha_params();
     void set_protuberance_params();
 
-   private:
     // Some metadata useful for interpolation
     int mach_number_instances_;    // Number of mach numbers in the table
     double mach_number_fidelity_;  // Distance between mach numbers in table

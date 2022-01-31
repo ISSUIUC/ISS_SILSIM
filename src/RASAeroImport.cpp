@@ -59,6 +59,13 @@ RASAeroImport::RASAeroImport(std::string file_path) {
     set_mach_number_params();
     set_alpha_params();
     set_protuberance_params();
+
+    std::cout << "mach_instances = " << mach_number_instances_ << std::endl;
+    std::cout << "mach_fidelity = " << mach_number_fidelity_ << std::endl;
+    std::cout << "alpha_instances = " << alpha_instances_ << std::endl;
+    std::cout << "alpha_fidelity = " << alpha_fidelity_ << std::endl;
+    std::cout << "protuberance_instances = " << protuberance_instances_ << std::endl;
+    std::cout << "protuberance_fidelity = " << protuberance_fidelity_ << std::endl;
 }
 
 void RASAeroImport::set_mach_number_params() {
@@ -90,38 +97,45 @@ void RASAeroImport::set_protuberance_params() {
 
 RASAeroCoefficients RASAeroImport::get_aero_coefficients(
     double mach, double alpha, double protuberance_percent) {
-    std::cout << "Debug!!" << std::endl;
 
-    double closest_mach;
+    // Find closest mach number to passed mach value
     double mach_below =
-        ((int)(mach / mach_number_fidelity_)) * mach_number_fidelity_;
+        std::trunc(mach / mach_number_fidelity_) * mach_number_fidelity_;
+    double closest_mach = mach_below;
+    if ((mach - mach_below) >= (mach_number_fidelity_ / 2.0))
+        closest_mach = mach_below + mach_number_fidelity_;
 
-    if ((mach - mach_below) <= (mach_number_fidelity_ / 2)) {
-        closest_mach = mach_below;
-    } else {
-        closest_mach = (mach_below + mach_number_fidelity_);
-    }
-
-    std::cout << "closest_mach = " << closest_mach << std::endl;
-
-    double alpha_below = ((int)(alpha / alpha_fidelity_)) * alpha_fidelity_;
+    // Find alpha values to interpolate among
+    double alpha_below = std::trunc(alpha / alpha_fidelity_) * alpha_fidelity_;
     double alpha_above = alpha_below + alpha_fidelity_;
 
-    double protuberance_percent_below =
-        ((int)(protuberance_percent / protuberance_fidelity_)) *
+    // Find protub values to interpolate among
+    double prot_below =
+        std::trunc(protuberance_percent / protuberance_fidelity_) *
         protuberance_fidelity_;
-
-    double protuberance_percent_above =
-        protuberance_percent_below + protuberance_fidelity_;
+    double prot_above = prot_below + protuberance_fidelity_;
 
     int mach_start_index = ((closest_mach / mach_number_fidelity_) - 1) *
                            (alpha_instances_ * protuberance_instances_);
     int row_a_offset_index =
         (alpha_below / alpha_fidelity_) * (protuberance_instances_);
 
-    std::cout << "mach_number_fidelity_ = " << mach_number_fidelity_ << std::endl;
-    std::cout << "mach start index = " << mach_start_index << std::endl;
-    std::cout << "row offset index = " << row_a_offset_index << std::endl;
+    std::cout << "get_aero_coefficients:" << std::endl;
+    std::cout << "mach_below = " << mach_below << std::endl;
+    std::cout << "closest_mach = " << closest_mach << std::endl;
+    std::cout << "alpha_below = " << alpha_below << std::endl;
+    std::cout << "alpha_above = " << alpha_above << std::endl;
+    std::cout << "prot_below = " << prot_below << std::endl;
+    std::cout << "prot_above = " << prot_above << std::endl;
 
     return {};
 }
+
+
+
+
+
+
+
+
+
