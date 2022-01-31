@@ -18,6 +18,10 @@
 #include <set>
 #include <string>
 
+#include "Eigen/src/Core/Matrix.h"
+
+// #define RASAERO_DEBUG
+
 RASAeroImport::RASAeroImport(std::string file_path) {
     rapidcsv::Document csv(file_path);
 
@@ -64,8 +68,10 @@ RASAeroImport::RASAeroImport(std::string file_path) {
     std::cout << "mach_fidelity = " << mach_number_fidelity_ << std::endl;
     std::cout << "alpha_instances = " << alpha_instances_ << std::endl;
     std::cout << "alpha_fidelity = " << alpha_fidelity_ << std::endl;
-    std::cout << "protuberance_instances = " << protuberance_instances_ << std::endl;
-    std::cout << "protuberance_fidelity = " << protuberance_fidelity_ << std::endl;
+    std::cout << "protuberance_instances = " << protuberance_instances_
+              << std::endl;
+    std::cout << "protuberance_fidelity = " << protuberance_fidelity_
+              << std::endl;
 }
 
 void RASAeroImport::set_mach_number_params() {
@@ -95,9 +101,9 @@ void RASAeroImport::set_protuberance_params() {
     protuberance_fidelity_ = fabs(vec[0] - vec[1]);
 }
 
-RASAeroCoefficients RASAeroImport::get_aero_coefficients(
-    double mach, double alpha, double protuberance_percent) {
-
+RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
+                                                         double alpha,
+                                                         double protuberance) {
     // Find closest mach number to passed mach value
     double mach_below =
         std::trunc(mach / mach_number_fidelity_) * mach_number_fidelity_;
@@ -110,17 +116,57 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(
     double alpha_above = alpha_below + alpha_fidelity_;
 
     // Find protub values to interpolate among
-    double prot_below =
-        std::trunc(protuberance_percent / protuberance_fidelity_) *
-        protuberance_fidelity_;
+    double prot_below = std::trunc(protuberance / protuberance_fidelity_) *
+                        protuberance_fidelity_;
     double prot_above = prot_below + protuberance_fidelity_;
 
+    // Start index of chunk with the mach number we want
     int mach_start_index = ((closest_mach / mach_number_fidelity_) - 1) *
                            (alpha_instances_ * protuberance_instances_);
-    int row_a_offset_index =
-        (alpha_below / alpha_fidelity_) * (protuberance_instances_);
 
-    std::cout << "get_aero_coefficients:" << std::endl;
+    // How many rows to go down from start of chunk to get a,b,c,d rows
+    int row_a_offset =
+        ((alpha_below / alpha_fidelity_) * (protuberance_instances_)) +
+        (prot_below / protuberance_fidelity_);
+
+    int row_b_offset =
+        ((alpha_above / alpha_fidelity_) * (protuberance_instances_)) +
+        (prot_below / protuberance_fidelity_);
+
+    int row_c_offset =
+        ((alpha_below / alpha_fidelity_) * (protuberance_instances_)) +
+        (prot_above / protuberance_fidelity_);
+
+    int row_d_offset =
+        ((alpha_above / alpha_fidelity_) * (protuberance_instances_)) +
+        (prot_above / protuberance_fidelity_);
+
+    // Fetch rows a,b,c,d from the lookup table
+    Eigen::RowVectorXd row_a = aero_table_.row(mach_start_index + row_a_offset);
+    Eigen::RowVectorXd row_b = aero_table_.row(mach_start_index + row_b_offset);
+    Eigen::RowVectorXd row_c = aero_table_.row(mach_start_index + row_c_offset);
+    Eigen::RowVectorXd row_d = aero_table_.row(mach_start_index + row_d_offset);
+
+    // Perform Bilinear Interpolation
+    Eigen::RowVectorXd row_q =
+        (row_a * ((alpha_above - alpha) / (alpha_above - alpha_below))) +
+        (row_b * ((alpha - alpha_below) / (alpha_above - alpha_below)));
+
+    Eigen::RowVectorXd row_r =
+        (row_c * ((alpha_above - alpha) / (alpha_above - alpha_below))) +
+        (row_d * ((alpha - alpha_below) / (alpha_above - alpha_below)));
+
+    Eigen::RowVectorXd row_z =
+        (row_q * ((prot_above - protuberance) / (prot_above - prot_below))) +
+        (row_r * ((protuberance - prot_below) / (prot_above - prot_below)));
+
+    RASAeroCoefficients result{row_z(3), row_z(4), row_z(5), row_z(6),
+                               row_z(7), row_z(8), row_z(9)};
+
+#ifdef RASAERO_DEBUG
+    std::cout << std::endl;
+    std::cout << "### [get_aero_coefficients() debug above/below finding]:"
+              << std::endl;
     std::cout << "mach_below = " << mach_below << std::endl;
     std::cout << "closest_mach = " << closest_mach << std::endl;
     std::cout << "alpha_below = " << alpha_below << std::endl;
@@ -128,14 +174,19 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(
     std::cout << "prot_below = " << prot_below << std::endl;
     std::cout << "prot_above = " << prot_above << std::endl;
 
-    return {};
+    std::cout << std::endl;
+    std::cout << "### [get_aero_coefficients() debug index finding]:"
+              << std::endl;
+    std::cout << "mach_start_index = " << mach_start_index << std::endl;
+    std::cout << "row_a_offset = " << row_a_offset << std::endl;
+    std::cout << "row_b_offset = " << row_b_offset << std::endl;
+    std::cout << "row_c_offset = " << row_c_offset << std::endl;
+    std::cout << "row_d_offset = " << row_d_offset << std::endl;
+
+    std::cout << std::endl;
+    std::cout << "### [get_aero_coefficients() debug result]:" << std::endl;
+    std::cout << row_z << std::endl;
+#endif
+
+    return result;
 }
-
-
-
-
-
-
-
-
-
