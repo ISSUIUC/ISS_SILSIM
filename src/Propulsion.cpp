@@ -51,16 +51,21 @@ void SolidMotor::get_thrust(double tStamp, Vector3d& vector) const {
     vector.z() = 0.0;
 }
 
-
+/**
+ * @brief Returns current thrust of rocket
+ *
+ * @param tStamp Current simulation timestamp
+ * 
+ */
 double SolidMotor::current_thrust(double tStamp) const {
     
-    rapidcsv::Document csv("thrust_data/data.csv");
+    rapidcsv::Document csv("thrust_data/data.csv");     // Imports thrust data for Cesaroni 
     auto time = csv.GetColumn<double>("Time");
     auto thrust = csv.GetColumn<double>("Thrust");
     
     int n_data = time.size();
     
-    for (int i = 1; i < n_data; i++) {
+    for (int i = 1; i < n_data; i++) {                  // Returns different thrust values based on time
         if (tStamp < time[i]) {
             double slope =(thrust[i] - thrust[i - 1]) / (time[i] - time[i - 1]);
             return slope*(tStamp - time[i - 1]) + thrust[i - 1];
