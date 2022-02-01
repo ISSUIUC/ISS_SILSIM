@@ -1,0 +1,76 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"lib/eigen/blas/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 45,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 45,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"lib/eigen/blas/eigen_blas_static.lib"
+			],
+			"targetId" : "eigen_blas_static::@1c4dc5c255a33b975941",
+			"targetIndex" : 360,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"lib/eigen/blas/eigen_blas.lib"
+			],
+			"targetId" : "eigen_blas::@1c4dc5c255a33b975941",
+			"targetIndex" : 359,
+			"targetIsImportLibrary" : true,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "bin",
+			"paths" : 
+			[
+				"lib/eigen/blas/eigen_blas.dll"
+			],
+			"targetId" : "eigen_blas::@1c4dc5c255a33b975941",
+			"targetIndex" : 359,
+			"type" : "target"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "lib/eigen/blas",
+		"source" : "lib/eigen/blas"
+	}
+}

@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "lib/eigen/unsupported/doc/snippets",
+		"source" : "lib/eigen/unsupported/doc/snippets"
+	}
+}

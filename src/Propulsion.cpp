@@ -13,6 +13,8 @@
 
 #include "Propulsion.h"
 
+#include<rapidcsv.h>
+
 #include <Eigen/Dense>
 
 using Eigen::Vector3d;
@@ -40,7 +42,7 @@ void SolidMotor::get_thrust(double tStamp, Vector3d& vector) const {
         if ((tStamp - ignition_tStamp_) <= max_burn_duration_) {
             vector.x() = 0.0;
             vector.y() = 0.0;
-            vector.z() = current_thrust_;
+            vector.z() = current_thrust(tStamp);
             return;
         }
     }
@@ -48,6 +50,27 @@ void SolidMotor::get_thrust(double tStamp, Vector3d& vector) const {
     vector.y() = 0.0;
     vector.z() = 0.0;
 }
+
+
+double SolidMotor::current_thrust(double tStamp) const {
+    
+    rapidcsv::Document csv("thrust_data/data.csv");
+    auto time = csv.GetColumn<double>("Time");
+    auto thrust = csv.GetColumn<double>("Thrust");
+    
+    int n_data = time.size();
+    
+    for (int i = 1; i < n_data; i++) {
+        if (tStamp < time[i]) {
+            double slope =(thrust[i] - thrust[i - 1]) / (time[i] - time[i - 1]);
+            return slope*(tStamp - time[i - 1]) + thrust[i - 1];
+        }
+    }
+
+    return 0;
+
+}
+
 
 /**
  * @brief Thrust vector getter function (by value)

@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\includes",
+    "\\lib",
+    "\\lib\\eigen",
+    "\\ork_files",
+    "\\out",
+    "\\sim_data",
+    "\\src",
+    "\\thrust_data"
+  ],
+  "SelectedNode": "\\src\\Propulsion.cpp",
+  "PreviewInSolutionExplorer": false
+}

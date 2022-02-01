@@ -30,6 +30,7 @@ class SolidMotor {
 
     void ignite(double tStamp);
     void get_thrust(double tStamp, Vector3d& vector) const;
+    double current_thrust(double tStamp) const;
     Vector3d get_thrust(double tStamp) const;
 
    private:
