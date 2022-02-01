@@ -145,7 +145,7 @@ class Rocket {
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
 
     //The following are in Geocentric frame
-    Vector3d launch_ecef_coords_{0, 0, 0};
+    Vector3d launch_ecef_coords_{0, 0, 0};  // (40.111801, -88.228691, 216) - Talbot Laboratory
     Vector3d r_geod_{0, 0, 0};
     Vector3d r_ecef_{0, 0, 0};
 
