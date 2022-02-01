@@ -507,17 +507,17 @@ Vector3d RungeKutta::i2ecef(Vector3d pos_if) {
 }
 
 Vector3d RungeKutta::ecef2geod(Vector3d ecef) {
-    Vector3d geod;
+    Vector3d geod = rocket_.get_r_geod();
     
     const double a = 6378137.0;
     const double b = 6356752.3142;
     const double e = (std::pow(a, 2) - std::pow(b, 2)) / std::pow(a, 2);
     double p = std::sqrt(std::pow(ecef.x(), 2) + std::pow(ecef.y(), 2));
-    double n = a / (std::sqrt(1 - (std::pow(e, 2) * std::pow(std::sin(ecef.x()), 2))));
+    double n = a / (std::sqrt(1 - (e * std::pow(std::sin(geod.x()), 2))));
 
     geod.y() = std::atan2(ecef.y(), ecef.x());
-    geod.z() = (p / std::cos(ecef.x())) - n;
-    geod.x() = std::atan((ecef.z() / p) / (1 - (std::pow(e, 2) * n / (n - geod.z()))));
+    geod.z() = (p / std::cos(geod.x())) - n;
+    geod.x() = std::atan((ecef.z() / p) / (1 - (e * n / (n - geod.z()))));
 
     return geod;
 }
