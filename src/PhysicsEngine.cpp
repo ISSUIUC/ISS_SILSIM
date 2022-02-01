@@ -217,6 +217,9 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     double mass = rocket_.get_mass();
 
+    Vector3d geod = rocket_.get_r_geod();
+    Vector3d ecef = rocket_.get_r_ecef();
+
     /******************** Calculate Intermediate States **********************/
     // Each state is used to calculate the next state
 
@@ -277,6 +280,9 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     rocket_.set_f_net(net_force_if);
     rocket_.set_t_net(net_torque_if);
     rocket_.set_q_ornt(orient);
+    
+    rocket_.set_r_ecef(i2ecef(pos_if));
+    rocket_.set_r_geod(ecef2geod(ecef));
 }
 
 /**
@@ -483,4 +489,35 @@ Quaterniond PhysicsEngine::update_quaternion(Quaterniond q_ornt,
     q_ornt.normalize();
 
     return q_ornt;
+}
+
+Vector3d RungeKutta::i2ecef(Vector3d pos_if) {
+    double lambda = 0.0;
+    double lat = 0.0;
+    Vector3d ecef = rocket_.get_launch_ecef_coords();
+
+    Eigen::Matrix<double, 3, 3> transform {
+        {-std::sin(lambda), -std::sin(lat) * std::cos(lambda), std::cos(lat) * std::cos(lambda)},
+        {std::cos(lambda), -std::sin(lat) * std::sin(lambda), std::cos(lat) * std::sin(lambda)},
+        {0, std::cos(lat), std::sin(lat)}
+    };
+
+    ecef += (transform * pos_if);
+    return ecef;
+}
+
+Vector3d RungeKutta::ecef2geod(Vector3d ecef) {
+    Vector3d geod;
+    
+    const double a = 6378137.0;
+    const double b = 6356752.3142;
+    const double e = (std::pow(a, 2) - std::pow(b, 2)) / std::pow(a, 2);
+    double p = std::sqrt(std::pow(ecef.x(), 2) + std::pow(ecef.y(), 2));
+    double n = a / (std::sqrt(1 - (std::pow(e, 2) * std::pow(std::sin(ecef.x()), 2))));
+
+    geod.y() = std::atan2(ecef.y(), ecef.x());
+    geod.z() = (p / std::cos(ecef.x())) - n;
+    geod.x() = std::atan((ecef.z() / p) / (1 - (std::pow(e, 2) * n / (n - geod.z()))));
+
+    return geod;
 }

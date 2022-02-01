@@ -67,6 +67,8 @@ class RungeKutta : public PhysicsEngine {
     Vector3d calc_net_force(double tStamp, Vector3d pos_if, Vector3d vel_if);
     Vector3d calc_net_torque(Vector3d vel_if, Vector3d pos_if);
     RungeKuttaState calc_state(double tStamp, double tStep, RungeKuttaState k);
+    Vector3d i2ecef(Vector3d pos_if);
+    Vector3d ecef2geod(Vector3d ecef);
 };
 
 #endif

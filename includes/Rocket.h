@@ -85,6 +85,10 @@ class Rocket {
 
     Vector3d get_Cp_vect() const { return Cp_vect_; };
 
+    Vector3d get_launch_ecef_coords() const { return launch_ecef_coords_; };
+    Vector3d get_r_geod() const { return r_geod_; };
+    Vector3d get_r_ecef() const { return r_ecef_; };
+
     /************* Set parameters (all passed by reference) ***************/
     void set_r_vect(Vector3d& vector) { r_vect_ = vector; };
     void set_r_dot(Vector3d& vector) { r_dot_ = vector; };
@@ -112,6 +116,9 @@ class Rocket {
     void set_nose_to_cg(double& nose_to_cg);
     void set_nose_to_cp(double& nose_to_cp);
 
+    void set_r_geod(Vector3d& vector) { r_geod_ = vector; };
+    void set_r_ecef(Vector3d& vector) { r_ecef_ = vector; };
+
     // Converts vector from inertial frame to rocket reference frame
     Vector3d i2r(Vector3d vector);
 
@@ -138,6 +145,7 @@ class Rocket {
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
 
     //The following are in Geocentric frame
+    Vector3d launch_ecef_coords_{0, 0, 0};
     Vector3d r_geod_{0, 0, 0};
     Vector3d r_ecef_{0, 0, 0};
 
