@@ -4,7 +4,7 @@ if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" LESS 2.5)
    message(FATAL_ERROR "CMake >= 2.6.0 required")
 endif()
 cmake_policy(PUSH)
-cmake_policy(VERSION 2.6...3.19)
+cmake_policy(VERSION 2.6...3.18)
 #----------------------------------------------------------------
 # Generated CMake target import file.
 #----------------------------------------------------------------
@@ -49,7 +49,7 @@ unset(_expectedTargets)
 add_library(Eigen3::Eigen INTERFACE IMPORTED)
 
 set_target_properties(Eigen3::Eigen PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen"
+  INTERFACE_INCLUDE_DIRECTORIES "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen"
 )
 
 # This file does not depend on other imported targets which have

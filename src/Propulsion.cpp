@@ -57,24 +57,6 @@ void SolidMotor::get_thrust(double tStamp, Vector3d& vector) const {
  * @param tStamp Current simulation timestamp
  * 
  */
-double SolidMotor::current_thrust(double tStamp) const {
-    
-    rapidcsv::Document csv("thrust_data/data.csv");     // Imports thrust data for Cesaroni 
-    auto time = csv.GetColumn<double>("Time");
-    auto thrust = csv.GetColumn<double>("Thrust");
-    
-    int n_data = time.size();
-    
-    for (int i = 1; i < n_data; i++) {                  // Returns different thrust values based on time
-        if (tStamp < time[i]) {
-            double slope =(thrust[i] - thrust[i - 1]) / (time[i] - time[i - 1]);
-            return slope*(tStamp - time[i - 1]) + thrust[i - 1];
-        }
-    }
-
-    return 0;
-
-}
 
 
 /**
@@ -89,7 +71,8 @@ Vector3d SolidMotor::get_thrust(double tStamp) const {
         if ((tStamp - ignition_tStamp_) <= max_burn_duration_) {
             vector.x() = 0.0;
             vector.y() = 0.0;
-            vector.z() = current_thrust_;
+            //vector.z() = current_thrust_;
+            vector.z() = current_thrust(tStamp);
             return vector;
         }
     }
@@ -98,4 +81,25 @@ Vector3d SolidMotor::get_thrust(double tStamp) const {
     vector.z() = 0.0;
 
     return vector;
+}
+
+double SolidMotor::current_thrust(double tStamp) const {
+    
+    rapidcsv::Document csv("thrust_data/data.csv");     // Imports thrust data for Cesaroni 
+    auto time_vals = csv.GetColumn<double>("Time");
+    auto thrust_vals = csv.GetColumn<double>("Thrust");
+    
+    int n_data = time_vals.size();
+    
+    for (int i = 1.0; i < n_data; i++) {                  // Returns different thrust values based on time
+        if (tStamp < time_vals[i]) {
+            double slope =(thrust_vals[i] - thrust_vals[i - 1.0]) / (time_vals[i] - time_vals[i - 1.0]);
+            double thrust = slope*(tStamp - time_vals[i - 1.0]) + thrust_vals[i - 1.0];
+            std::cout << "Thrust: " << thrust << std::endl;
+            return thrust;
+        }
+    }
+
+    return 0.0;
+
 }

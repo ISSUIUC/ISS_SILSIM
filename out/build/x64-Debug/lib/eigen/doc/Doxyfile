@@ -47,14 +47,14 @@ PROJECT_BRIEF          =
 # exceed 55 pixels and the maximum width should not exceed 200 pixels.
 # Doxygen will copy the logo to the output directory.
 
-PROJECT_LOGO           = "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/doc/Eigen_Silly_Professor_64x64.png"
+PROJECT_LOGO           = "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/doc/Eigen_Silly_Professor_64x64.png"
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute)
 # base path where the generated documentation will be put.
 # If a relative path is entered, it will be relative to the location
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc"
+OUTPUT_DIRECTORY       = "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc"
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create
 # 4096 sub-directories (in 2 levels) under the output directory of each output
@@ -624,7 +624,7 @@ FILE_VERSION_FILTER    =
 # You can optionally specify a file name after the option, if omitted
 # DoxygenLayout.xml will be used as the name of the layout file.
 
-LAYOUT_FILE            = "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/eigendoxy_layout.xml"
+LAYOUT_FILE            = "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/eigendoxy_layout.xml"
 
 # The CITE_BIB_FILES tag can be used to specify one or more bib files
 # containing the references data. This must be a list of .bib files. The
@@ -696,7 +696,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/Eigen" "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/doc"
+INPUT                  = "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/Eigen" "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/doc"
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -728,14 +728,14 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/Eigen/src/Core/products" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/Eigen/Eigen2Support" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/Eigen/src/Eigen2Support" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/doc/examples" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/doc/special_examples" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/doc/snippets" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/unsupported/doc/examples" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/unsupported/doc/snippets"
+EXCLUDE                = "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/Eigen/src/Core/products" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/Eigen/Eigen2Support" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/Eigen/src/Eigen2Support" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/doc/examples" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/doc/special_examples" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/doc/snippets" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/unsupported/doc/examples" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/unsupported/doc/snippets"
 
 # Forward declarations of class templates cause the title of the main page for
 # the class template to not contain the template signature.  This only happens
@@ -743,7 +743,7 @@ EXCLUDE                = "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/Eigen
 # by https://github.com/doxygen/doxygen/issues/7698.  Confirmed fixed by
 # doxygen release 1.8.19.
 
-EXCLUDE += "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/Eigen/src/Core/util/ForwardDeclarations.h"
+EXCLUDE += "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/Eigen/src/Core/util/ForwardDeclarations.h"
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -789,16 +789,16 @@ EXCLUDE_SYMBOLS        = internal::* \
 # directories that contain example code fragments that are included (see
 # the \include command).
 
-EXAMPLE_PATH           = "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/doc/snippets" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/snippets" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/doc/examples" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/examples" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/doc/special_examples" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/special_examples" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/unsupported/doc/snippets" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/unsupported/doc/snippets" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/unsupported/doc/examples" \
-                         "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/unsupported/doc/examples"
+EXAMPLE_PATH           = "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/doc/snippets" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/snippets" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/doc/examples" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/examples" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/doc/special_examples" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/special_examples" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/unsupported/doc/snippets" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/unsupported/doc/snippets" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/unsupported/doc/examples" \
+                         "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/unsupported/doc/examples"
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -818,7 +818,7 @@ EXAMPLE_RECURSIVE      = NO
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH             = C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/html
+IMAGE_PATH             = C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/html
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -948,7 +948,7 @@ GENERATE_HTML          = YES
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be
 # put in front of it. If left blank `html' will be used as the default path.
 
-HTML_OUTPUT            = "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/html"
+HTML_OUTPUT            = "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/html"
 
 # The HTML_FILE_EXTENSION tag can be used to specify the file extension for
 # each generated HTML page (for example: .htm,.php,.asp). If it is left blank
@@ -967,13 +967,13 @@ HTML_FILE_EXTENSION    = .html
 # have to redo this when upgrading to a newer version of doxygen or when
 # changing the value of configuration settings such as GENERATE_TREEVIEW!
 
-HTML_HEADER            = "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/eigendoxy_header.html"
+HTML_HEADER            = "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/eigendoxy_header.html"
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard footer.
 
-HTML_FOOTER            = "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/eigendoxy_footer.html"
+HTML_FOOTER            = "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/eigendoxy_footer.html"
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading
 # style sheet that is used by each HTML page. It can be used to
@@ -991,7 +991,7 @@ HTML_STYLESHEET        =
 # files. In the HTML_STYLESHEET file, use the file name only. Also note that
 # the files will be copied as-is; there are no commands or markers available.
 
-HTML_EXTRA_FILES       = "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/doc/eigendoxy.css"
+HTML_EXTRA_FILES       = "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/doc/eigendoxy.css"
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output.
 # Doxygen will adjust the colors in the style sheet and background images
@@ -1577,7 +1577,7 @@ SEARCH_INCLUDES        = YES
 # contain include files that are not input files but should be processed by
 # the preprocessor.
 
-INCLUDE_PATH           = "C:/Users/Truon/source/repos/ISS_SILSIM/lib/eigen/Eigen/src/plugins"
+INCLUDE_PATH           = "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/lib/eigen/Eigen/src/plugins"
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the
@@ -1665,12 +1665,12 @@ SKIP_FUNCTION_MACROS   = YES
 # doxygen is run, you must also specify the path to the tagfile here.
 
 TAGFILES               = 
-# "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/eigen-unsupported.doxytags =unsupported"
+# "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/eigen-unsupported.doxytags =unsupported"
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE       = "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/Eigen.doxytags"
+GENERATE_TAGFILE       = "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug/lib/eigen/doc/Eigen.doxytags"
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed
 # in the class index. If set to NO only the inherited external classes

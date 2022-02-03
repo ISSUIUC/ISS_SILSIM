@@ -1,6 +1,6 @@
 
-set(CTEST_SOURCE_DIRECTORY  "C:/Users/Truon/source/repos/ISS_SILSIM")
-set(CTEST_BINARY_DIRECTORY  "C:/Users/Truon/source/repos/ISS_SILSIM/out/build/x64-Debug")
+set(CTEST_SOURCE_DIRECTORY  "C:/Users/rishi/Documents/GitHub/ISS_SILSIM")
+set(CTEST_BINARY_DIRECTORY  "C:/Users/rishi/Documents/GitHub/ISS_SILSIM/out/build/x64-Debug")
 set(CTEST_CMAKE_GENERATOR   "Ninja")
 set(CTEST_BUILD_NAME        "")
 set(CTEST_SITE              "")
