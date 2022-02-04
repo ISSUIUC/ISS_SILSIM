@@ -30,7 +30,7 @@ class Rocket {
     Rocket() {
         q_ornt_ = {1, 0, 0, 0};
 
-        Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
+        cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
     }
 
     /************ Get parameters ***************/
@@ -47,14 +47,14 @@ class Rocket {
     Vector3d get_t_net() const { return t_net_; };
 
     double get_mass() const { return mass_; };
-    double get_d_ref() const { return d_ref_; };
-    double get_A_ref() const { return A_ref_; };
-    double get_Cna() const { return Cna_; };
-    double get_Cd() const { return Cd_; };
+    double get_reference_length() const { return reference_length_; };
+    double get_reference_area() const { return reference_area_; };
+    double get_total_normal_force_coeff() const { return total_normal_force_coeff_; };
+    double get_total_axial_force_coeff() const { return total_axial_force_coeff_; };
     double get_nose_to_cg() const { return nose_to_cg_; };
     double get_nose_to_cp() const { return nose_to_cp_; };
 
-    Vector3d get_Cp_vect() const { return Cp_vect_; };
+    Vector3d get_cp_vect() const { return cp_vect_; };
 
     std::array<double, 9> get_I() const { return I_; };
 
@@ -74,17 +74,17 @@ class Rocket {
     void set_t_net(Vector3d vector) { t_net_ = vector; };
 
     void set_mass(double mass) { mass_ = mass; };
-    void set_d_ref(double d_ref) { d_ref_ = d_ref; };
-    void set_A_ref(double A_ref) { A_ref_ = A_ref; };
-    void set_Cna(double Cna) { Cna_ = Cna; };
-    void set_Cd(double Cd) { Cd_ = Cd; };
+    void set_reference_length(double d_ref) { reference_length_ = d_ref; };
+    void set_reference_area(double a_ref) { reference_area_ = a_ref; };
+    void set_total_normal_force_coeff(double cn_total) { total_normal_force_coeff_ = cn_total; };
+    void set_total_axial_focre_coeff(double ca_total) { total_axial_force_coeff_ = ca_total; };
     void set_nose_to_cg(double nose_to_cg) {
         nose_to_cg_ = nose_to_cg;
-        Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
+        cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
     };
     void set_nose_to_cp(double nose_to_cp) {
         nose_to_cp_ = nose_to_cp;
-        Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
+        cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
     };
 
     // Converts vector from inertial frame to rocket reference frame
@@ -108,17 +108,17 @@ class Rocket {
     Quaterniond q_ornt_{};  // inertial -> rocket frame quaternion
 
     // The following are in rocket frame
-    Vector3d Cp_vect_{};  // CG to Cp vector
+    Vector3d cp_vect_{};  // CG to CP vector
 
+    // Intertial Parameters
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
-
-    // Default scalar parameters from OpenRocket
     double mass_ = 41.034;      // in Kg
-    double d_ref_ = 0.0157;     // ref length in m
-    double A_ref_ = 0.0194;     // ref area in m^2
-    double Cna_ = 9.65;         // normal force coefficient derivative
-                                // wrt angle-of-attack
-    double Cd_ = 0.630;         // drag coefficient
+
+    // Aerodynamic Parameters
+    double reference_length_ = 0.0157;     // reference length in m
+    double reference_area_ = 0.0194;     // reference area in m^2
+    double total_normal_force_coeff_ = 9.65;    // total normal force coefficient 
+    double total_axial_force_coeff_ = 0.630;   // total axial force coefficient
     double nose_to_cg_ = 3.59;  // nosecone tip to CG distance in m
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
 };
