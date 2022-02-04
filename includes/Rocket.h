@@ -36,7 +36,7 @@ class Rocket {
         cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
     }
 
-    /************ Get parameters ***************/
+    /*************************** Get parameters *****************************#*/
     Vector3d get_r_vect() const { return r_vect_; };
     Vector3d get_r_dot() const { return r_dot_; };
     Vector3d get_r_ddot() const { return r_ddot_; };
@@ -65,7 +65,7 @@ class Rocket {
 
     std::array<double, 9> get_I() const { return I_; };
 
-    /************* Set parameters ***************/
+    /**************************** Set parameters ******************************/
     void set_r_vect(Vector3d vector) { r_vect_ = vector; };
     void set_r_dot(Vector3d vector) { r_dot_ = vector; };
     void set_r_ddot(Vector3d vector) { r_ddot_ = vector; };
@@ -98,14 +98,16 @@ class Rocket {
         cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
     };
 
+    /************************ Internal State Update ***************************/
+    void update_aero_coefficients(bool poweron, double protuberance_perecent);
+
+    /*************************** Helper Functions  ****************************/
     // Converts vector from inertial frame to rocket reference frame
     Vector3d i2r(Vector3d vector);
 
     // Converts vector from rocket frame to inertial reference frame
     Vector3d r2i(Vector3d vector);
 
-    // Updates internal representation of aerodynamic coefficients
-    void update_aero_coefficinets(bool poweron, double protuberance_perecent);
 
    private:
     // The following are in inertial frame
@@ -132,10 +134,9 @@ class Rocket {
     double nose_to_cg_ = 3.59;   // nosecone tip to CG distance in m
 
     //----------- Aerodynamic Parameters ----------
-    std::shared_ptr<RASAeroImport>
-        rasaero_import_;                      // Aero coefficient lookup table
-    double reference_length_ = 0.0157;        // reference length in m
-    double reference_area_ = 0.0194;          // reference area in m^2
+    std::shared_ptr<RASAeroImport> rasaero_import_;  // Aero lookup table
+    double reference_length_ = 0.0157;               // reference length in m
+    double reference_area_ = 0.0194;                 // reference area in m^2
     double total_normal_force_coeff_ = 9.65;  // total normal force coefficient
     double total_axial_force_coeff_ = 0.630;  // total axial force coefficient
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
