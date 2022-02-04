@@ -18,8 +18,11 @@
 
 #include <Eigen/Dense>
 #include <array>
+#include <memory>
 #include <string>
 #include <vector>
+
+#include "RASAeroImport.h"
 
 using Eigen::Vector3d;
 
@@ -49,8 +52,12 @@ class Rocket {
     double get_mass() const { return mass_; };
     double get_reference_length() const { return reference_length_; };
     double get_reference_area() const { return reference_area_; };
-    double get_total_normal_force_coeff() const { return total_normal_force_coeff_; };
-    double get_total_axial_force_coeff() const { return total_axial_force_coeff_; };
+    double get_total_normal_force_coeff() const {
+        return total_normal_force_coeff_;
+    };
+    double get_total_axial_force_coeff() const {
+        return total_axial_force_coeff_;
+    };
     double get_nose_to_cg() const { return nose_to_cg_; };
     double get_nose_to_cp() const { return nose_to_cp_; };
 
@@ -76,8 +83,12 @@ class Rocket {
     void set_mass(double mass) { mass_ = mass; };
     void set_reference_length(double d_ref) { reference_length_ = d_ref; };
     void set_reference_area(double a_ref) { reference_area_ = a_ref; };
-    void set_total_normal_force_coeff(double cn_total) { total_normal_force_coeff_ = cn_total; };
-    void set_total_axial_focre_coeff(double ca_total) { total_axial_force_coeff_ = ca_total; };
+    void set_total_normal_force_coeff(double cn_total) {
+        total_normal_force_coeff_ = cn_total;
+    };
+    void set_total_axial_focre_coeff(double ca_total) {
+        total_axial_force_coeff_ = ca_total;
+    };
     void set_nose_to_cg(double nose_to_cg) {
         nose_to_cg_ = nose_to_cg;
         cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
@@ -93,6 +104,9 @@ class Rocket {
     // Converts vector from rocket frame to inertial reference frame
     Vector3d r2i(Vector3d vector);
 
+    // Updates internal representation of aerodynamic coefficients
+    void update_aero_coefficinets(bool poweron, double protuberance_perecent);
+
    private:
     // The following are in inertial frame
     Vector3d r_vect_{0, 0, 0};  // r vector
@@ -107,19 +121,23 @@ class Rocket {
 
     Quaterniond q_ornt_{};  // inertial -> rocket frame quaternion
 
-    // The following are in rocket frame
-    Vector3d cp_vect_{};  // CG to CP vector
+    Vector3d cp_vect_{};  // CG to CP vector, rocket frame
 
-    // Intertial Parameters
+    double mach_ = 0.0;   // Freestream air mach number;
+    double alpha_ = 0.0;  // Rocket total angle-of-attack to air
+
+    //---------- Intertial Parameters ----------
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
-    double mass_ = 41.034;      // in Kg
+    double mass_ = 41.034;       // in Kg
+    double nose_to_cg_ = 3.59;   // nosecone tip to CG distance in m
 
-    // Aerodynamic Parameters
-    double reference_length_ = 0.0157;     // reference length in m
-    double reference_area_ = 0.0194;     // reference area in m^2
-    double total_normal_force_coeff_ = 9.65;    // total normal force coefficient 
-    double total_axial_force_coeff_ = 0.630;   // total axial force coefficient
-    double nose_to_cg_ = 3.59;  // nosecone tip to CG distance in m
+    //----------- Aerodynamic Parameters ----------
+    std::shared_ptr<RASAeroImport>
+        rasaero_import_;                      // Aero coefficient lookup table
+    double reference_length_ = 0.0157;        // reference length in m
+    double reference_area_ = 0.0194;          // reference area in m^2
+    double total_normal_force_coeff_ = 9.65;  // total normal force coefficient
+    double total_axial_force_coeff_ = 0.630;  // total axial force coefficient
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
 };
 
