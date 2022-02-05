@@ -71,3 +71,15 @@ Vector3d SolidMotor::get_thrust(double tStamp) const {
 
     return vector;
 }
+
+/**
+ * @brief Check if motor is currently burning and producing thrust
+ *
+ * @param tStamp Current simulation timestamp
+ * @return bool True if motor is burning and producing thrust, false otherwise
+ */
+bool SolidMotor::is_burning(double tStamp) const {
+    double burn_end_tStamp = ignition_tStamp_ + max_burn_duration_;
+
+    return (tStamp > burn_end_tStamp);
+}

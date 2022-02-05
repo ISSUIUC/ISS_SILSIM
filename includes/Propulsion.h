@@ -32,6 +32,8 @@ class SolidMotor {
     void get_thrust(double tStamp, Vector3d& vector) const;
     Vector3d get_thrust(double tStamp) const;
 
+    bool is_burning(double tStamp) const;
+
    private:
     bool ignition_;
     double max_burn_duration_;
