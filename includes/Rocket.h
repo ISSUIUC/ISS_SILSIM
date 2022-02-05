@@ -32,8 +32,13 @@ class Rocket {
    public:
     Rocket() {
         q_ornt_ = {1, 0, 0, 0};
-
         cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
+    }
+
+    Rocket(std::shared_ptr<RASAeroImport> rasaero) {
+        q_ornt_ = {1, 0, 0, 0};
+        cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
+        rasaero_import_ = rasaero;
     }
 
     /*************************** Get parameters *****************************#*/
@@ -50,6 +55,8 @@ class Rocket {
     Vector3d get_t_net() const { return t_net_; };
 
     double get_mass() const { return mass_; };
+    double get_mach() const { return mach_; };
+    double get_alpha() const { return alpha_; };
     double get_reference_length() const { return reference_length_; };
     double get_reference_area() const { return reference_area_; };
     double get_total_normal_force_coeff() const {
@@ -81,12 +88,14 @@ class Rocket {
     void set_t_net(Vector3d vector) { t_net_ = vector; };
 
     void set_mass(double mass) { mass_ = mass; };
+    void set_mach(double mach) { mach_ = mach; };
+    void set_alpha(double alpha) { alpha_ = alpha; };
     void set_reference_length(double d_ref) { reference_length_ = d_ref; };
     void set_reference_area(double a_ref) { reference_area_ = a_ref; };
     void set_total_normal_force_coeff(double cn_total) {
         total_normal_force_coeff_ = cn_total;
     };
-    void set_total_axial_focre_coeff(double ca_total) {
+    void set_total_axial_force_coeff(double ca_total) {
         total_axial_force_coeff_ = ca_total;
     };
     void set_nose_to_cg(double nose_to_cg) {
@@ -108,7 +117,6 @@ class Rocket {
     // Converts vector from rocket frame to inertial reference frame
     Vector3d r2i(Vector3d vector);
 
-
    private:
     // The following are in inertial frame
     Vector3d r_vect_{0, 0, 0};  // r vector
@@ -125,9 +133,6 @@ class Rocket {
 
     Vector3d cp_vect_{};  // CG to CP vector, rocket frame
 
-    double mach_ = 0.0;   // Freestream air mach number;
-    double alpha_ = 0.0;  // Rocket total angle-of-attack to air
-
     //---------- Intertial Parameters ----------
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
     double mass_ = 41.034;       // in Kg
@@ -140,6 +145,8 @@ class Rocket {
     double total_normal_force_coeff_ = 9.65;  // total normal force coefficient
     double total_axial_force_coeff_ = 0.630;  // total axial force coefficient
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
+    double mach_ = 0.0;         // Freestream air mach number
+    double alpha_ = 0.0;        // Rocket total angle-of-attack to air
 };
 
 #endif

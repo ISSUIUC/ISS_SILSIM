@@ -12,15 +12,13 @@
 constexpr double deg2rad = 3.14159265 / 180.0;
 
 int main() {
-    // RASAeroImport import("utils/RASAero_fetch/output/RASAero.csv");
-    // RASAeroCoefficients data = import.get_aero_coefficients(0.043, 2.87,
-    // 0.46);
+    RASAeroImport rasaero_import("utils/RASAero_fetch/output/RASAero.csv");
 
     spdlog::set_level(spdlog::level::debug);
     // comment below is used if we want to change the format of the logging
     // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
 
-    Rocket rocket;
+    Rocket rocket(std::make_shared<RASAeroImport>(rasaero_import));
 
     double mass = rocket.get_mass();
     std::array<double, 9> I_tensor{};
@@ -42,8 +40,8 @@ int main() {
     // 3.5 second burn time @ 4000 Newton constant thrust (L ish motor I think)
     SolidMotor motor(3.5, 4000.0);
 
-    // ForwardEuler engine(rocket, motor);
-    RungeKutta engine(rocket, motor);
+    ForwardEuler engine(rocket, motor);
+    // RungeKutta engine(rocket, motor);
     CpuState cpu;
 
     Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");

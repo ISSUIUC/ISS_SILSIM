@@ -179,6 +179,9 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
     if ((mach - mach_below) >= (mach_number_fidelity_ / 2.0))
         closest_mach = mach_below + mach_number_fidelity_;
 
+    // sanitize closest_mach, no data for mach 0.0
+    if (closest_mach < 0.01) closest_mach = 0.01;
+
     // Find alpha values to interpolate among
     double alpha_below = std::trunc(alpha / alpha_fidelity_) * alpha_fidelity_;
     double alpha_above = alpha_below + alpha_fidelity_;

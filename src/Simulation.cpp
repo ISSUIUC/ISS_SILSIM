@@ -52,7 +52,10 @@ Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
 void Simulation::run(int steps) {
     std::ofstream dataFile(filename_);
 
+    rocket_.update_aero_coefficients(motor_.is_burning(tStamp_), 0.0);
+
     motor_.ignite(tStamp_);
+
     for (int iter = 0; iter < steps; ++iter) {
         Vector3d r_vect = rocket_.get_r_vect();
         Vector3d r_dot = rocket_.get_r_dot();
@@ -89,6 +92,8 @@ void Simulation::run(int steps) {
         sim_log->debug("alphaSIM: {}  [deg]", alpha * RAD2DEG);
         Vector3d rocket_axis(0, 0, 1);
         rocket_axis = rocket_.r2i(rocket_axis);
+
+        rocket_.update_aero_coefficients(motor_.is_burning(tStamp_), 0.0);
 
         engine_->march_step(tStamp_, tStep_);
 
