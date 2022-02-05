@@ -1,9 +1,10 @@
 /**
  * @file        Atmosphere.cpp
  * @authors     Kenneth Tochihara
+ *              Buffet Lee
+ *              Ayberk Yaraneri
  *
- * @brief       Member function implementations of atmosphere component
- * classes
+ * @brief       Member function implementations of atmosphere class
  *
  * The classes defined here represent atmosphere components. These
  * objects will represent the atmosphere model used for simulation.
@@ -285,6 +286,19 @@ double Atmosphere::get_density(double altitude) {
     }
 
     return density;
+}
+
+/**
+ * @brief Calculates the speed-of-sound at the current altitude
+ *
+ * @param altitude Altitude above sea level in meters
+ * @return double Speed of sound in m/s
+ */
+double Atmosphere::get_speed_of_sound(double altitude) {
+    constexpr double gamma = 1.4;            // Heat Capacity Ratio of air
+    constexpr double gas_constant = 287.05;  // Gas constant of air
+
+    return sqrt(gamma * gas_constant * get_temperature(altitude));
 }
 
 double Atmosphere::get_geometric_to_geopotential(double altitude) {
