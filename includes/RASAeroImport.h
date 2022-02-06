@@ -51,7 +51,6 @@ class RASAeroImport {
    */
 
    private:
-
     static constexpr double kSmallestMach = 0.01;
     static constexpr double kLargestMach = 25.00;
     static constexpr double kSmallestAlpha = 0.00;

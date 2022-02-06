@@ -22,7 +22,7 @@
 
 #include "Eigen/src/Core/Matrix.h"
 
-#define RASAERO_DEBUG
+// #define RASAERO_DEBUG
 
 /**
  * @brief RASAeroImport class constructor. Parses data into lookup table
@@ -172,16 +172,11 @@ void RASAeroImport::set_protuberance_params() {
 RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
                                                          double alpha,
                                                          double protuberance) {
-
-    printf("get_aero_coeffs called with mach=%f, alpha=%f, protub=%f\n", mach, alpha, protuberance);
-
     // Sanitize input
     mach = std::clamp(mach, kSmallestMach, kLargestMach);
     alpha = std::clamp(alpha, kSmallestAlpha, kLargestAlpha);
     protuberance = std::clamp(protuberance, kSmallestProtub, kSmallestProtub);
 
-    printf("after clamping: mach=%f, alpha=%f, protub=%f\n", mach, alpha, protuberance);
-    
     // Find closest mach number to passed mach value
     double mach_below =
         std::trunc(mach / mach_number_fidelity_) * mach_number_fidelity_;
@@ -199,25 +194,26 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
     double prot_above = prot_below + protuberance_fidelity_;
 
     // Start index of chunk with the mach number we want
-    int mach_start_index = (std::round(closest_mach / mach_number_fidelity_) - 1) *
-                           (alpha_instances_ * protuberance_instances_);
+    int mach_start_index =
+        (std::round(closest_mach / mach_number_fidelity_) - 1) *
+        (alpha_instances_ * protuberance_instances_);
 
     // How many rows to go down from start of chunk to get a,b,c,d rows
-    int row_a_offset =
-        (std::round(alpha_below / alpha_fidelity_) * (protuberance_instances_)) +
-        std::round(prot_below / protuberance_fidelity_);
+    int row_a_offset = (std::round(alpha_below / alpha_fidelity_) *
+                        (protuberance_instances_)) +
+                       std::round(prot_below / protuberance_fidelity_);
 
-    int row_b_offset =
-        (std::round(alpha_above / alpha_fidelity_) * (protuberance_instances_)) +
-        std::round(prot_below / protuberance_fidelity_);
+    int row_b_offset = (std::round(alpha_above / alpha_fidelity_) *
+                        (protuberance_instances_)) +
+                       std::round(prot_below / protuberance_fidelity_);
 
-    int row_c_offset =
-        (std::round(alpha_below / alpha_fidelity_) * (protuberance_instances_)) +
-        std::round(prot_above / protuberance_fidelity_);
+    int row_c_offset = (std::round(alpha_below / alpha_fidelity_) *
+                        (protuberance_instances_)) +
+                       std::round(prot_above / protuberance_fidelity_);
 
-    int row_d_offset =
-        (std::round(alpha_above / alpha_fidelity_) * (protuberance_instances_)) +
-        std::round(prot_above / protuberance_fidelity_);
+    int row_d_offset = (std::round(alpha_above / alpha_fidelity_) *
+                        (protuberance_instances_)) +
+                       std::round(prot_above / protuberance_fidelity_);
 
     // Fetch rows a,b,c,d from the lookup table
     Eigen::RowVectorXd row_a = aero_table_.row(mach_start_index + row_a_offset);
@@ -241,8 +237,6 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
     // Contemplate the meaning of life
     RASAeroCoefficients result{row_z(3), row_z(4), row_z(5),
                                row_z(6), row_z(7), row_z(8)};
-    if (row_z(2) > 0.0)
-        std::cout << "Did you ever hear the tragedy of Darth Plagueis The Wise?" << std::endl;
 
 #ifdef RASAERO_DEBUG
     std::cout << std::endl;
@@ -267,10 +261,10 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
     std::cout << "row_d_offset = " << row_d_offset << std::endl;
 
     std::cout << std::endl;
-    
+
     std::cout << "### [RASAeroImport get_aero_coefficients() debug result]:"
               << std::endl;
-    //std::cout << "given alpha = " << alpha << std::endl;
+    // std::cout << "given alpha = " << alpha << std::endl;
     std::cout << row_z << std::endl;
 #endif
 
