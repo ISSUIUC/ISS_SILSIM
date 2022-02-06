@@ -57,7 +57,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     Quaterniond q_ornt = rocket_.get_q_ornt();  // orientation of rocket
 
     // CG to Cp vector
-    Vector3d Cp_vect_rf =
+    Vector3d cp_vect_rf =
         rocket_.get_cp_vect();  // CG to Cp (center of pressure) vector
 
     // Aerodynamic and Inertial parameters
@@ -110,7 +110,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         Vector3d f_A_rf(0, 0, std::copysign(f_A_mag, -v_rf.z()));
 
         f_aero_rf = f_N_rf + f_A_rf;
-        t_aero_rf = Cp_vect_rf.cross(f_aero_rf);
+        t_aero_rf = cp_vect_rf.cross(f_aero_rf);
 
     } else {
         f_aero_rf.x() = 0;
@@ -138,12 +138,13 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
 
     w_vect_if += w_dot_if * tStep;
 
-    w_dot_if.x() = t_net_if.x() / I_tens[0];
-    w_dot_if.y() = t_net_if.y() / I_tens[4];
-    w_dot_if.z() = t_net_if.z() / I_tens[8];
+    Vector3d w_dot_rf{t_net_rf.x() / I_tens[0], t_net_rf.y() / I_tens[4],
+                      t_net_rf.z() / I_tens[8]};
 
-    // Naively accounting for launch rail
-    if (r_vect_if.norm() < 4.50) {
+    w_dot_if = rocket_.r2i(w_dot_rf);
+
+    // Naively accounting for launch rail (17ft ESRA rail)
+    if (r_vect_if.norm() < 5.18) {
         w_dot_if.x() = 0;
         w_dot_if.y() = 0;
         w_dot_if.z() = 0;
@@ -158,9 +159,6 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         Vector3d v_rf = rocket_.i2r(r_dot_if);
         alpha = acos(v_rf.z() / v_rf.norm());
         mach = r_dot_if.norm() / Atmosphere::get_speed_of_sound(r_vect_if.z());
-    } else {
-        alpha = 0.0;
-        mach = 0.0;
     }
 
     euler_logger->debug("Timestamp {}", tStamp);
