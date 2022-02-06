@@ -16,6 +16,7 @@
 
 #include <Eigen/Dense>
 #include <cmath>
+#include <iostream>
 
 #include "Atmosphere.h"
 
@@ -496,17 +497,25 @@ Quaterniond PhysicsEngine::update_quaternion(Quaterniond q_ornt,
 }
 
 Vector3d RungeKutta::i2ecef(Vector3d pos_if) {
-    double lambda = 0.0;
-    double lat = 0.0;
+    double lambda = rocket_.get_r_geod().x();
+    double lat = rocket_.get_r_geod().y();
     Vector3d ecef = rocket_.get_r_ecef();
+    
+    Eigen::Matrix<double, 1, 3> enu {
+        {pos_if.x()},
+        {pos_if.y()},
+        {pos_if.z()}
+    };
 
     Eigen::Matrix<double, 3, 3> transform {
         {-std::sin(lambda), -std::sin(lat) * std::cos(lambda), std::cos(lat) * std::cos(lambda)},
         {std::cos(lambda), -std::sin(lat) * std::sin(lambda), std::cos(lat) * std::sin(lambda)},
         {0, std::cos(lat), std::sin(lat)}
     };
+    Eigen::Matrix<double, 3, 1> mult = transform * enu;
 
-    ecef += (transform * pos_if);
+    Vector3d new_ecef = {mult(0, 0), mult(0, 1), mult(0, 2)};
+    ecef += new_ecef;
     return ecef;
 }
 
