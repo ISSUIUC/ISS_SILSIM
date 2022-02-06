@@ -62,6 +62,9 @@ class Rocket {
 
     void get_Cp_vect(Vector3d& vector) const;
 
+    void get_r_geod(Vector3d& vector) const { vector = r_geod_; };
+    void get_r_ecef(Vector3d& vector) const { vector = r_ecef_; };
+
     /************ Get parameters by value (return by value) ***************/
     Vector3d get_r_vect() const { return r_vect_; };
     Vector3d get_r_dot() const { return r_dot_; };
@@ -85,7 +88,6 @@ class Rocket {
 
     Vector3d get_Cp_vect() const { return Cp_vect_; };
 
-    Vector3d get_launch_ecef_coords() const { return launch_ecef_coords_; };
     Vector3d get_r_geod() const { return r_geod_; };
     Vector3d get_r_ecef() const { return r_ecef_; };
 
@@ -144,10 +146,9 @@ class Rocket {
 
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
 
-    //The following are in Geocentric frame
-    Vector3d launch_ecef_coords_{0, 0, 0};  // (40.111801, -88.228691, 216) - Talbot Laboratory
-    Vector3d r_geod_{0, 0, 0};
-    Vector3d r_ecef_{0, 0, 0};
+    //The following are in Geocentric frame  
+    Vector3d r_geod_{40.111801, -88.228691, 216};     // (40.111801, -88.228691, 216) - Talbot Laboratory
+    Vector3d r_ecef_{150992.99, -4882549.85, 4087626.55};
 
 
     // Default scalar parameters from OpenRocket

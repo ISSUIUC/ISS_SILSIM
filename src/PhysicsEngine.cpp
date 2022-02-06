@@ -307,6 +307,8 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
     double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
     double drag_coef = rocket_.get_Cd();
 
+    Vector3d geod = rocket_.get_r_geod();
+
     /************************* Calculate Net Force ****************************/
 
     Vector3d aero_force_rf;
@@ -364,6 +366,8 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_if, Vector3d pos_if) {
     double area = rocket_.get_A_ref();
     double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
     double drag_coef = rocket_.get_Cd();
+
+    Vector3d geod = rocket_.get_r_geod();
 
     /************************ Calculate Net Torque ***************************/
 
@@ -494,7 +498,7 @@ Quaterniond PhysicsEngine::update_quaternion(Quaterniond q_ornt,
 Vector3d RungeKutta::i2ecef(Vector3d pos_if) {
     double lambda = 0.0;
     double lat = 0.0;
-    Vector3d ecef = rocket_.get_launch_ecef_coords();
+    Vector3d ecef = rocket_.get_r_ecef();
 
     Eigen::Matrix<double, 3, 3> transform {
         {-std::sin(lambda), -std::sin(lat) * std::cos(lambda), std::cos(lat) * std::cos(lambda)},

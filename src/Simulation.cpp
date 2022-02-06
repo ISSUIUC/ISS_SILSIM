@@ -64,7 +64,7 @@ void Simulation::run(int steps) {
 
     motor_.ignite(tStamp_);
     for (int iter = 0; iter < steps; ++iter) {
-        rocket_.get_r_vect(r_vect);
+        rocket_.get_r_geod(r_vect);
         rocket_.get_r_dot(r_dot);
         rocket_.get_r_ddot(r_ddot);
         rocket_.get_f_net(f_net);
