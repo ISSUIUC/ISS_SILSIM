@@ -497,40 +497,37 @@ Quaterniond PhysicsEngine::update_quaternion(Quaterniond q_ornt,
 }
 
 Vector3d RungeKutta::i2ecef(Vector3d pos_if) {
+    
     double lambda = rocket_.get_r_geod().x();
     double lat = rocket_.get_r_geod().y();
     Vector3d ecef = rocket_.get_r_ecef();
-    
-    Eigen::Matrix<double, 1, 3> enu {
-        {pos_if.x()},
-        {pos_if.y()},
-        {pos_if.z()}
-    };
+    std::cout << ecef.x() << " " << ecef.y() << " " << ecef.z() << std::endl;
 
     Eigen::Matrix<double, 3, 3> transform {
         {-std::sin(lambda), -std::sin(lat) * std::cos(lambda), std::cos(lat) * std::cos(lambda)},
         {std::cos(lambda), -std::sin(lat) * std::sin(lambda), std::cos(lat) * std::sin(lambda)},
         {0, std::cos(lat), std::sin(lat)}
     };
-    Eigen::Matrix<double, 3, 1> mult = transform * enu;
 
-    Vector3d new_ecef = {mult(0, 0), mult(0, 1), mult(0, 2)};
-    ecef += new_ecef;
+    ecef = (transform * pos_if) + rocket_.get_launch_ecef();
     return ecef;
 }
 
 Vector3d RungeKutta::ecef2geod(Vector3d ecef) {
     Vector3d geod = rocket_.get_r_geod();
+    std::cout << geod.x() << " " << geod.y() << " " << geod.z() << std::endl;
+    double h = geod.z();
+
     
     const double a = 6378137.0;
     const double b = 6356752.3142;
     const double e = (std::pow(a, 2) - std::pow(b, 2)) / std::pow(a, 2);
     double p = std::sqrt(std::pow(ecef.x(), 2) + std::pow(ecef.y(), 2));
-    double n = a / (std::sqrt(1 - (e * std::pow(std::sin(geod.x()), 2))));
+    double n = a / (std::sqrt(1 - (e * std::pow(std::sin(geod.x()), 2)))) * 180 / M_PI;
 
-    geod.y() = std::atan2(ecef.y(), ecef.x());
-    geod.z() = (p / std::cos(geod.x())) - n;
-    geod.x() = std::atan((ecef.z() / p) / (1 - (e * n / (n - geod.z()))));
+    geod.y() = std::atan2(ecef.y(), ecef.x()) * 180 / M_PI;
+    geod.z() = (p / std::cos(geod.x()) - n);
+    geod.x() = std::atan((ecef.z() / p) / (1 - (e * n / (n + h)))) * 180 / M_PI;
 
     return geod;
 }

@@ -14,6 +14,7 @@
 
 #ifndef _PHYSICS_ENGINE_H_
 #define _PHYSICS_ENGINE_H_
+#define _USE_MATH_DEFINES
 
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
