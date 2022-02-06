@@ -135,13 +135,13 @@ class Rocket {
 
     //---------- Intertial Parameters ----------
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
-    double mass_ = 41.034;       // in Kg
-    double nose_to_cg_ = 3.59;   // nosecone tip to CG distance in m
+    double mass_ = 25.91;        // in Kg
+    double nose_to_cg_ = 1.683;   // nosecone tip to CG distance in m
 
     //----------- Aerodynamic Parameters ----------
     std::shared_ptr<RASAeroImport> rasaero_import_;  // Aero lookup table
-    double reference_length_ = 0.0157;               // reference length in m
-    double reference_area_ = 0.0194;                 // reference area in m^2
+    double reference_length_ = 3.2258;               // reference length in m
+    double reference_area_ = 0.00811;                // reference area in m^2
     double total_normal_force_coeff_ = 9.65;  // total normal force coefficient
     double total_axial_force_coeff_ = 0.630;  // total axial force coefficient
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m

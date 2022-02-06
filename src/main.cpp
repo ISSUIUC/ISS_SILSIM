@@ -11,6 +11,18 @@
 
 constexpr double deg2rad = 3.14159265 / 180.0;
 
+constexpr double kLbsToKg = 0.453592;
+constexpr double kInchToMeters = 0.0254;
+
+/***************** Intrepid MK4 Parameters *****************/
+constexpr double kIntrepidDryMass = 57.12 * kLbsToKg; 
+constexpr double kIntrepidWetMass = 67.90 * kLbsToKg; 
+constexpr double kIntrepidWetCGLocation = 74.63 * kInchToMeters;
+constexpr double kIntrepidDryCGLocation = 66.26 * kInchToMeters;
+constexpr double kIntrepidTotalLength = 127.0 * kInchToMeters;
+constexpr double kIntrepidDiameter = 4.0 * kInchToMeters;
+constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
+
 int main() {
     RASAeroImport rasaero_import("utils/RASAero_fetch/output/RASAero.csv");
 
@@ -20,11 +32,18 @@ int main() {
 
     Rocket rocket(std::make_shared<RASAeroImport>(rasaero_import));
 
-    double mass = rocket.get_mass();
+    double mass = (((3.50/50.0) * kIntrepidWetMass) +
+                  ((46.5/50.0) * kIntrepidDryMass)); 
+    rocket.set_mass(mass);
+
+    double nose_to_cg = (((3.50/50.0) * kIntrepidWetCGLocation) +
+                         ((46.5/50.0) * kIntrepidDryCGLocation)); 
+    rocket.set_nose_to_cg(nose_to_cg);
+
     std::array<double, 9> I_tensor{};
-    I_tensor[0] = (1.0 / 12.0) * mass * 5.182 * 5.182 * 25;
+    I_tensor[0] = (1.0 / 12.0) * mass * kIntrepidTotalLength * kIntrepidTotalLength;
     I_tensor[4] = I_tensor[0];
-    I_tensor[8] = 0.5 * mass * 0.0762 * 0.0762;
+    I_tensor[8] = 0.5 * mass * kIntrepidRadius * kIntrepidRadius;
     rocket.set_I(I_tensor);
 
     double angle = 5.0 * deg2rad;
@@ -37,8 +56,7 @@ int main() {
     accel1.enable_noise_injection();
     Gyroscope gyro1("LSM9_gyro", rocket, 100);
 
-    // 3.5 second burn time @ 4000 Newton constant thrust (L ish motor I think)
-    SolidMotor motor(3.5, 4000.0);
+    SolidMotor motor(3.49, 5800.0);
 
     ForwardEuler engine(rocket, motor);
     // RungeKutta engine(rocket, motor);
