@@ -16,7 +16,6 @@
 
 #include <Eigen/Dense>
 #include <cmath>
-#include <iostream>
 
 #include "Atmosphere.h"
 
@@ -308,7 +307,7 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
     double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
     double drag_coef = rocket_.get_Cd();
 
-    Vector3d geod = rocket_.get_r_geod();
+    Vector3d geod = ecef2geod(i2ecef(pos_if));
 
     /************************* Calculate Net Force ****************************/
 
@@ -326,14 +325,14 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_if,
         double normal_coef = c_Na * alpha;
 
         double normal_force_mag = 0.5 * normal_coef * vel_rf.squaredNorm() *
-                                  area * Atmosphere::get_density(pos_if.z());
+                                  area * Atmosphere::get_density(geod.z());
         normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
 
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
         double drag_mag = 0.5 * drag_coef * vel_rf.squaredNorm() * area *
-                          Atmosphere::get_density(pos_if.z());
+                          Atmosphere::get_density(geod.z());
         Vector3d drag_rf{0, 0, std::copysign(drag_mag, -vel_rf.z())};
 
         aero_force_rf = normal_force_rf + drag_rf;
@@ -368,7 +367,7 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_if, Vector3d pos_if) {
     double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
     double drag_coef = rocket_.get_Cd();
 
-    Vector3d geod = rocket_.get_r_geod();
+    Vector3d geod = ecef2geod(i2ecef(pos_if));
 
     /************************ Calculate Net Torque ***************************/
 
@@ -389,14 +388,14 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_if, Vector3d pos_if) {
         double normal_coef = c_Na * alpha;
 
         double normal_force_mag = 0.5 * normal_coef * vel_rf.squaredNorm() *
-                                  area * Atmosphere::get_density(pos_if.z());
+                                  area * Atmosphere::get_density(geod.z());
         normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
 
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
         double drag_mag = 0.5 * drag_coef * vel_rf.squaredNorm() * area *
-                          Atmosphere::get_density(pos_if.z());
+                          Atmosphere::get_density(geod.z());
         Vector3d drag_rf{0, 0, std::copysign(drag_mag, -vel_rf.z())};
 
         aero_force_rf = normal_force_rf + drag_rf;
