@@ -21,6 +21,8 @@
 #include <string>
 #include <vector>
 
+#include "Parachute.h"
+
 using Eigen::Vector3d;
 
 using Eigen::Quaterniond;
@@ -112,11 +114,15 @@ class Rocket {
     void set_nose_to_cg(double& nose_to_cg);
     void set_nose_to_cp(double& nose_to_cp);
 
+    void update_parachutes();
+
     // Converts vector from inertial frame to rocket reference frame
-    Vector3d i2r(Vector3d vector);
+    Vector3d i2r(Vector3d vector) const;
 
     // Converts vector from rocket frame to inertial reference frame
-    Vector3d r2i(Vector3d vector);
+    Vector3d r2i(Vector3d vector) const;
+
+    Vector3d calculate_drag_rf() const;
 
    private:
     // The following are in inertial frame
@@ -136,6 +142,10 @@ class Rocket {
     Vector3d Cp_vect_{};  // CG to Cp vector
 
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
+
+    // Parachute settings
+    DrogueParachute drogue_chute{1.75, 0.203};
+    MainParachute main_chute{1.75, 1.161, 400.0};
 
     // Default scalar parameters from OpenRocket
     double mass_ = 41.034;      // in Kg

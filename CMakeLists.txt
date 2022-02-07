@@ -27,9 +27,7 @@ add_executable(ISS_SILSIM src/main.cpp
         src/Sensor.cpp
         src/Simulation.cpp
         src/Atmosphere.cpp
-        
-        
-        )
+        src/Parachute.cpp)
 
 target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog Eigen3::Eigen)
 
@@ -38,7 +36,7 @@ target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog Eigen3::Eigen)
 if(MSVC)
     target_compile_options(ISS_SILSIM PRIVATE /W3)
 else()
-    target_compile_options(ISS_SILSIM PRIVATE -Wall -Wextra -Wpedantic)
+    target_compile_options(ISS_SILSIM PRIVATE -Wall -Wextra -Wpedantic -Wno-unknown-pragmas)
 endif()
 
 target_include_directories(ISS_SILSIM PUBLIC ${CMAKE_SOURCE_DIR}/includes/)

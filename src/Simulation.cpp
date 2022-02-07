@@ -84,6 +84,11 @@ void Simulation::run(int steps) {
         roll = atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
                RAD2DEG;
 
+        if ((r_dot.z() < 0) && (r_vect.z() < -1.0)) {
+            sim_log->info("Sim done at iteration {}", iter);
+            break;
+        }
+
         double alpha = acos(rocket_.i2r(r_dot).z() / (r_dot.norm()));
         sim_log->debug("Timestamp: {}", tStamp_);
         sim_log->debug("R-Vector: <{}, {}, {}>", r_vect.x(), r_vect.y(),
@@ -100,9 +105,8 @@ void Simulation::run(int steps) {
         rocket_axis = rocket_.r2i(rocket_axis);
 
         engine_->march_step(tStamp_, tStep_);
-
+        rocket_.update_parachutes();
         update_sensors();
-
         cpu_.tick(tStamp_);
 
         dataFile << tStamp_ << ",";
@@ -123,10 +127,6 @@ void Simulation::run(int steps) {
         dataFile << "\n";
 
         tStamp_ += tStep_;
-
-        if (r_dot.z() < -3.0) {
-            break;
-        }
     }
 
     dataFile.close();
