@@ -498,36 +498,44 @@ Quaterniond PhysicsEngine::update_quaternion(Quaterniond q_ornt,
 
 Vector3d RungeKutta::i2ecef(Vector3d pos_if) {
     
-    double lambda = rocket_.get_r_geod().x();
-    double lat = rocket_.get_r_geod().y();
+    double lambda = rocket_.get_launch_geod().y() * M_PI / 180;
+    double lat = rocket_.get_launch_geod().x() * M_PI / 180;
     Vector3d ecef = rocket_.get_r_ecef();
-    std::cout << ecef.x() << " " << ecef.y() << " " << ecef.z() << std::endl;
 
     Eigen::Matrix<double, 3, 3> transform {
         {-std::sin(lambda), -std::sin(lat) * std::cos(lambda), std::cos(lat) * std::cos(lambda)},
         {std::cos(lambda), -std::sin(lat) * std::sin(lambda), std::cos(lat) * std::sin(lambda)},
         {0, std::cos(lat), std::sin(lat)}
     };
-
+    
     ecef = (transform * pos_if) + rocket_.get_launch_ecef();
+    
     return ecef;
 }
 
 Vector3d RungeKutta::ecef2geod(Vector3d ecef) {
     Vector3d geod = rocket_.get_r_geod();
-    std::cout << geod.x() << " " << geod.y() << " " << geod.z() << std::endl;
-    double h = geod.z();
-
     
     const double a = 6378137.0;
     const double b = 6356752.3142;
-    const double e = (std::pow(a, 2) - std::pow(b, 2)) / std::pow(a, 2);
+    const double e2 = (std::pow(a, 2) - std::pow(b, 2)) / std::pow(a, 2);
+    const double er2 = (std::pow(a, 2) - std::pow(b, 2)) / std::pow(b, 2);
     double p = std::sqrt(std::pow(ecef.x(), 2) + std::pow(ecef.y(), 2));
-    double n = a / (std::sqrt(1 - (e * std::pow(std::sin(geod.x()), 2)))) * 180 / M_PI;
+    double F = 54 * std::pow(b, 2) * std::pow(ecef.z(), 2);
+    double G = std::pow(p, 2) + ((1 - e2) * std::pow(ecef.z(), 2)) - (e2 * (std::pow(a, 2) - std::pow(b, 2)));
+    double c = (std::pow(e2, 2) * F * std::pow(p, 2)) / std::pow(G, 3);
+    double s = std::cbrt(1 + c + std::sqrt(std::pow(c, 2) + (2 * c)));
+    double k = s + 1 + (1/s);
+    double P = F / (3 * std::pow(k, 2) * std::pow(G, 2));
+    double Q = std::sqrt(1 + (2 * std::pow(e2, 2) * P));
+    double r0 = ((-P * e2 * p) / (1 + Q)) + std::sqrt(((0.5 * std::pow(a, 2)) * (1 + (1 / Q))) - ((P * (1 - e2) * std::pow(ecef.z(), 2)) / (Q * (1 + Q))) - (0.5 * P * std::pow(p, 2)));
+    double U = std::sqrt(std::pow((p - (e2 * r0)), 2) + std::pow(ecef.z(), 2));
+    double V = std::sqrt(std::pow(p - (e2 * r0), 2) + ((1 - e2) * std::pow(ecef.z(), 2)));
+    double z0 = (std::pow(b, 2) * ecef.z()) / (a * V);
 
+    geod.z() = U * (1 - (std::pow(b, 2) / (a * V)));
+    geod.x() = std::atan((ecef.z() + (er2 * z0)) / p) * 180 / M_PI;
     geod.y() = std::atan2(ecef.y(), ecef.x()) * 180 / M_PI;
-    geod.z() = (p / std::cos(geod.x()) - n);
-    geod.x() = std::atan((ecef.z() / p) / (1 - (e * n / (n + h)))) * 180 / M_PI;
 
     return geod;
 }

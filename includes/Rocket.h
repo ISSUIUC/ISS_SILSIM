@@ -65,6 +65,7 @@ class Rocket {
     void get_r_geod(Vector3d& vector) const { vector = r_geod_; };
     void get_r_ecef(Vector3d& vector) const { vector = r_ecef_; };
     void get_launch_ecef(Vector3d& vector) const { vector = launch_ecef_; };
+    void get_launch_geod(Vector3d& vector) const { vector = launch_geod_; };
 
     /************ Get parameters by value (return by value) ***************/
     Vector3d get_r_vect() const { return r_vect_; };
@@ -92,6 +93,7 @@ class Rocket {
     Vector3d get_r_geod() const { return r_geod_; };
     Vector3d get_r_ecef() const { return r_ecef_; };
     Vector3d get_launch_ecef() const { return launch_ecef_; };
+    Vector3d get_launch_geod() const { return launch_geod_; };
 
     /************* Set parameters (all passed by reference) ***************/
     void set_r_vect(Vector3d& vector) { r_vect_ = vector; };
@@ -150,6 +152,7 @@ class Rocket {
 
     //The following are in Geocentric frame  
     Vector3d launch_ecef_{150992.99, -4882549.85, 4087626.55};
+    Vector3d launch_geod_{40.111801, -88.228691, 216};
     Vector3d r_geod_{40.111801, -88.228691, 216};     // (40.111801, -88.228691, 216) - Talbot Laboratory
     Vector3d r_ecef_{150992.99, -4882549.85, 4087626.55};
 
