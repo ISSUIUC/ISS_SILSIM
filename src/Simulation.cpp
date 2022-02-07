@@ -58,9 +58,6 @@ void Simulation::run(int steps) {
     Vector3d f_net{};
     Vector3d w_net{};
 
-    bool drogue_deploy;
-    bool main_deploy;
-
     Quaterniond q_ornt{};
 
     double roll, pitch, yaw;
@@ -73,9 +70,6 @@ void Simulation::run(int steps) {
         rocket_.get_f_net(f_net);
         rocket_.get_w_vect(w_net);
         rocket_.get_q_ornt(q_ornt);
-
-        rocket_.get_drogue_deploy(drogue_deploy);
-        rocket_.get_main_deploy(main_deploy);
 
         double s = q_ornt.w();
         double x = q_ornt.x();
