@@ -15,7 +15,7 @@ struct FileStorage {
     FileStorage(uint8_t mode) {
         flags = mode;
     };
-    std::vector<char> vect;
+    std::vector<uint8_t> vect;
     uint8_t flags;
 };
 struct File {

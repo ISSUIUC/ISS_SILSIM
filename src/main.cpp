@@ -61,9 +61,8 @@ int main() {
 
     auto data = cpu.get_filesystem().at("data.dat");
 
-    auto data_dat = std::ofstream("sim_data/data_synth.dat");
+    auto data_dat = std::ofstream("sim_data/data_synth.dat", std::ios::binary);
 
-    data_dat.write(data.vect.data(), data.vect.size());
-
+    data_dat.write((const char *)data.vect.data(), data.vect.size());
     return 0;
 }
