@@ -150,12 +150,12 @@ class Rocket {
 
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
 
-    //The following are in Geocentric frame  
+    // The following are in Geocentric frame
     Vector3d launch_ecef_{150992.99, -4882549.85, 4087626.55};
     Vector3d launch_geod_{40.111801, -88.228691, 216};
-    Vector3d r_geod_{40.111801, -88.228691, 216};     // (40.111801, -88.228691, 216) - Talbot Laboratory
+    Vector3d r_geod_{40.111801, -88.228691,
+                     216};  // (40.111801, -88.228691, 216) - Talbot Laboratory
     Vector3d r_ecef_{150992.99, -4882549.85, 4087626.55};
-
 
     // Default scalar parameters from OpenRocket
     double mass_ = 41.034;      // in Kg
