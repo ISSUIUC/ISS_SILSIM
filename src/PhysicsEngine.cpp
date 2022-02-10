@@ -495,6 +495,12 @@ Quaterniond PhysicsEngine::update_quaternion(Quaterniond q_ornt,
     return q_ornt;
 }
 
+/**
+ * @brief 
+ * 
+ * @param pos_if 
+ * @return Vector3d 
+ */
 Vector3d RungeKutta::i2ecef(Vector3d pos_if) {
     double lambda = rocket_.get_launch_geod().y() * M_PI / 180;
     double lat = rocket_.get_launch_geod().x() * M_PI / 180;
@@ -512,6 +518,12 @@ Vector3d RungeKutta::i2ecef(Vector3d pos_if) {
     return ecef;
 }
 
+/**
+ * @brief 
+ * 
+ * @param ecef 
+ * @return Vector3d 
+ */
 Vector3d RungeKutta::ecef2geod(Vector3d ecef) {
     Vector3d geod = rocket_.get_r_geod();
 
