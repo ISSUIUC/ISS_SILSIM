@@ -62,11 +62,6 @@ class Rocket {
 
     void get_Cp_vect(Vector3d& vector) const;
 
-    void get_r_geod(Vector3d& vector) const { vector = r_geod_; };
-    void get_r_ecef(Vector3d& vector) const { vector = r_ecef_; };
-    void get_launch_ecef(Vector3d& vector) const { vector = launch_ecef_; };
-    void get_launch_geod(Vector3d& vector) const { vector = launch_geod_; };
-
     /************ Get parameters by value (return by value) ***************/
     Vector3d get_r_vect() const { return r_vect_; };
     Vector3d get_r_dot() const { return r_dot_; };
@@ -125,25 +120,25 @@ class Rocket {
     void set_r_geod(Vector3d& vector) { r_geod_ = vector; };
     void set_r_ecef(Vector3d& vector) { r_ecef_ = vector; };
 
-    // Converts vector from inertial frame to rocket reference frame
-    Vector3d i2r(Vector3d vector);
+    // Converts vector from ENU frame to rocket reference frame
+    Vector3d enu2r(Vector3d vector);
 
-    // Converts vector from rocket frame to inertial reference frame
-    Vector3d r2i(Vector3d vector);
+    // Converts vector from rocket frame to ENU reference frame
+    Vector3d r2enu(Vector3d vector);
 
    private:
-    // The following are in inertial frame
+    // The following are in ENU frame
     Vector3d r_vect_{0, 0, 0};  // r vector
     Vector3d r_dot_{0, 0, 0};   // r-dot (velocity)
     Vector3d r_ddot_{0, 0, 0};  // r-double-dot (acceleration)
     Vector3d w_vect_{0, 0, 0};  // angular velocity (omega) vector
     Vector3d w_dot_{0, 0, 0};   // angular acceleration vector
 
-    // The following are in inertial frame
+    // The following are in ENU frame
     Vector3d f_net_{0, 0, 0};  // net force in Netwons
     Vector3d t_net_{0, 0, 0};  // net torque in Newton*meters
 
-    Quaterniond q_ornt_{};  // inertial -> rocket frame quaternion
+    Quaterniond q_ornt_{};  // ENU -> rocket frame quaternion
 
     // The following are in rocket frame
     Vector3d Cp_vect_{};  // CG to Cp vector

@@ -33,7 +33,7 @@ class PhysicsEngine {
     virtual void march_step(double tStamp, double tStep) = 0;
 
    protected:
-    Quaterniond update_quaternion(Quaterniond q_ornt, Vector3d omega_if,
+    Quaterniond update_quaternion(Quaterniond q_ornt, Vector3d omega_enu,
                                   double tStep) const;
     Rocket& rocket_;
     SolidMotor& motor_;
@@ -65,10 +65,10 @@ class RungeKutta : public PhysicsEngine {
         Vector3d ang_accel;
     };
 
-    Vector3d calc_net_force(double tStamp, Vector3d pos_if, Vector3d vel_if);
-    Vector3d calc_net_torque(Vector3d vel_if, Vector3d pos_if);
+    Vector3d calc_net_force(double tStamp, Vector3d pos_enu, Vector3d vel_enu);
+    Vector3d calc_net_torque(Vector3d vel_enu, Vector3d pos_enu);
     RungeKuttaState calc_state(double tStamp, double tStep, RungeKuttaState k);
-    Vector3d i2ecef(Vector3d pos_if);
+    Vector3d i2ecef(Vector3d pos_enu);
     Vector3d ecef2geod(Vector3d ecef);
 };
 

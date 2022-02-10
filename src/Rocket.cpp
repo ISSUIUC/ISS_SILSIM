@@ -70,13 +70,13 @@ void Rocket::set_nose_to_cp(double& nose_to_cp) {
 void Rocket::get_Cp_vect(Vector3d& vector) const { vector = Cp_vect_; }
 
 /**
- * @brief Performs a quaternion rotation to translate a vector from the inertial
+ * @brief Performs a quaternion rotation to translate a vector from the ENU
  * frame to the rocket body frame.
  *
  * @param vector Input vector in intertial frame to be rotated
  * @return Vector3d The rotated vector represented in the rocket body frame
  */
-Vector3d Rocket::i2r(Vector3d vector) {
+Vector3d Rocket::enu2r(Vector3d vector) {
     Quaterniond p{0, vector.x(), vector.y(), vector.z()};
     p = (q_ornt_.conjugate() * p) * q_ornt_;
     return p.vec();
@@ -84,12 +84,12 @@ Vector3d Rocket::i2r(Vector3d vector) {
 
 /**
  * @brief Performs a quaternion rotation to translate a vector from the rocket
- * frame to the inertial reference frame.
+ * frame to the ENU reference frame.
  *
  * @param vector Input vector in rocket frame to be rotated
- * @return Vector3d The rotated vector represented in the inertial frame
+ * @return Vector3d The rotated vector represented in the ENU frame
  */
-Vector3d Rocket::r2i(Vector3d vector) {
+Vector3d Rocket::r2enu(Vector3d vector) {
     Quaterniond p{0, vector.x(), vector.y(), vector.z()};
     p = (q_ornt_ * p) * q_ornt_.conjugate();
 
