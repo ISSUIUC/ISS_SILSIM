@@ -60,7 +60,6 @@ build/*
 compile_commands.json
 bin
 .clangd
-<<<<<<< HEAD
 .session.vim
 .idea
 .vs
@@ -68,7 +67,3 @@ bin
 out/
 *.make
 **/*.make
-=======
-
->>>>>>> master
-
