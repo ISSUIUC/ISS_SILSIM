@@ -302,8 +302,8 @@ Wind related code
 
 */
 
-void Atmosphere::create_tables(std::string filename) {
-    
+void Atmosphere::create_table(std::string filename) {
+    return;
 }
 
 double Atmosphere::get_wind_direction(double altitude) {
