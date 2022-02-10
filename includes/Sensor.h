@@ -68,6 +68,23 @@ class Sensor {
     bool inject_noise_ = false;
 };
 
+class Magnetometer : public Sensor {
+   public:
+    Magnetometer(std::string name, Rocket& rocket, double refresh_rate,
+              double noise_mean = 0.0f, double noise_stddev = 0.1f);
+    void update_data(double tStep) override;
+    void get_data(Vector3d& data) override;
+
+    void set_constant_bias(Vector3d bias) { bias_ = bias; };
+
+   private:
+    Vector3d data_;  // The sensor's current reading
+
+    Vector3d noise_;  // Noise vector to be added to measurement
+
+    Vector3d bias_;  // Constant bias vector to be added to measurement
+};
+
 class Gyroscope : public Sensor {
    public:
     Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
@@ -83,6 +100,35 @@ class Gyroscope : public Sensor {
     Vector3d noise_;  // Noise vector to be added to measurement
 
     Vector3d bias_;  // Constant bias vector to be added to measurement
+};
+
+class GPSSensor : public Sensor {
+   public:
+    GPSSensor(std::string name, Rocket& rocket, double refresh_rate,
+              double noise_mean = 0.0f, double noise_stddev = 0.1f);
+    void update_data(double tStep) override;
+    void get_data(Vector3d& data) override;
+
+    void set_constant_bias(Vector3d bias) { bias_ = bias; };
+
+   private:
+    Vector3d data_;  // The sensor's current reading
+
+    Vector3d noise_;  // Noise vector to be added to measurement
+
+    Vector3d bias_;  // Constant bias vector to be added to measurement
+};
+
+class Thermometer : public Sensor {
+   public:
+    Thermometer(std::string name, Rocket& rocket, double refresh_rate, double noise_mean = 0.0f, double noise_stddev = 0.1f);
+    void update_data(double tStep) override;
+    double get_data() override;
+
+   private:
+    double data_;
+    double bias_;
+    double noise_;
 };
 
 class Accelerometer : public Sensor {

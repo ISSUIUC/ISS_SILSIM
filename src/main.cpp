@@ -11,7 +11,7 @@
 constexpr double deg2rad = 3.14159265 / 180.0;
 
 int main() {
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::critical);
     // comment below is used if we want to change the format of the logging
     // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
 
@@ -30,26 +30,39 @@ int main() {
     rocket.set_q_ornt(start_ornt);
 
     // Construct some sensors
-    Accelerometer accel1("LSM9_accel", rocket, 100);
-    accel1.enable_noise_injection();
-    Gyroscope gyro1("LSM9_gyro", rocket, 100);
+    Accelerometer accelerometer("LSM9_accel", rocket, 100);
+    accelerometer.enable_noise_injection();
+    Gyroscope gyroscope("LSM9_gyro", rocket, 100);
+    Thermometer thermometer("MS5611_thermometer", rocket, 100);
+    Barometer barometer("MS5611_barometer", rocket, 100);
+    GPSSensor gps("ZOEM8Q_gps", rocket, 10);
+    Magnetometer magnetometer("LSM9_magnetometer", rocket, 100);
 
     // 3.5 second burn time @ 4000 Newton constant thrust (L ish motor I think)
     SolidMotor motor(3.5, 4000.0);
 
     // ForwardEuler engine(rocket, motor);
     RungeKutta engine(rocket, motor);
-    CpuState cpu;
+    CpuState cpu(&accelerometer, &thermometer, &barometer, &gyroscope, &gps, &magnetometer);
 
     Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
 
-    sim.add_sensor(&accel1);
-    // sim.add_sensor(&gyro1);
+    sim.add_sensor(&accelerometer);
+    sim.add_sensor(&gyroscope);
+    sim.add_sensor(&thermometer);
+    sim.add_sensor(&barometer);
+    sim.add_sensor(&gps);
+    sim.add_sensor(&magnetometer);
 
     std::cout << "Running Sim!" << std::endl;
 
     // run 10000 steps
     sim.run(10000);
 
+    auto data = cpu.get_filesystem().at("data.dat");
+
+    auto data_dat = std::ofstream("sim_data/data_synth.dat", std::ios::binary);
+
+    data_dat.write((const char *)data.vect.data(), data.vect.size());
     return 0;
 }

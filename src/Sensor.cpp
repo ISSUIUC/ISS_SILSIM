@@ -18,6 +18,7 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include <string>
+#include <Atmosphere.h>
 
 using Eigen::Vector3d;
 
@@ -107,14 +108,14 @@ void Accelerometer::get_data(Vector3d& data) {
 Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
                      double noise_mean, double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
-    data_ = rocket_.get_r_vect().x();
+    data_ = Atmosphere::get_pressure(rocket.get_r_vect().z());
     bias_ = 0;
     noise_ = 0;
 }
 
 void Barometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
-        data_ = rocket_.get_r_vect().x();
+        data_ = Atmosphere::get_pressure(rocket_.get_r_vect().z());
         new_data_ = true;
 
         if (inject_noise_) {
@@ -141,4 +142,60 @@ Vector3d randomize_vector(std::default_random_engine& generator,
     vector.z() = dist(generator);
 
     return vector;
+}
+Thermometer::Thermometer(std::string name, Rocket& rocket, double refresh_rate,
+                         double noise_mean, double noise_stddev): Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {}
+void Thermometer::update_data(double tStep) {
+    if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
+        data_ = Atmosphere::get_temperature(rocket_.get_r_vect().z());
+        new_data_ = true;
+
+        if (inject_noise_) {
+            noise_ = normal_dist_(generator_);
+            data_ += noise_;
+        }
+
+        if (inject_bias_) {
+            data_ += bias_;
+        }
+    }
+}
+double Thermometer::get_data() { return data_; }
+
+GPSSensor::GPSSensor(std::string name, Rocket& rocket, double refresh_rate, double noise_mean, double noise_stddev)
+    : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {}
+
+void GPSSensor::update_data(double tStep) {
+    if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
+        data_ = rocket_.get_r_vect();
+        new_data_ = true;
+
+        if (inject_noise_) {
+            noise_.x() = normal_dist_(generator_);
+            noise_.y() = normal_dist_(generator_);
+            noise_.z() = normal_dist_(generator_);
+            data_ += noise_;
+        }
+
+        if (inject_bias_) {
+            data_ += bias_;
+        }
+    }
+}
+
+void GPSSensor::get_data(Vector3d& data){
+    data = data_;
+}
+
+//TODO implement magnetometer
+Magnetometer::Magnetometer(std::string name, Rocket& rocket,
+                           double refresh_rate, double noise_mean,
+                           double noise_stddev)
+    : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {}
+void Magnetometer::update_data(double tStep) {
+
+}
+
+void Magnetometer::get_data(Vector3d& data) {
+    data = {};
 }

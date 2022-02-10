@@ -38,6 +38,7 @@ logs/*
 .session.vim
 
 # CMake Temporaries
+cmake-*
 **/cmake-build-debug
 **/CMakeCache.txt
 **/cmake_install.cmake
@@ -59,5 +60,10 @@ build/*
 compile_commands.json
 bin
 .clangd
+.session.vim
+.idea
+.vs
 
-
+out/
+*.make
+**/*.make
