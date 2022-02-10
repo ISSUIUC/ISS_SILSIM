@@ -18,6 +18,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 
 /**
  * @brief Temperature getter function based on altitude
@@ -293,6 +294,16 @@ double Atmosphere::get_geometric_to_geopotential(double altitude) {
     double geopotential = (r * altitude) / (r + altitude);
 
     return geopotential;
+}
+
+/*
+
+Wind related code
+
+*/
+
+void Atmosphere::create_tables(std::string filename) {
+    
 }
 
 double Atmosphere::get_wind_direction(double altitude) {
