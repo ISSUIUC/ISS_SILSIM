@@ -22,7 +22,7 @@ class Atmosphere {
         static double get_geometric_to_geopotential(double altitude);
         static double get_wind_direction(double altitude);
         static double get_wind_speed(double altitude);
-        static void create_table(std::string filename);
+        static void create_table(const char* filename);
     private:
         std::vector<std::vector<double>> wind_data_table;
 };
