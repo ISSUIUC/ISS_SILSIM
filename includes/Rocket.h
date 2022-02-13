@@ -15,6 +15,7 @@
 
 #ifndef _ROCKET_H_
 #define _ROCKET_H_
+#define _USE_MATH_DEFINES
 
 #include <Eigen/Dense>
 #include <array>
@@ -86,7 +87,6 @@ class Rocket {
     Vector3d get_Cp_vect() const { return Cp_vect_; };
 
     Vector3d get_r_geod() const { return r_geod_; };
-    Vector3d get_r_ecef() const { return r_ecef_; };
     Vector3d get_launch_ecef() const { return launch_ecef_; };
     Vector3d get_launch_geod() const { return launch_geod_; };
 
@@ -117,14 +117,19 @@ class Rocket {
     void set_nose_to_cg(double& nose_to_cg);
     void set_nose_to_cp(double& nose_to_cp);
 
-    void set_r_geod(Vector3d& vector) { r_geod_ = vector; };
-    void set_r_ecef(Vector3d& vector) { r_ecef_ = vector; };
+    void set_r_geod(Vector3d vector) { r_geod_ = vector; };
 
     // Converts vector from ENU frame to rocket reference frame
     Vector3d enu2r(Vector3d vector);
 
     // Converts vector from rocket frame to ENU reference frame
     Vector3d r2enu(Vector3d vector);
+
+    // Converts vector from ENU frame to ECEF reference frame
+    Vector3d enu2ecef(Vector3d pos_enu);
+
+    // Converts vector from ECEF frame to Geodetic reference frame
+    Vector3d ecef2geod(Vector3d ecef);
 
    private:
     // The following are in ENU frame
@@ -150,7 +155,6 @@ class Rocket {
     Vector3d launch_geod_{40.111801, -88.228691, 216};
     Vector3d r_geod_{40.111801, -88.228691,
                      216};  // (40.111801, -88.228691, 216) - Talbot Laboratory
-    Vector3d r_ecef_{150992.99, -4882549.85, 4087626.55};
 
     // Default scalar parameters from OpenRocket
     double mass_ = 41.034;      // in Kg

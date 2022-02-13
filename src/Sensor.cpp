@@ -56,7 +56,7 @@ Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
 void Gyroscope::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
         rocket_.get_w_vect(data_);
-        rocket_.i2r(data_);
+        rocket_.enu2r(data_);
         new_data_ = true;
 
         if (inject_noise_) {
@@ -87,7 +87,7 @@ Accelerometer::Accelerometer(std::string name, Rocket& rocket,
 void Accelerometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
         rocket_.get_r_ddot(data_);
-        rocket_.i2r(data_);
+        rocket_.enu2r(data_);
         new_data_ = true;
 
         if (inject_noise_) {
