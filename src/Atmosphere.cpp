@@ -307,16 +307,16 @@ Wind related code
 */
 
 void Atmosphere::create_table(const char* filename) {
-    FILE* file = fopen(filename, "rb");
-    fseek(file,0,SEEK_END);
-    int size = ftell(file);
-    char read_buffer[size];
-    FileReadStream is(fp, read_buffer, sizeof(readBuffer));
+    // FILE* file = fopen(filename, "rb");
+    // fseek(file,0,SEEK_END);
+    // int size = ftell(file);
+    // char read_buffer[size];
+    // FileReadStream is(fp, read_buffer, sizeof(readBuffer));
 
-    Document d;
-    d.ParseStream(is);
+    // Document d;
+    // d.ParseStream(is);
 
-    fclose(file);
+    // fclose(file);
 
     return;
 }
