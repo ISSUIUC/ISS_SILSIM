@@ -1,0 +1,72 @@
+{
+  "name": "@faa-aviation-data-portal/winds-aloft",
+  "description": "Get Winds and Temps Aloft data from https://api.weather.gov",
+  "version": "0.0.2",
+  "author": {
+    "name": "Forrest Desjardins",
+    "email": "desjardinsfg@gmail.com",
+    "url": "github.com/fdesjardins"
+  },
+  "dependencies": {
+    "superagent": "^5.2.2"
+  },
+  "devDependencies": {
+    "coveralls": "^3.1.0",
+    "mocha": "^7.1.2",
+    "nyc": "^15.0.1",
+    "standard": "^14.3.4"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "eslintConfig": {
+    "extends": [
+      "standard"
+    ],
+    "rules": {
+      "object-curly-spacing": [
+        2,
+        "always"
+      ],
+      "array-bracket-spacing": [
+        2,
+        "always"
+      ],
+      "func-style": [
+        2,
+        "expression"
+      ],
+      "prefer-arrow-callback": [
+        2,
+        {
+          "allowNamedFunctions": false
+        }
+      ]
+    }
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "winds",
+    "winds aloft",
+    "temps",
+    "temperatures",
+    "aviation",
+    "weather",
+    "stations",
+    "weather.gov"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text"
+    ]
+  },
+  "repository": "FAA-Aviation-Data-Portal/winds-aloft",
+  "scripts": {
+    "test": "eslint *.js && nyc mocha test.js"
+  }
+}
