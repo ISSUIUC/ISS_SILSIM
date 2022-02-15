@@ -14,6 +14,7 @@
 
 #ifndef _PHYSICS_ENGINE_H_
 #define _PHYSICS_ENGINE_H_
+#define _USE_MATH_DEFINES
 
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
@@ -67,6 +68,8 @@ class RungeKutta : public PhysicsEngine {
     Vector3d calc_net_force(double tStamp, Vector3d pos_enu, Vector3d vel_enu);
     Vector3d calc_net_torque(Vector3d vel_enu, Vector3d pos_enu);
     RungeKuttaState calc_state(double tStamp, double tStep, RungeKuttaState k);
+    Vector3d enu2ecef(Vector3d pos_enu);
+    Vector3d ecef2geod(Vector3d ecef);
 };
 
 #endif

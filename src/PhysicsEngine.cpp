@@ -60,8 +60,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         rocket_.get_Cp_vect();  // CG to Cp (center of pressure) vector
 
     // Get moment of inertia tenspr
-    double I_tens[9];
-    rocket_.get_I(I_tens);  // moment of inertia
+    std::array<double, 9> I_tens = rocket_.get_I();  // moment of inertia
 
     // parameters
     double mass = rocket_.get_mass();    // mass of rocket
@@ -211,8 +210,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     Quaterniond orient = rocket_.get_q_ornt();
 
-    double inertia[9];  // moments of inertia
-    rocket_.get_I(inertia);
+    std::array<double, 9> inertia = rocket_.get_I();  // moment of inertia
 
     double mass = rocket_.get_mass();
 
@@ -355,9 +353,6 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_enu, Vector3d pos_enu) {
 
     Vector3d Cp_vect_rf = rocket_.get_Cp_vect();
 
-    double inertia[9];  // moments of inertia
-    rocket_.get_I(inertia);
-
     double area = rocket_.get_A_ref();
     double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
     double drag_coef = rocket_.get_Cd();
@@ -365,17 +360,10 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_enu, Vector3d pos_enu) {
     Vector3d geod = rocket_.ecef2geod(rocket_.enu2ecef(pos_enu));
 
     /************************ Calculate Net Torque ***************************/
-
-    Vector3d aero_force_rf;
     Vector3d aero_torque_rf;
-    Vector3d aero_force_enu;
-    Vector3d aero_torque_enu;
-    Vector3d net_force_rf;
-    Vector3d net_torque_rf;
 
     if (vel_enu.norm() > 0.01) {
         Vector3d vel_rf = rocket_.enu2r(vel_enu);
-        Vector3d normal_force_rf;
 
         // angle between velocity vector and rocket axis
         double alpha = acos(vel_rf.z() / vel_rf.norm());
@@ -384,7 +372,7 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_enu, Vector3d pos_enu) {
 
         double normal_force_mag = 0.5 * normal_coef * vel_rf.squaredNorm() *
                                   area * Atmosphere::get_density(geod.z());
-        normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
+        Vector3d normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
 
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
@@ -393,7 +381,7 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_enu, Vector3d pos_enu) {
                           Atmosphere::get_density(geod.z());
         Vector3d drag_rf{0, 0, std::copysign(drag_mag, -vel_rf.z())};
 
-        aero_force_rf = normal_force_rf + drag_rf;
+        Vector3d aero_force_rf = normal_force_rf + drag_rf;
         aero_torque_rf = Cp_vect_rf.cross(aero_force_rf);
     } else {
         aero_torque_rf = {0, 0, 0};
@@ -426,8 +414,7 @@ RungeKutta::RungeKuttaState RungeKutta::calc_state(double tStamp, double tStep,
     Vector3d ang_vel_initial = rocket_.get_w_vect();
     Quaterniond orient_true = rocket_.get_q_ornt();
 
-    double inertia[9];
-    rocket_.get_I(inertia);
+    std::array<double, 9> inertia = rocket_.get_I();
 
     Quaterniond orient = update_quaternion(orient_true, k.ang_vel, tStep);
     rocket_.set_q_ornt(orient);  // sets the orientation to the current state in
