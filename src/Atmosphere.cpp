@@ -322,9 +322,16 @@ void Atmosphere::create_table(const char* filename) {
 }
 
 double Atmosphere::get_wind_direction(double altitude) {
+
     return;
 }
 
 double Atmosphere::get_wind_speed(double altitude) {
+    /*
+    Interpolation Basic Instructions
+    - Get altitude as input, find the values that it's in between
+    - Get the wind speed at both bound points
+    - Find linear equation, substitute original altitude value. 
+    */
     return;
 }
