@@ -114,7 +114,7 @@ Vector3d Rocket::enu2ecef(Vector3d pos_enu) {
  * @return Vector3d Geodetic latitude, longitude, and altitude of the rocket
  */
 Vector3d Rocket::ecef2geod(Vector3d ecef) {
-    Vector3d geod = get_r_geod();
+    Vector3d geod;
 
     const double a = 6378137.0;
     const double b = 6356752.3142;

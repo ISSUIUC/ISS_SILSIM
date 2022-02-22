@@ -15,7 +15,6 @@
 #include "PhysicsEngine.h"
 
 #include <Eigen/Dense>
-#include <iostream>
 
 #include "Atmosphere.h"
 
@@ -52,6 +51,9 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     Vector3d w_dot_enu = rocket_.get_w_dot();    // angular acceleration
     Vector3d f_net_enu = rocket_.get_f_net();    // net force (Newtons)
     Vector3d t_net_enu = rocket_.get_t_net();    // net torque (Newtons*meters)
+
+    Vector3d geod =
+        rocket_.ecef2geod(rocket_.enu2ecef(r_vect_enu));  // lat, long, alt
 
     // Quaternion from ENU to rocket frame
     Quaterniond q_ornt = rocket_.get_q_ornt();  // orientation of rocket
@@ -93,7 +95,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         Vector3d f_N_rf;        // normal aerodynamic force
 
         double c_N = c_Na * alpha;
-        double f_N_mag = c_N * 0.5 * Atmosphere::get_density(r_vect_enu.z()) *
+        double f_N_mag = c_N * 0.5 * Atmosphere::get_density(geod.z()) *
                          v_rf.squaredNorm() *
                          A_ref;  // norm of normal force (assuming constant
                                  // 0.5 is a coefficient in the equation
@@ -105,7 +107,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         f_N_rf.normalize();
         f_N_rf = f_N_rf * f_N_mag;
 
-        double f_D_mag = c_D * 0.5 * Atmosphere::get_density(r_vect_enu.z()) *
+        double f_D_mag = c_D * 0.5 * Atmosphere::get_density(geod.z()) *
                          v_rf.squaredNorm() * A_ref;
         // make drag force apply in the opposite direction to rocket travel
         Vector3d f_D_rf(0, 0, std::copysign(f_D_mag, -v_rf.z()));
@@ -122,7 +124,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         t_aero_rf.y() = 0;
         t_aero_rf.z() = 0;
     }
-    Vector3d geod = rocket_.get_r_geod();
+
     Vector3d deg_dif = (geod - rocket_.get_launch_geod()) * M_PI / 180;
     Vector3d gravity_geod = {std::sin(deg_dif.x()) * std::cos(deg_dif.y()),
                              std::sin(deg_dif.x()) * std::sin(deg_dif.y()),
@@ -280,8 +282,6 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     rocket_.set_f_net(net_force_enu);
     rocket_.set_t_net(net_torque_enu);
     rocket_.set_q_ornt(orient);
-
-    rocket_.set_r_geod(rocket_.ecef2geod(rocket_.enu2ecef(pos_enu)));
 }
 
 /**

@@ -57,7 +57,6 @@ class Rocket {
 
     Vector3d get_Cp_vect() const { return Cp_vect_; };
 
-    Vector3d get_r_geod() const { return r_geod_; };
     Vector3d get_launch_ecef() const { return launch_ecef_; };
     Vector3d get_launch_geod() const { return launch_geod_; };
 
@@ -92,8 +91,6 @@ class Rocket {
         Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
     };
 
-    void set_r_geod(Vector3d vector) { r_geod_ = vector; };
-
     // Converts vector from ENU frame to rocket reference frame
     Vector3d enu2r(Vector3d vector);
 
@@ -127,9 +124,9 @@ class Rocket {
 
     // The following are in Geocentric frame
     Vector3d launch_ecef_{150992.99, -4882549.85, 4087626.55};
-    Vector3d launch_geod_{40.111801, -88.228691, 216};
-    Vector3d r_geod_{40.111801, -88.228691,
-                     216};  // (40.111801, -88.228691, 216) - Talbot Laboratory
+    Vector3d launch_geod_{
+        40.111801, -88.228691,
+        216};  // (40.111801, -88.228691, 216) - Talbot Laboratory
 
     // Default scalar parameters from OpenRocket
     double mass_ = 41.034;      // in Kg
