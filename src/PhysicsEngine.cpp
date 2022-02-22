@@ -15,6 +15,7 @@
 #include "PhysicsEngine.h"
 
 #include <Eigen/Dense>
+#include <iostream>
 
 #include "Atmosphere.h"
 
@@ -121,9 +122,14 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         t_aero_rf.y() = 0;
         t_aero_rf.z() = 0;
     }
+    Vector3d geod = rocket_.get_r_geod();
+    Vector3d deg_dif = (geod - rocket_.get_launch_geod()) * M_PI / 180;
+    Vector3d gravity_geod = {std::sin(deg_dif.x()) * std::cos(deg_dif.y()),
+                             std::sin(deg_dif.x()) * std::sin(deg_dif.y()),
+                             std::cos(deg_dif.x())};
 
     f_net_enu = rocket_.r2enu(f_aero_rf + thrust_rf);
-    f_net_enu -= rocket_.ecef2geod(rocket_.enu2ecef({0, 0, (9.81 * mass)}));
+    f_net_enu -= (gravity_geod * 9.81 * mass);
 
     t_net_rf = t_aero_rf;
     t_net_enu = rocket_.r2enu(t_aero_rf);
@@ -333,8 +339,12 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
         aero_force_rf = {0, 0, 0};
     }
 
+    Vector3d deg_dif = (geod - rocket_.get_launch_geod()) * M_PI / 180;
+    Vector3d gravity_geod = {std::sin(deg_dif.x()) * std::cos(deg_dif.y()),
+                             std::sin(deg_dif.x()) * std::sin(deg_dif.y()),
+                             std::cos(deg_dif.x())};
     Vector3d net_force_enu = rocket_.r2enu(aero_force_rf + thrust_rf);
-    net_force_enu -= rocket_.ecef2geod(rocket_.enu2ecef({0, 0, (9.81 * mass)}));
+    net_force_enu -= (gravity_geod * 9.81 * mass);
 
     return net_force_enu;
 }
