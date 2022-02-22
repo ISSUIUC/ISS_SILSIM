@@ -123,7 +123,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     }
 
     f_net_enu = rocket_.r2enu(f_aero_rf + thrust_rf);
-    f_net_enu.z() -= (9.81 * mass);
+    f_net_enu -= rocket_.ecef2geod(rocket_.enu2ecef({0, 0, (9.81 * mass)}));
 
     t_net_rf = t_aero_rf;
     t_net_enu = rocket_.r2enu(t_aero_rf);
@@ -334,7 +334,7 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
     }
 
     Vector3d net_force_enu = rocket_.r2enu(aero_force_rf + thrust_rf);
-    net_force_enu.z() -= (9.81 * mass);
+    net_force_enu -= rocket_.ecef2geod(rocket_.enu2ecef({0, 0, (9.81 * mass)}));
 
     return net_force_enu;
 }
