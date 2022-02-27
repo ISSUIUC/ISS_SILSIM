@@ -15,6 +15,7 @@
 
 #ifndef _ROCKET_H_
 #define _ROCKET_H_
+#define _USE_MATH_DEFINES
 
 #include <Eigen/Dense>
 #include <array>
@@ -56,6 +57,9 @@ class Rocket {
 
     Vector3d get_Cp_vect() const { return Cp_vect_; };
 
+    Vector3d get_launch_ecef() const { return launch_ecef_; };
+    Vector3d get_launch_geod() const { return launch_geod_; };
+
     std::array<double, 9> get_I() const { return I_; };
 
     /************* Set parameters ***************/
@@ -87,30 +91,42 @@ class Rocket {
         Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
     };
 
-    // Converts vector from inertial frame to rocket reference frame
-    Vector3d i2r(Vector3d vector);
+    // Converts vector from ENU frame to rocket reference frame
+    Vector3d enu2r(Vector3d vector);
 
-    // Converts vector from rocket frame to inertial reference frame
-    Vector3d r2i(Vector3d vector);
+    // Converts vector from rocket frame to ENU reference frame
+    Vector3d r2enu(Vector3d vector);
+
+    // Converts vector from ENU frame to ECEF reference frame
+    Vector3d enu2ecef(Vector3d pos_enu);
+
+    // Converts vector from ECEF frame to Geodetic reference frame
+    Vector3d ecef2geod(Vector3d ecef);
 
    private:
-    // The following are in inertial frame
+    // The following are in ENU frame
     Vector3d r_vect_{0, 0, 0};  // r vector
     Vector3d r_dot_{0, 0, 0};   // r-dot (velocity)
     Vector3d r_ddot_{0, 0, 0};  // r-double-dot (acceleration)
     Vector3d w_vect_{0, 0, 0};  // angular velocity (omega) vector
     Vector3d w_dot_{0, 0, 0};   // angular acceleration vector
 
-    // The following are in inertial frame
+    // The following are in ENU frame
     Vector3d f_net_{0, 0, 0};  // net force in Netwons
     Vector3d t_net_{0, 0, 0};  // net torque in Newton*meters
 
-    Quaterniond q_ornt_{};  // inertial -> rocket frame quaternion
+    Quaterniond q_ornt_{};  // ENU -> rocket frame quaternion
 
     // The following are in rocket frame
     Vector3d Cp_vect_{};  // CG to Cp vector
 
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
+
+    // The following are in Geocentric frame
+    Vector3d launch_ecef_{150992.99, -4882549.85, 4087626.55};
+    Vector3d launch_geod_{
+        40.111801, -88.228691,
+        216};  // (40.111801, -88.228691, 216) - Talbot Laboratory
 
     // Default scalar parameters from OpenRocket
     double mass_ = 41.034;      // in Kg

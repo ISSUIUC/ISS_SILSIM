@@ -54,7 +54,8 @@ void Simulation::run(int steps) {
 
     motor_.ignite(tStamp_);
     for (int iter = 0; iter < steps; ++iter) {
-        Vector3d r_vect = rocket_.get_r_vect();
+        Vector3d r_vect =
+            rocket_.ecef2geod(rocket_.enu2ecef(rocket_.get_r_vect()));
         Vector3d r_dot = rocket_.get_r_dot();
         Vector3d r_ddot = rocket_.get_r_ddot();
         Vector3d f_net = rocket_.get_f_net();
@@ -75,7 +76,7 @@ void Simulation::run(int steps) {
             atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
             RAD2DEG;
 
-        double alpha = acos(rocket_.i2r(r_dot).z() / (r_dot.norm()));
+        double alpha = acos(rocket_.enu2r(r_dot).z() / (r_dot.norm()));
         sim_log->debug("Timestamp: {}", tStamp_);
         sim_log->debug("R-Vector: <{}, {}, {}>", r_vect.x(), r_vect.y(),
                        r_vect.z());
@@ -88,7 +89,7 @@ void Simulation::run(int steps) {
         sim_log->debug("ROLL: {} PITCH: {} YAW: {}  [deg]", roll, pitch, yaw);
         sim_log->debug("alphaSIM: {}  [deg]", alpha * RAD2DEG);
         Vector3d rocket_axis(0, 0, 1);
-        rocket_axis = rocket_.r2i(rocket_axis);
+        rocket_axis = rocket_.r2enu(rocket_axis);
 
         engine_->march_step(tStamp_, tStep_);
 
