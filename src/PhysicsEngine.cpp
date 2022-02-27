@@ -125,10 +125,13 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         t_aero_rf.z() = 0;
     }
 
-    Vector3d deg_dif = (geod - rocket_.get_launch_geod()) * M_PI / 180;
-    Vector3d gravity_geod = {std::sin(deg_dif.x()) * std::cos(deg_dif.y()),
-                             std::sin(deg_dif.x()) * std::sin(deg_dif.y()),
-                             std::cos(deg_dif.x())};
+    // difference in geoditic radians between rocket position and launchpad
+    Vector3d rad_dif = (geod - rocket_.get_launch_geod()) * M_PI / 180;
+
+    // converts gravity from enu to geod
+    Vector3d gravity_geod = {std::sin(rad_dif.x()) * std::cos(rad_dif.y()),
+                             std::sin(rad_dif.x()) * std::sin(rad_dif.y()),
+                             std::cos(rad_dif.x())};
 
     f_net_enu = rocket_.r2enu(f_aero_rf + thrust_rf);
     f_net_enu -= (gravity_geod * 9.81 * mass);
@@ -339,10 +342,14 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
         aero_force_rf = {0, 0, 0};
     }
 
-    Vector3d deg_dif = (geod - rocket_.get_launch_geod()) * M_PI / 180;
-    Vector3d gravity_geod = {std::sin(deg_dif.x()) * std::cos(deg_dif.y()),
-                             std::sin(deg_dif.x()) * std::sin(deg_dif.y()),
-                             std::cos(deg_dif.x())};
+    // difference in geoditic radians between rocket position and launchpad
+    Vector3d rad_dif = (geod - rocket_.get_launch_geod()) * M_PI / 180;
+
+    // converts gravity from enu to geod
+    Vector3d gravity_geod = {std::sin(rad_dif.x()) * std::cos(rad_dif.y()),
+                             std::sin(rad_dif.x()) * std::sin(rad_dif.y()),
+                             std::cos(rad_dif.x())};
+
     Vector3d net_force_enu = rocket_.r2enu(aero_force_rf + thrust_rf);
     net_force_enu -= (gravity_geod * 9.81 * mass);
 
