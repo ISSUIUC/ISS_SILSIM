@@ -37,9 +37,11 @@
 #include "pins.h"
 #include "rocketFSM.h"
 #include "sensors.h"
+#include "kalmanFilter.h"
 
 // emulation for global variables
 #include <CpuThread.h>
+
 #include "GlobalVars.h"
 
 // datalogger_THD datalogger_THD_vars;
@@ -55,7 +57,10 @@
 
 class rocket_FSM : public CpuThread {
    public:
-    rocket_FSM(void * arg, uint8_t prio) : CpuThread(prio), pointer_struct((struct pointers *)arg), stateMachine(pointer_struct){}
+    rocket_FSM(void *arg, uint8_t prio)
+        : CpuThread(prio),
+          pointer_struct((struct pointers *)arg),
+          stateMachine(pointer_struct) {}
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### Rocket FSM thread entrance");
@@ -63,6 +68,7 @@ class rocket_FSM : public CpuThread {
         stateMachine.tickFSM();
         return 6.0;  // FSM runs at 100 Hz
     }
+
    private:
     pointers *pointer_struct;
     rocketFSM stateMachine;
@@ -73,35 +79,44 @@ class rocket_FSM : public CpuThread {
 
 class lowgIMU_THD : public CpuThread {
    public:
-    lowgIMU_THD(void* arg, uint8_t prio): CpuThread(prio), pointer_struct((struct pointers *)arg){}
+    lowgIMU_THD(void *arg, uint8_t prio)
+        : CpuThread(prio), pointer_struct((struct pointers *)arg) {}
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### Low G IMU thread entrance");
 #endif
-
-        lowGimuTickFunction(pointer_struct);
+        LSM9DS1 *lsm = pointer_struct->lowGimuPointer;
+        DataLogBuffer *data_log_buffer =
+            &pointer_struct->dataloggerTHDVarsPointer;
+        LowGData *lowG_Data = &pointer_struct->sensorDataPointer->lowG_data;
+        lowGimuTickFunction(lsm, data_log_buffer, lowG_Data);
 
         return 6.0;
     }
+
    private:
     struct pointers *pointer_struct;
-
 };
 
 /******************************************************************************/
 /* BAROMETER THREAD                                                           */
 
-class barometer_THD : public CpuThread{
+class barometer_THD : public CpuThread {
    public:
-    barometer_THD(void* arg, uint8_t prio): CpuThread(prio), pointer_struct((struct pointers *)arg){}
+    barometer_THD(void *arg, uint8_t prio)
+        : CpuThread(prio), pointer_struct((struct pointers *)arg) {}
     // Load outside variables into the function
 
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### Barometer thread entrance");
 #endif
-
-        barometerTickFunction(pointer_struct);
+        MS5611 * barometer_ = pointer_struct->barometerPointer;
+        DataLogBuffer *data_log_buffer =
+            &pointer_struct->dataloggerTHDVarsPointer;
+        BarometerData *barometer_data =
+            &pointer_struct->sensorDataPointer->barometer_data;
+        barometerTickFunction(barometer_, data_log_buffer, barometer_data);
 
         return 6.0;
     }
@@ -109,41 +124,49 @@ class barometer_THD : public CpuThread{
    private:
     struct pointers *pointer_struct;
 };
-
 
 /******************************************************************************/
 /* HIGH G IMU THREAD                                                          */
 
 class highgIMU_THD : public CpuThread {
    public:
-    highgIMU_THD(void* arg, uint8_t prio): CpuThread(prio), pointer_struct((struct pointers *)arg){}
+    highgIMU_THD(void *arg, uint8_t prio)
+        : CpuThread(prio), pointer_struct((struct pointers *)arg) {}
 
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### High G IMU thread entrance");
 #endif
+        KX134 *highG = pointer_struct->highGimuPointer;
+        DataLogBuffer *data_log_buffer =
+            &pointer_struct->dataloggerTHDVarsPointer;
+        HighGData *highg_data = &pointer_struct->sensorDataPointer->highG_data;
 
-        highGimuTickFunction(pointer_struct);
+        highGimuTickFunction(highG, data_log_buffer, highg_data);
 
         return 6.0;
     }
+
    private:
     struct pointers *pointer_struct;
-
 };
 
 /******************************************************************************/
 /* GPS THREAD                                                                 */
 class gps_THD : public CpuThread {
    public:
-    gps_THD(void* arg, uint8_t prio): CpuThread(prio), pointer_struct((struct pointers *)arg){}
+    gps_THD(void *arg, uint8_t prio)
+        : CpuThread(prio), pointer_struct((struct pointers *)arg) {}
 
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### GPS thread entrance");
 #endif
-
-        gpsTickFunction(pointer_struct);
+        SFE_UBLOX_GNSS *gps_ = pointer_struct->GPSPointer;
+        DataLogBuffer *data_log_buffer =
+            &pointer_struct->dataloggerTHDVarsPointer;
+        GpsData *gps_data = &pointer_struct->sensorDataPointer->gps_data;
+        gpsTickFunction(gps_, data_log_buffer, gps_data);
 
 #ifdef THREAD_DEBUG
         Serial.println("### GPS thread exit");
@@ -154,7 +177,33 @@ class gps_THD : public CpuThread {
 
    private:
     struct pointers *pointer_struct;
+};
 
+/******************************************************************************/
+/* KALMAN FILTER THREAD                                                       */
+
+class Kalman_Filter_THD : public CpuThread {
+   public:
+    Kalman_Filter_THD(void *arg, uint8_t prio)
+        : CpuThread(prio),
+          pointer_struct((struct pointers *)arg),
+          Kf((struct pointers *)arg) {
+        Serial.println("Initialize Kalman");
+        Kf.Initialize(0.0, 0.0, 0.0);
+    }
+
+   double loop() override {
+        Kf.kfTickFunction();
+        Serial.println("Kalman Thread");
+#ifdef THREAD_DEBUG
+        Serial.println("### Kalman_Filter thread entrance");
+#endif
+        return 6.0;
+    }
+
+   private:
+    KalmanFilter Kf;
+    struct pointers *pointer_struct;
 };
 
 /******************************************************************************/
@@ -162,7 +211,10 @@ class gps_THD : public CpuThread {
 
 class servo_THD : public CpuThread {
    public:
-    servo_THD(void *arg, uint8_t prio): CpuThread(prio), pointer_struct((struct pointers *)arg), ac(pointer_struct, &servo_cw, &servo_ccw) {}
+    servo_THD(void *arg, uint8_t prio)
+        : CpuThread(prio),
+          pointer_struct((struct pointers *)arg),
+          ac(pointer_struct, &servo_cw, &servo_ccw) {}
 
     double loop() override {
 #ifdef THREAD_DEBUG
@@ -184,8 +236,8 @@ class servo_THD : public CpuThread {
 /* MPU COMMUNICATION THREAD                                                   */
 
 class mpuComm_THD : public CpuThread {
-    public:
-    mpuComm_THD(void* arg, uint8_t prio): CpuThread(prio) {
+   public:
+    mpuComm_THD(void *arg, uint8_t prio) : CpuThread(prio) {
         Serial1.begin(115200);
     }
     double loop() override {
@@ -238,7 +290,8 @@ class mpuComm_THD : public CpuThread {
 
 class dataLogger_THD : public CpuThread {
    public:
-    dataLogger_THD(void *arg, uint8_t prio): CpuThread(prio), pointer_struct((struct pointers *)arg) {}
+    dataLogger_THD(void *arg, uint8_t prio)
+        : CpuThread(prio), pointer_struct((struct pointers *)arg) {}
 
     double loop() override {
 #ifdef THREAD_DEBUG
@@ -249,9 +302,9 @@ class dataLogger_THD : public CpuThread {
 
         return 6.0;
     }
+
    private:
     pointers *pointer_struct;
-
 };
 
 /**
@@ -277,6 +330,9 @@ void chSetup() {
                       NORMALPRIO, dataLogger_THD, &sensor_pointers);
     chThdCreateStatic(mpuComm_WA, sizeof(mpuComm_WA), NORMALPRIO, mpuComm_THD,
                       NULL);
+    chThdCreateStatic(Kalman_Filter_WA, sizeof(Kalman_Filter_WA), NORMALPRIO, Kalman_Filter_THD,
+                      NULL);
+    Serial.println("Finish Setup");
 }
 
 void emu_setup() {
@@ -368,6 +424,7 @@ void emu_setup() {
     // Servo Setup
     servo_cw.attach(SERVO_CW_PIN, 770, 2250);
     servo_ccw.attach(SERVO_CCW_PIN, 770, 2250);
+
 
     Serial.println("Starting ChibiOS");
     chBegin(chSetup);
