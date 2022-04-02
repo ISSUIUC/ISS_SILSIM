@@ -30,7 +30,6 @@ add_executable(ISS_SILSIM src/main.cpp
         src/RASAeroImport.cpp
         )
 
-target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog Eigen3::Eigen)
 target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog Eigen3::Eigen rapidcsv)
 
 

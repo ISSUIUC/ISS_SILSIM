@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "CpuState.h"
+#include "RASAeroImport.h"
 #include "Rocket.h"
 #include "Sensor.h"
 #include "Simulation.h"
@@ -14,6 +15,8 @@ int main() {
     spdlog::set_level(spdlog::level::debug);
     // comment below is used if we want to change the format of the logging
     // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
+
+    RASAeroImport import("utils/RASAero_fetch/output/RASAero.csv");
 
     Rocket rocket;
 
