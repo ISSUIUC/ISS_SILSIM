@@ -51,6 +51,9 @@ class RASAeroImport {
    */
 
    private:
+
+    // These should really be determined dynamically from the ingested RASAero
+    // data, but magic numbers it is for now.
     static constexpr double kSmallestMach = 0.01;
     static constexpr double kLargestMach = 25.00;
     static constexpr double kSmallestAlpha = 0.00;
