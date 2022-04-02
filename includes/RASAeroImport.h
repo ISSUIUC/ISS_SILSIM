@@ -14,6 +14,9 @@
 #ifndef _RASAERO_IMPORT_H_
 #define _RASAERO_IMPORT_H_
 
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
+
 #include <Eigen/Dense>
 #include <string>
 #include <vector>
@@ -51,7 +54,6 @@ class RASAeroImport {
    */
 
    private:
-
     // These should really be determined dynamically from the ingested RASAero
     // data, but magic numbers it is for now.
     static constexpr double kSmallestMach = 0.01;
@@ -60,6 +62,8 @@ class RASAeroImport {
     static constexpr double kLargestAlpha = 15.00;
     static constexpr double kSmallestProtub = 0.00;
     static constexpr double kLargestProtub = 1.00;
+
+    std::shared_ptr<spdlog::logger> rasaero_logger_;
 
     /************************** Set Parameters ********************************/
     void set_mach_number_params();
