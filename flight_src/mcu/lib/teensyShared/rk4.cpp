@@ -1,17 +1,13 @@
 #include <iostream>
 #include <array>
 #include <chrono>
+#include "rk4.h"
+
 using namespace std::chrono;
 
 using std::array;
 
-array<float, 2> y1{0, 0};
-array<float, 2> y2{0, 0};
-array<float, 2> y3{0, 0};
-array<float, 2> y4{0, 0};
-array<float, 2> rk4_kp1{0, 0};
-
-array<float, 2> accel(array<float, 2> u, float rho) {
+array<float, 2> rk4::accel(array<float, 2> u, float rho) {
     float r1 = u[0];
     float v1 = u[1];
     
@@ -29,7 +25,7 @@ array<float, 2> accel(array<float, 2> u, float rho) {
     return f1;
 }
 
-array<float, 2> rk4_step(array<float, 2> state, float dt, float rho) {
+array<float, 2> rk4::rk4_step(array<float, 2> state, float dt, float rho) {
     // rk4 iteration 
     array<float, 2> y1 = accel(state, rho);
 
@@ -48,7 +44,7 @@ array<float, 2> rk4_step(array<float, 2> state, float dt, float rho) {
     return temp;
 }
 
-array<float, 2> rk4(array<float, 2> state, float dt) {
+array<float, 2> rk4::sim_apogee(array<float, 2> state, float dt) {
     
     // Approximation - use the area of a circle for reference area
     float Sref_a = .007854;

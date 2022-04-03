@@ -26,7 +26,11 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
     // set F
     F_mat(0, 1) = s_dt;
     F_mat(0, 2) = (s_dt*s_dt) / 2;
-    F_mat(0, 2) = s_dt;
+    F_mat(1, 2) = s_dt;
+
+    F_mat(0, 0) = 1;
+    F_mat(1, 1) = 1;
+    F_mat(2, 2) = 1;
 
     // set H
     H(0,0) = 1;
@@ -38,8 +42,8 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
     P_k(0,2) = .005;
     P_k(1,1) = .009;
     P_k(2,2) = 10;
-    P_k(1,3) = .0045;
-    P_k(3,1) = P_k(1,3);
+    P_k(1,2) = .0045;
+    P_k(2,1) = P_k(1,2);
     P_k(1,0) = P_k(0,1);
     P_k(2,0) = P_k(0,2);
     P_k(1,0) = P_k(0,1);

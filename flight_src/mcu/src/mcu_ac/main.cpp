@@ -44,6 +44,12 @@
 
 #include "GlobalVars.h"
 
+// rk4 apogee simulation
+#include "rk4.h"
+using std::array;
+#include<string>
+using std::string;
+
 // datalogger_THD datalogger_THD_vars;
 
 //#define THREAD_DEBUG
@@ -194,7 +200,8 @@ class Kalman_Filter_THD : public CpuThread {
 
    double loop() override {
         Kf.kfTickFunction();
-        Serial.println("Kalman Thread");
+        array<float, 2> init = {7857, 309.25008};
+        Serial.println(std::to_string(controller_sim.sim_apogee(init, 0.1)[0]).c_str());
 #ifdef THREAD_DEBUG
         Serial.println("### Kalman_Filter thread entrance");
 #endif
@@ -204,6 +211,7 @@ class Kalman_Filter_THD : public CpuThread {
    private:
     KalmanFilter Kf;
     struct pointers *pointer_struct;
+    rk4 controller_sim;
 };
 
 /******************************************************************************/
@@ -330,8 +338,8 @@ void chSetup() {
                       NORMALPRIO, dataLogger_THD, &sensor_pointers);
     chThdCreateStatic(mpuComm_WA, sizeof(mpuComm_WA), NORMALPRIO, mpuComm_THD,
                       NULL);
-    chThdCreateStatic(Kalman_Filter_WA, sizeof(Kalman_Filter_WA), NORMALPRIO, Kalman_Filter_THD,
-                      NULL);
+    chThdCreateStatic(Kalman_Filter_WA, sizeof(Kalman_Filter_WA), NORMALPRIO, Kalman_Filter_THD, 
+                      &sensor_pointers);
     Serial.println("Finish Setup");
 }
 
