@@ -15,11 +15,11 @@ constexpr double kLbsToKg = 0.453592;
 constexpr double kInchToMeters = 0.0254;
 
 /***************** Intrepid MK4 Parameters *****************/
-constexpr double kIntrepidDryMass = 57.12 * kLbsToKg;
-constexpr double kIntrepidWetMass = 67.90 * kLbsToKg;
-constexpr double kIntrepidWetCGLocation = 74.63 * kInchToMeters;
-constexpr double kIntrepidDryCGLocation = 66.26 * kInchToMeters;
-constexpr double kIntrepidTotalLength = 127.0 * kInchToMeters;
+constexpr double kIntrepidDryMass = 47.41 * kLbsToKg;
+constexpr double kIntrepidWetMass = 67.30 * kLbsToKg;
+constexpr double kIntrepidWetCGLocation = 82.79 * kInchToMeters;
+constexpr double kIntrepidDryCGLocation = 73.06  * kInchToMeters;
+constexpr double kIntrepidTotalLength = 130.0 * kInchToMeters;
 constexpr double kIntrepidDiameter = 4.0 * kInchToMeters;
 constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
@@ -33,12 +33,12 @@ int main() {
 
     Rocket rocket(std::make_shared<RASAeroImport>(rasaero_import));
 
-    double mass = (((3.50 / 50.0) * kIntrepidWetMass) +
-                   ((46.5 / 50.0) * kIntrepidDryMass));
+    double mass = (((35.0 / 100.0) * kIntrepidWetMass) +
+                   ((65.0 / 100.0) * kIntrepidDryMass));
     rocket.set_mass(mass);
 
-    double nose_to_cg = (((3.50 / 50.0) * kIntrepidWetCGLocation) +
-                         ((46.5 / 50.0) * kIntrepidDryCGLocation));
+    double nose_to_cg = (((10.0 / 100.0) * kIntrepidWetCGLocation) +
+                         ((90.0 / 100.0) * kIntrepidDryCGLocation));
     rocket.set_nose_to_cg(nose_to_cg);
 
     std::array<double, 9> I_tensor{};
