@@ -171,7 +171,7 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
     // Sanitize input
     mach = std::clamp(mach, kSmallestMach, kLargestMach);
     alpha = std::clamp(alpha, kSmallestAlpha, kLargestAlpha);
-    protuberance = std::clamp(protuberance, kSmallestProtub, kSmallestProtub);
+    protuberance = std::clamp(protuberance, kSmallestProtub, kLargestProtub);
 
     // Find closest mach number to passed mach value
     double mach_below =
