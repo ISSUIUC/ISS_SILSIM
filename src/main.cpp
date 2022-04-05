@@ -16,7 +16,14 @@ int main() {
     // comment below is used if we want to change the format of the logging
     // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
 
-    RASAeroImport import("utils/RASAero_fetch/output/RASAero.csv");
+    RASAeroImport import("utils/RASAero_fetch/output/RASAero_Intrepid_5800_mk6.csv");
+    // 2.09,5.0,0.0,0.604,0.535,0.534,0.465,0.824,92.786
+    RASAeroCoefficients coeffs = import.get_aero_coefficients(2.09, 5.0, 0.0);
+
+    std::printf("cd_poweroff = %.3f\n", coeffs.cd_poweroff);
+    std::printf("cd_poweron = %.3f\n", coeffs.cd_poweron);
+    std::printf("cn_total = %.3f\n", coeffs.cn_total);
+    std::printf("cp_total = %.3f\n", coeffs.cp_total);
 
     Rocket rocket;
 
