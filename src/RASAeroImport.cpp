@@ -13,16 +13,12 @@
 
 #include "RASAeroImport.h"
 
+#include <Eigen/src/Core/Matrix.h>
 #include <rapidcsv.h>
 
 #include <cmath>
 #include <iostream>
-#include <set>
 #include <string>
-
-#include "Eigen/src/Core/Matrix.h"
-
-// #define RASAERO_DEBUG
 
 /**
  * @brief RASAeroImport class constructor. Parses data into lookup table
@@ -31,6 +27,9 @@
  *
  */
 RASAeroImport::RASAeroImport(std::string file_path) {
+    rasaero_logger_ = spdlog::basic_logger_mt("RASAeroImport_Logger",
+                                              "logs/rasaero_import.log");
+
     rapidcsv::Document csv(file_path);
 
     auto mach = csv.GetColumn<double>("Mach Number");
@@ -63,18 +62,15 @@ RASAeroImport::RASAeroImport(std::string file_path) {
     set_alpha_params();
     set_protuberance_params();
 
-#ifdef RASAERO_DEBUG
-    std::cout << std::endl;
-    std::cout << "### [RASAeroImport ctor parsing metadata]:" << std::endl;
-    std::cout << "mach_instances = " << mach_number_instances_ << std::endl;
-    std::cout << "mach_fidelity = " << mach_number_fidelity_ << std::endl;
-    std::cout << "alpha_instances = " << alpha_instances_ << std::endl;
-    std::cout << "alpha_fidelity = " << alpha_fidelity_ << std::endl;
-    std::cout << "protuberance_instances = " << protuberance_instances_
-              << std::endl;
-    std::cout << "protuberance_fidelity = " << protuberance_fidelity_
-              << std::endl;
-#endif
+    rasaero_logger_->debug("[RASAeroImport ctor parsing metadata]:");
+    rasaero_logger_->debug("mach_instances = {}", mach_number_instances_);
+    rasaero_logger_->debug("mach_fidelity = {}", mach_number_fidelity_);
+    rasaero_logger_->debug("alpha_instances = {}", alpha_instances_);
+    rasaero_logger_->debug("alpha_fidelity = {}", alpha_fidelity_);
+    rasaero_logger_->debug("protuberance_instances = {}",
+                           protuberance_instances_);
+    rasaero_logger_->debug("protuberance_fidelity = {}",
+                           protuberance_fidelity_);
 }
 
 /**
@@ -89,10 +85,10 @@ RASAeroImport::RASAeroImport(std::string file_path) {
 void RASAeroImport::set_mach_number_params() {
     auto column = aero_table_.col(0);
     auto vec = std::vector<double>(column.begin(), column.end());
-    sort(vec.begin(), vec.end());
+    std::sort(vec.begin(), vec.end());
     vec.erase(unique(vec.begin(), vec.end()), vec.end());
     mach_number_instances_ = vec.size();
-    mach_number_fidelity_ = fabs(vec[0] - vec[1]);
+    mach_number_fidelity_ = std::abs(vec[0] - vec[1]);
 }
 
 /**
@@ -109,10 +105,10 @@ void RASAeroImport::set_mach_number_params() {
 void RASAeroImport::set_alpha_params() {
     auto column = aero_table_.col(1);
     auto vec = std::vector<double>(column.begin(), column.end());
-    sort(vec.begin(), vec.end());
+    std::sort(vec.begin(), vec.end());
     vec.erase(unique(vec.begin(), vec.end()), vec.end());
     alpha_instances_ = vec.size();
-    alpha_fidelity_ = fabs(vec[0] - vec[1]);
+    alpha_fidelity_ = std::abs(vec[0] - vec[1]);
 }
 
 /**
@@ -127,10 +123,10 @@ void RASAeroImport::set_alpha_params() {
 void RASAeroImport::set_protuberance_params() {
     auto column = aero_table_.col(2);
     auto vec = std::vector<double>(column.begin(), column.end());
-    sort(vec.begin(), vec.end());
+    std::sort(vec.begin(), vec.end());
     vec.erase(unique(vec.begin(), vec.end()), vec.end());
     protuberance_instances_ = vec.size();
-    protuberance_fidelity_ = fabs(vec[0] - vec[1]);
+    protuberance_fidelity_ = std::abs(vec[0] - vec[1]);
 }
 
 /** clang-format off
@@ -175,7 +171,7 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
     // Sanitize input
     mach = std::clamp(mach, kSmallestMach, kLargestMach);
     alpha = std::clamp(alpha, kSmallestAlpha, kLargestAlpha);
-    protuberance = std::clamp(protuberance, kSmallestProtub, kSmallestProtub);
+    protuberance = std::clamp(protuberance, kSmallestProtub, kLargestProtub);
 
     // Find closest mach number to passed mach value
     double mach_below =

@@ -24,7 +24,7 @@ constexpr double kIntrepidDiameter = 4.0 * kInchToMeters;
 constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
 int main() {
-    RASAeroImport rasaero_import("utils/RASAero_fetch/output/RASAero.csv");
+    RASAeroImport rasaero_import("utils/RASAero_fetch/output/RASAero_Intrepid_5800_mk6.csv");
 
     spdlog::set_level(spdlog::level::debug);
     // comment below is used if we want to change the format of the logging

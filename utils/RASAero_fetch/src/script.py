@@ -35,19 +35,21 @@ def main():
     # fetch protuberance files
     files = os.listdir(ras_pth)
     for i in range(len(files)):
-        protuberances.append(int(files[i][14:17]))
+        filename_length = len(files[i])
+        protuberances.append(int(files[i][filename_length-8:filename_length-5]))
 
     # run sims for each protuberance
     for i in range(len(protuberances)):
 
         # define parameters to open cdx1 file
         protuberance = protuberances[i]
-        rasaero_file = "Test_5800_mk3_{}.cdx1".format(str(protuberance).zfill(3))
+        rasaero_file = "Intrepid_5800_mk6_{}.cdx1".format(str(protuberance).zfill(3))
         pyautogui.moveTo(screenWidth * 0.5, screenHeight * 0.5)
         pyautogui.click()
         pyautogui.press('alt')
         pyautogui.press('enter')
         pyautogui.hotkey('ctrl', 'o')
+        pyautogui.PAUSE = 1.5
         
         # accounting for non-initial protuberance interations
         if (i != 0):
@@ -59,6 +61,7 @@ def main():
         pyautogui.press('delete')
         pyautogui.write(ras_pth)
         pyautogui.press('enter')
+        pyautogui.PAUSE = 1.5
         
         # open file
         for j in range(6):
@@ -67,7 +70,7 @@ def main():
         pyautogui.press('enter')
 
         # define nozzle exit diameter
-        pyautogui.PAUSE = 0.001
+        pyautogui.PAUSE = 0.01
         pyautogui.press('alt')
         pyautogui.press('right')
         pyautogui.press('enter')
@@ -81,6 +84,9 @@ def main():
 
         # iterate through each angle of attack
         for j in range(alpha):
+
+            print(f"Running Alpha = {j}")
+            pyautogui.PAUSE = 0.1
         
             # define output file name
             output_path = (out_pth + "{}_{}.txt").format(str(j).zfill(2), str(protuberance).zfill(3))
@@ -106,7 +112,6 @@ def main():
         for j in range(2):
                 pyautogui.press('tab')
         pyautogui.press('enter')
-        pyautogui.PAUSE = 0.5
 
 if __name__ == "__main__":
    main()
