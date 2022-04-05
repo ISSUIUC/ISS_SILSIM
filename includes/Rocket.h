@@ -71,7 +71,9 @@ class Rocket {
 
     Vector3d get_cp_vect() const { return cp_vect_; };
 
-<<<<<<< HEAD
+    Vector3d get_launch_ecef() const { return launch_ecef_; };
+    Vector3d get_launch_geod() const { return launch_geod_; };
+
     std::array<double, 9> get_I() const { return I_; };
 
     /**************************** Set parameters ******************************/
@@ -112,45 +114,6 @@ class Rocket {
     /************************ Internal State Update ***************************/
     void update_aero_coefficients(bool poweron, double protuberance_perecent);
 
-    /*************************** Helper Functions  ****************************/
-    // Converts vector from inertial frame to rocket reference frame
-    Vector3d i2r(Vector3d vector);
-=======
-    Vector3d get_launch_ecef() const { return launch_ecef_; };
-    Vector3d get_launch_geod() const { return launch_geod_; };
-
-    std::array<double, 9> get_I() const { return I_; };
-
-    /************* Set parameters ***************/
-    void set_r_vect(Vector3d vector) { r_vect_ = vector; };
-    void set_r_dot(Vector3d vector) { r_dot_ = vector; };
-    void set_r_ddot(Vector3d vector) { r_ddot_ = vector; };
-
-    void set_q_ornt(Quaterniond quatrn) { q_ornt_ = quatrn; };
-
-    void set_I(const std::array<double, 9>& array) { I_ = array; };
-
-    void set_w_vect(Vector3d vector) { w_vect_ = vector; };
-    void set_w_dot(Vector3d vector) { w_dot_ = vector; };
-
-    void set_f_net(Vector3d vector) { f_net_ = vector; };
-    void set_t_net(Vector3d vector) { t_net_ = vector; };
->>>>>>> feature/AV-288-integrate-rasaero-data
-
-    void set_mass(double mass) { mass_ = mass; };
-    void set_d_ref(double d_ref) { d_ref_ = d_ref; };
-    void set_A_ref(double A_ref) { A_ref_ = A_ref; };
-    void set_Cna(double Cna) { Cna_ = Cna; };
-    void set_Cd(double Cd) { Cd_ = Cd; };
-    void set_nose_to_cg(double nose_to_cg) {
-        nose_to_cg_ = nose_to_cg;
-        Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
-    };
-    void set_nose_to_cp(double nose_to_cp) {
-        nose_to_cp_ = nose_to_cp;
-        Cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
-    };
-
     // Converts vector from ENU frame to rocket reference frame
     Vector3d enu2r(Vector3d vector);
 
@@ -179,9 +142,14 @@ class Rocket {
 
     Vector3d cp_vect_{};  // CG to CP vector, rocket frame
 
+    //---------- Launch Pad Location ----------
+    // The following are in Geocentric frame
+    Vector3d launch_ecef_{150992.99, -4882549.85, 4087626.55};
+    Vector3d launch_geod_{40.111801, -88.228691, 216};
+    // (40.111801, -88.228691, 216) - Talbot Laboratory
+
     //---------- Intertial Parameters ----------
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
-<<<<<<< HEAD
     double mass_ = 25.91;        // in Kg
     double nose_to_cg_ = 1.683;  // nosecone tip to CG distance in m
 
@@ -191,23 +159,6 @@ class Rocket {
     double reference_area_ = 0.00811;                // reference area in m^2
     double total_normal_force_coeff_ = 9.65;  // total normal force coefficient
     double total_axial_force_coeff_ = 0.630;  // total axial force coefficient
-=======
-
-    // The following are in Geocentric frame
-    Vector3d launch_ecef_{150992.99, -4882549.85, 4087626.55};
-    Vector3d launch_geod_{
-        40.111801, -88.228691,
-        216};  // (40.111801, -88.228691, 216) - Talbot Laboratory
-
-    // Default scalar parameters from OpenRocket
-    double mass_ = 41.034;      // in Kg
-    double d_ref_ = 0.0157;     // ref length in m
-    double A_ref_ = 0.0194;     // ref area in m^2
-    double Cna_ = 9.65;         // normal force coefficient derivative
-                                // wrt angle-of-attack
-    double Cd_ = 0.630;         // drag coefficient
-    double nose_to_cg_ = 3.59;  // nosecone tip to CG distance in m
->>>>>>> feature/AV-288-integrate-rasaero-data
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
     double mach_ = 0.0;         // Freestream air mach number
     double alpha_ = 0.0;        // Rocket total angle-of-attack to air

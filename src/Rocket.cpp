@@ -14,8 +14,8 @@
 #include "Rocket.h"
 
 #include <Eigen/Dense>
-#include <iostream>
 #include <cmath>
+#include <iostream>
 
 using Eigen::Quaterniond;
 using Eigen::Vector3d;
@@ -65,7 +65,6 @@ Vector3d Rocket::r2enu(Vector3d vector) {
  * The X axis is the prime meridian and 180 degrees longitude, on the equator
  * The Y axis is 90 degrees east and 90 degrees west, on the equator
  * The Z axis is north and south
->>>>>>> feature/AV-288-integrate-rasaero-data
  *
  * https://en.wikipedia.org/wiki/Geographic_coordinate_conversion
  * "From ENU to ECEF"

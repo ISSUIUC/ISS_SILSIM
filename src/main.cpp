@@ -24,7 +24,8 @@ constexpr double kIntrepidDiameter = 4.0 * kInchToMeters;
 constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
 int main() {
-    RASAeroImport rasaero_import("utils/RASAero_fetch/output/RASAero_Intrepid_5800_mk6.csv");
+    RASAeroImport rasaero_import(
+        "utils/RASAero_fetch/output/RASAero_Intrepid_5800_mk6.csv");
 
     spdlog::set_level(spdlog::level::debug);
     // comment below is used if we want to change the format of the logging
@@ -59,8 +60,8 @@ int main() {
 
     SolidMotor motor(3.49, 5800.0);
 
-    ForwardEuler engine(rocket, motor);
-    // RungeKutta engine(rocket, motor);
+    // ForwardEuler engine(rocket, motor);
+    RungeKutta engine(rocket, motor);
     CpuState cpu;
 
     Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
