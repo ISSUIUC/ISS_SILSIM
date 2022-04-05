@@ -2,8 +2,8 @@
 #define EIGEN_MATRIX_PLUGIN "MatrixAddons.h"
 
 KalmanFilter::KalmanFilter(struct pointers* pointer_struct) {
-    gy_L = &pointer_struct->sensorDataPointer->lowG_data.gy;
-    gy_H = &pointer_struct->sensorDataPointer->highG_data.hg_ay;
+    gz_L = &pointer_struct->sensorDataPointer->lowG_data.gz;
+    gz_H = &pointer_struct->sensorDataPointer->highG_data.hg_az;
     b_alt = &pointer_struct->sensorDataPointer->barometer_data.altitude;
     mutex_lowG_ = &pointer_struct->dataloggerTHDVarsPointer.dataMutex_lowG;
     mutex_highG_ = &pointer_struct->dataloggerTHDVarsPointer.dataMutex_highG;
@@ -41,7 +41,7 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
     P_k(0,1) = .009;
     P_k(0,2) = .005;
     P_k(1,1) = .009;
-    P_k(2,2) = 10;
+    P_k(2,2) = 10.0;
     P_k(1,2) = .0045;
     P_k(2,1) = P_k(1,2);
     P_k(1,0) = P_k(0,1);
@@ -54,11 +54,44 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
     // set R
     R(0,0) = 12;
     R(1,1) = 1.4;
+
+    // set B
+    B(2,0) = -1;
+}
+
+void KalmanFilter::Initialize(float pos_f, float vel_f) {
+    // set x_k
+    x_k(0,0) = pos_f;
+    x_k(1,0) = vel_f;
+    
+    // set F
+    F_mat(0, 1) = s_dt;
+
+    F_mat(0, 0) = 1;
+    F_mat(1, 1) = 1;
+
+    // set H
+    H(0,0) = 1;
+
+    // set P_k
+    P_k(0,0) = 0.0357;
+    P_k(0,1) = 0.0178;
+    P_k(1,1) = 0.01774;
+    P_k(1,0) = 0.00017095;
+
+    // set Q
+    
+
+    // set R
+    R(0,0) = 12;
+
+    // set B
+    B(2,0) = -1;
 }
 
 void KalmanFilter::priori() {
     // x_priori = (F @ x_k) + ((B @ u).T) #* For some reason doesnt work when B or u is = 0
-    x_priori = F_mat * x_k;
+    x_priori = (F_mat * x_k);
     P_priori = (F_mat * P_k * F_mat.transpose()) + Q;
 }
 
@@ -69,11 +102,11 @@ void KalmanFilter::update() {
 
     // Sensor Measurements
     chMtxLock(mutex_lowG_);
-    y_k(0,0) = *gy_H;
+    y_k(1,0) = *gz_H + 9.81;
     chMtxUnlock(mutex_lowG_);
 
     chMtxLock(dataMutex_barometer_);
-    y_k(1,0) = *b_alt;
+    y_k(0,0) = *b_alt;
     chMtxUnlock(dataMutex_barometer_);
     
     // # Posteriori Update
