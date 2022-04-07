@@ -41,6 +41,7 @@ int main() {
                          ((90.0 / 100.0) * kIntrepidDryCGLocation));
     rocket.set_nose_to_cg(nose_to_cg);
 
+    double mass = rocket.get_structural_mass();
     std::array<double, 9> I_tensor{};
     I_tensor[0] =
         (1.0 / 12.0) * mass * kIntrepidTotalLength * kIntrepidTotalLength;
@@ -58,7 +59,9 @@ int main() {
     accel1.enable_noise_injection();
     Gyroscope gyro1("LSM9_gyro", rocket, 100);
 
-    SolidMotor motor(3.49, 5800.0);
+    // Modeling Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop
+    // weight
+    SolidMotor motor(3.49, 5800.0, 9.021);
 
     // ForwardEuler engine(rocket, motor);
     RungeKutta engine(rocket, motor);

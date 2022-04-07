@@ -23,14 +23,17 @@ using Eigen::Vector3d;
 
 class SolidMotor {
    public:
-    SolidMotor(double max_burn_duration, double thrust_value)
+    SolidMotor(double max_burn_duration, double thrust_value,
+               double initial_propellant_mass)
         : ignition_(false),
           max_burn_duration_(max_burn_duration),
-          thrust_value_(thrust_value){};
+          thrust_value_(thrust_value),
+          initial_propellant_mass_(initial_propellant_mass){};
 
     void ignite(double tStamp);
     void get_thrust(double tStamp, Vector3d& vector) const;
     Vector3d get_thrust(double tStamp) const;
+    double get_propellant_mass(double tStamp) const;
 
     bool is_burning(double tStamp) const;
 
@@ -40,6 +43,7 @@ class SolidMotor {
     double ignition_tStamp_{};
     double current_thrust_{};
     double thrust_value_;
+    double initial_propellant_mass_;
 };
 
 #endif

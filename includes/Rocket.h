@@ -55,7 +55,8 @@ class Rocket {
     Vector3d get_f_net() const { return f_net_; };
     Vector3d get_t_net() const { return t_net_; };
 
-    double get_mass() const { return mass_; };
+    double get_structural_mass() const { return structural_mass_; };
+    double get_total_mass() const { return total_mass_; };
     double get_mach() const { return mach_; };
     double get_alpha() const { return alpha_; };
     double get_reference_length() const { return reference_length_; };
@@ -91,7 +92,8 @@ class Rocket {
     void set_f_net(Vector3d vector) { f_net_ = vector; };
     void set_t_net(Vector3d vector) { t_net_ = vector; };
 
-    void set_mass(double mass) { mass_ = mass; };
+    void set_structural_mass(double mass) { structural_mass_ = mass; };
+    void set_total_mass(double mass) { total_mass_ = mass; };
     void set_mach(double mach) { mach_ = mach; };
     void set_alpha(double alpha) { alpha_ = alpha; };
     void set_reference_length(double d_ref) { reference_length_ = d_ref; };
@@ -150,7 +152,8 @@ class Rocket {
 
     //---------- Intertial Parameters ----------
     std::array<double, 9> I_{};  // Rocket moment of inertia tensor
-    double mass_ = 25.91;        // in Kg
+    double structural_mass_ = 25.91;  // structural mass of rocket in Kg
+    double total_mass_ = 25.91;       // total mass including propellant in Kg
     double nose_to_cg_ = 1.683;  // nosecone tip to CG distance in m
 
     //----------- Aerodynamic Parameters ----------

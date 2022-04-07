@@ -54,6 +54,11 @@ void Simulation::run(int steps) {
 
     rocket_.update_aero_coefficients(motor_.is_burning(tStamp_), 0.0);
 
+    // Initial update of total mass to include propellant mass
+    double rocket_structural_mass = rocket_.get_structural_mass();
+    rocket_.set_total_mass(rocket_structural_mass +
+                           motor_.get_propellant_mass(tStamp_));
+
     motor_.ignite(tStamp_);
 
     for (int iter = 0; iter < steps; ++iter) {
@@ -95,6 +100,10 @@ void Simulation::run(int steps) {
         rocket_axis = rocket_.r2enu(rocket_axis);
 
         rocket_.update_aero_coefficients(motor_.is_burning(tStamp_), 0.0);
+
+        // Update total mass to include new propellant mass
+        rocket_.set_total_mass(rocket_structural_mass +
+                               motor_.get_propellant_mass(tStamp_));
 
         engine_->march_step(tStamp_, tStep_);
 
