@@ -232,7 +232,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     Quaterniond orient = rocket_.get_q_ornt();
 
     std::array<double, 9> inertia = rocket_.get_I();  // moment of inertia
-    double mass = rocket_.get_total_mass();
+    double total_mass = rocket_.get_total_mass();
     double alpha = rocket_.get_alpha();
     double mach = rocket_.get_mach();
 

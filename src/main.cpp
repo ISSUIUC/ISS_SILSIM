@@ -33,9 +33,7 @@ int main() {
 
     Rocket rocket(std::make_shared<RASAeroImport>(rasaero_import));
 
-    double mass = (((35.0 / 100.0) * kIntrepidWetMass) +
-                   ((65.0 / 100.0) * kIntrepidDryMass));
-    rocket.set_mass(mass);
+    rocket.set_structural_mass(kIntrepidDryMass);
 
     double nose_to_cg = (((10.0 / 100.0) * kIntrepidWetCGLocation) +
                          ((90.0 / 100.0) * kIntrepidDryCGLocation));
