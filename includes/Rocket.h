@@ -47,7 +47,8 @@ class Rocket {
     Vector3d get_f_net() const { return f_net_; };
     Vector3d get_t_net() const { return t_net_; };
 
-    double get_mass() const { return mass_; };
+    double get_structural_mass() const { return structural_mass_; };
+    double get_total_mass() const { return total_mass_; };
     double get_d_ref() const { return d_ref_; };
     double get_A_ref() const { return A_ref_; };
     double get_Cna() const { return Cna_; };
@@ -77,7 +78,8 @@ class Rocket {
     void set_f_net(Vector3d vector) { f_net_ = vector; };
     void set_t_net(Vector3d vector) { t_net_ = vector; };
 
-    void set_mass(double mass) { mass_ = mass; };
+    void set_structural_mass(double mass) { structural_mass_ = mass; };
+    void set_total_mass(double mass) { total_mass_ = mass; };
     void set_d_ref(double d_ref) { d_ref_ = d_ref; };
     void set_A_ref(double A_ref) { A_ref_ = A_ref; };
     void set_Cna(double Cna) { Cna_ = Cna; };
@@ -129,14 +131,15 @@ class Rocket {
         216};  // (40.111801, -88.228691, 216) - Talbot Laboratory
 
     // Default scalar parameters from OpenRocket
-    double mass_ = 41.034;      // in Kg
-    double d_ref_ = 0.0157;     // ref length in m
-    double A_ref_ = 0.0194;     // ref area in m^2
-    double Cna_ = 9.65;         // normal force coefficient derivative
-                                // wrt angle-of-attack
-    double Cd_ = 0.630;         // drag coefficient
-    double nose_to_cg_ = 3.59;  // nosecone tip to CG distance in m
-    double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
+    double structural_mass_ = 41.034;  // structural mass of rocket in Kg
+    double total_mass_ = 41.034;       // total mass including propellant in Kg
+    double d_ref_ = 0.0157;            // ref length in m
+    double A_ref_ = 0.0194;            // ref area in m^2
+    double Cna_ = 9.65;                // normal force coefficient derivative
+                                       // wrt angle-of-attack
+    double Cd_ = 0.630;                // drag coefficient
+    double nose_to_cg_ = 3.59;         // nosecone tip to CG distance in m
+    double nose_to_cp_ = 4.03;         // nosecone tip to Cp distance in m
 };
 
 #endif
