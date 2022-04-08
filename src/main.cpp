@@ -35,7 +35,10 @@ int main() {
     Gyroscope gyro1("LSM9_gyro", rocket, 100);
 
     // 3.5 second burn time @ 4000 Newton constant thrust (L ish motor I think)
-    SolidMotor motor(3.594, 5772.1);
+    // ConstantThrustSolidMotor motor(3.594, 5772.1);
+
+    // Cesaroni N5800 Motor
+    ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv");
 
     // ForwardEuler engine(rocket, motor);
     RungeKutta engine(rocket, motor);

@@ -35,7 +35,7 @@
 using Eigen::Vector3d;
 
 Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
-                       SolidMotor& motor, CpuState& cpu, std::string filename
+                       RocketMotor& motor, CpuState& cpu, std::string filename
                        // std::vector<Sensor&>& sensors
                        )
     : tStamp_(0),
