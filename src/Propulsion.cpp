@@ -30,6 +30,17 @@ void RocketMotor::ignite(double tStamp) {
 }
 
 /**
+ * @brief Check if motor is currently burning and producing thrust
+ *
+ * @param tStamp Current simulation timestamp
+ * @return bool True if motor is burning and producing thrust, false otherwise
+ */
+bool RocketMotor::is_burning(double tStamp) const {
+    double burn_end_tStamp = ignition_tStamp_ + max_burn_duration_;
+    return (tStamp > burn_end_tStamp);
+}
+
+/**
  * @brief Get the magnitude of the thrust force the motor is generating
  *
  * @param tStamp Current simulation timestamp

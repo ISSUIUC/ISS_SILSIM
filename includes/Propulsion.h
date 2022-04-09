@@ -24,6 +24,7 @@ using Eigen::Vector3d;
 class RocketMotor {
    public:
     void ignite(double tStamp);
+    bool is_burning(double tStamp) const;
 
     virtual double current_thrust(double tStamp) const = 0;
     virtual Vector3d get_thrust_vector(double tStamp) const = 0;
@@ -31,14 +32,13 @@ class RocketMotor {
    protected:
     bool ignition_ = false;
     double ignition_tStamp_{0.0};
+    double max_burn_duration_{0.0};
 };
 
 class ConstantThrustSolidMotor : public RocketMotor {
    public:
     ConstantThrustSolidMotor(double max_burn_duration, double thrust_value)
-        : RocketMotor(),
-          thrust_value_(thrust_value),
-          max_burn_duration_(max_burn_duration){};
+        : thrust_value_(thrust_value){ max_burn_duration_ = max_burn_duration; };
 
     double current_thrust(double tStamp) const override;
     Vector3d get_thrust_vector(double tStamp) const override;
@@ -46,8 +46,6 @@ class ConstantThrustSolidMotor : public RocketMotor {
    private:
     // Thrust force value the motor will generate, constant for this motor type.
     double thrust_value_;
-    // Maximum burn time of motor
-    double max_burn_duration_;
 };
 
 class ThrustCurveSolidMotor : public RocketMotor {
@@ -60,7 +58,6 @@ class ThrustCurveSolidMotor : public RocketMotor {
    private:
     // Useful metadata variables
     int data_points_;
-    double max_burn_duration_;
 
     // Thrust curve lookup table
     Eigen::MatrixXd thrust_table_;
