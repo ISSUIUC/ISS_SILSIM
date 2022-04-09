@@ -38,7 +38,9 @@ class RocketMotor {
 class ConstantThrustSolidMotor : public RocketMotor {
    public:
     ConstantThrustSolidMotor(double max_burn_duration, double thrust_value)
-        : thrust_value_(thrust_value){ max_burn_duration_ = max_burn_duration; };
+        : thrust_value_(thrust_value) {
+        max_burn_duration_ = max_burn_duration;
+    };
 
     double current_thrust(double tStamp) const override;
     Vector3d get_thrust_vector(double tStamp) const override;
