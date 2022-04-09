@@ -21,29 +21,54 @@
 
 using Eigen::Vector3d;
 
-class SolidMotor {
+class RocketMotor {
    public:
-    SolidMotor(double max_burn_duration, double thrust_value,
-               double initial_propellant_mass)
-        : ignition_(false),
-          max_burn_duration_(max_burn_duration),
-          thrust_value_(thrust_value),
-          initial_propellant_mass_(initial_propellant_mass){};
-
     void ignite(double tStamp);
-    void get_thrust(double tStamp, Vector3d& vector) const;
-    Vector3d get_thrust(double tStamp) const;
-    double get_propellant_mass(double tStamp) const;
-
     bool is_burning(double tStamp) const;
 
+    // Should this be a virtual implemented function?
+    double get_propellant_mass(double tStamp) const;
+
+    virtual double current_thrust(double tStamp) const = 0;
+    virtual Vector3d get_thrust_vector(double tStamp) const = 0;
+
+   protected:
+    bool ignition_ = false;
+    double ignition_tStamp_{0.0};
+    double max_burn_duration_{0.0};
+    double initial_propellant_mass_{0.0};
+};
+
+class ConstantThrustSolidMotor : public RocketMotor {
+   public:
+    ConstantThrustSolidMotor(double max_burn_duration, double thrust_value,
+                             double initial_propellant_mass)
+        : thrust_value_(thrust_value) {
+        max_burn_duration_ = max_burn_duration;
+        initial_propellant_mass_ = initial_propellant_mass;
+    };
+
+    double current_thrust(double tStamp) const override;
+    Vector3d get_thrust_vector(double tStamp) const override;
+
    private:
-    bool ignition_;
-    double max_burn_duration_;
-    double ignition_tStamp_{};
-    double current_thrust_{};
+    // Thrust force value the motor will generate, constant for this motor type.
     double thrust_value_;
-    double initial_propellant_mass_;
+};
+
+class ThrustCurveSolidMotor : public RocketMotor {
+   public:
+    ThrustCurveSolidMotor(std::string filename, double initial_propellant_mass);
+
+    double current_thrust(double tStamp) const override;
+    Vector3d get_thrust_vector(double tStamp) const override;
+
+   private:
+    // Useful metadata variables
+    int data_points_;
+
+    // Thrust curve lookup table
+    Eigen::MatrixXd thrust_table_;
 };
 
 #endif

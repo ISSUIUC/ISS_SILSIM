@@ -27,7 +27,7 @@
 
 class PhysicsEngine {
    public:
-    PhysicsEngine(Rocket& rocket, SolidMotor& motor)
+    PhysicsEngine(Rocket& rocket, RocketMotor& motor)
         : rocket_(rocket), motor_(motor){};
 
     virtual void march_step(double tStamp, double tStep) = 0;
@@ -36,12 +36,12 @@ class PhysicsEngine {
     Quaterniond update_quaternion(Quaterniond q_ornt, Vector3d omega_enu,
                                   double tStep) const;
     Rocket& rocket_;
-    SolidMotor& motor_;
+    RocketMotor& motor_;
 };
 
 class ForwardEuler : public PhysicsEngine {
    public:
-    ForwardEuler(Rocket& rocket, SolidMotor& motor);
+    ForwardEuler(Rocket& rocket, RocketMotor& motor);
 
     void march_step(double tStamp, double tStep) override;
 
@@ -51,7 +51,7 @@ class ForwardEuler : public PhysicsEngine {
 
 class RungeKutta : public PhysicsEngine {
    public:
-    RungeKutta(Rocket& rocket, SolidMotor& motor)
+    RungeKutta(Rocket& rocket, RocketMotor& motor)
         : PhysicsEngine(rocket, motor){};
 
     void march_step(double tStamp, double tStep) override;

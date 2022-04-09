@@ -18,7 +18,7 @@ constexpr double kInchToMeters = 0.0254;
 constexpr double kIntrepidDryMass = 47.41 * kLbsToKg;
 constexpr double kIntrepidWetMass = 67.30 * kLbsToKg;
 constexpr double kIntrepidWetCGLocation = 82.79 * kInchToMeters;
-constexpr double kIntrepidDryCGLocation = 73.06  * kInchToMeters;
+constexpr double kIntrepidDryCGLocation = 73.06 * kInchToMeters;
 constexpr double kIntrepidTotalLength = 130.0 * kInchToMeters;
 constexpr double kIntrepidDiameter = 4.0 * kInchToMeters;
 constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
@@ -47,7 +47,7 @@ int main() {
     I_tensor[8] = 0.5 * mass * kIntrepidRadius * kIntrepidRadius;
     rocket.set_I(I_tensor);
 
-    double angle = 5.0 * deg2rad;
+    double angle = 3.0 * deg2rad;
     Quaterniond start_ornt{cos(angle / 2.0), sin(angle / 2.0) * 0.707,
                            sin(angle / 2.0) * 0.707, 0};
     rocket.set_q_ornt(start_ornt);
@@ -59,7 +59,10 @@ int main() {
 
     // Modeling Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop
     // weight
-    SolidMotor motor(3.49, 5800.0, 9.021);
+    // ConstantThrustSolidMotor motor(3.49, 5800.0, 9.021);
+
+    // Cesaroni N5800 Motor
+    ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.021);
 
     // ForwardEuler engine(rocket, motor);
     RungeKutta engine(rocket, motor);

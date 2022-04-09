@@ -56,6 +56,10 @@ out/
 *.make
 **/*.make
 
+# VSCode Temporaries
+.vs/
+**/.vs/
+
 main
 ISS_SILSIM
 sim_data/*.csv

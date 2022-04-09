@@ -151,10 +151,10 @@ class Rocket {
     // (40.111801, -88.228691, 216) - Talbot Laboratory
 
     //---------- Intertial Parameters ----------
-    std::array<double, 9> I_{};  // Rocket moment of inertia tensor
+    std::array<double, 9> I_{};       // Rocket moment of inertia tensor
     double structural_mass_ = 25.91;  // structural mass of rocket in Kg
     double total_mass_ = 25.91;       // total mass including propellant in Kg
-    double nose_to_cg_ = 1.683;  // nosecone tip to CG distance in m
+    double nose_to_cg_ = 1.683;       // nosecone tip to CG distance in m
 
     //----------- Aerodynamic Parameters ----------
     std::shared_ptr<RASAeroImport> rasaero_import_;  // Aero lookup table
