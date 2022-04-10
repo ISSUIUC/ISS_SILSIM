@@ -17,6 +17,9 @@
 #define _ROCKET_H_
 #define _USE_MATH_DEFINES
 
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
+
 #include <Eigen/Dense>
 #include <array>
 #include <memory>
@@ -31,15 +34,20 @@ using Eigen::Quaterniond;
 
 class Rocket {
    public:
-    Rocket() {
+    Rocket(std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink) {
         q_ornt_ = {1, 0, 0, 0};
         cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
+        rocket_logger_ =
+            std::make_shared<spdlog::logger>("Rocket_Logger", sink);
     }
 
-    Rocket(std::shared_ptr<RASAeroImport> rasaero) {
+    Rocket(std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink,
+           std::shared_ptr<RASAeroImport> rasaero) {
         q_ornt_ = {1, 0, 0, 0};
         cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
         rasaero_import_ = rasaero;
+        rocket_logger_ =
+            std::make_shared<spdlog::logger>("Rocket_Logger", sink);
     }
 
     /*************************** Get parameters *****************************#*/
@@ -165,6 +173,9 @@ class Rocket {
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
     double mach_ = 0.0;         // Freestream air mach number
     double alpha_ = 0.0;        // Rocket total angle-of-attack to air
+
+    //----------- Aerodynamic Parameters ----------
+    std::shared_ptr<spdlog::logger> rocket_logger_;
 };
 
 #endif

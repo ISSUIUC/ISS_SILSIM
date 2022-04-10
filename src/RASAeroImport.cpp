@@ -15,6 +15,8 @@
 
 #include <Eigen/src/Core/Matrix.h>
 #include <rapidcsv.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
 
 #include <cmath>
 #include <iostream>
@@ -26,9 +28,14 @@
  * @oaram file_path The path where the RASAero .csv data is found
  *
  */
-RASAeroImport::RASAeroImport(std::string file_path) {
-    rasaero_logger_ = spdlog::basic_logger_mt("RASAeroImport_Logger",
-                                              "logs/rasaero_import.log");
+RASAeroImport::RASAeroImport(
+    std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink,
+    std::string file_path) {
+
+    rasaero_logger_ =
+        std::make_shared<spdlog::logger>("RASAeroImport_Logger", sink);
+
+    spdlog::register_logger(rasaero_logger_);
 
     rapidcsv::Document csv(file_path);
 
@@ -61,6 +68,8 @@ RASAeroImport::RASAeroImport(std::string file_path) {
     set_mach_number_params();
     set_alpha_params();
     set_protuberance_params();
+
+    rasaero_logger_->info("hmmmmmm rasaero");
 
     rasaero_logger_->debug("[RASAeroImport ctor parsing metadata]:");
     rasaero_logger_->debug("mach_instances = {}", mach_number_instances_);

@@ -24,14 +24,23 @@ constexpr double kIntrepidDiameter = 4.0 * kInchToMeters;
 constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
 int main() {
-    RASAeroImport rasaero_import(
-        "utils/RASAero_fetch/output/RASAero_Intrepid_5800_mk6.csv");
+
+    std::shared_ptr<spdlog::sinks::basic_file_sink_mt> silsim_sink =
+        std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/hmmm.log");
+
+    std::shared_ptr<spdlog::logger> test_logger = std::make_shared<spdlog::logger>("Test_Logger", silsim_sink);
+    test_logger->log(spdlog::level::info, "hmmm test log");
 
     spdlog::set_level(spdlog::level::debug);
     // comment below is used if we want to change the format of the logging
     // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
 
-    Rocket rocket(std::make_shared<RASAeroImport>(rasaero_import));
+    std::shared_ptr<RASAeroImport> rasaero_import =
+        std::make_shared<RASAeroImport>(
+            silsim_sink,
+            "utils/RASAero_fetch/output/RASAero_Intrepid_5800_mk6.csv");
+
+    Rocket rocket(silsim_sink, rasaero_import);
 
     rocket.set_structural_mass(kIntrepidDryMass);
 
@@ -68,7 +77,7 @@ int main() {
     RungeKutta engine(rocket, motor);
     CpuState cpu;
 
-    Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
+    Simulation sim(silsim_sink, 0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
 
     sim.add_sensor(&accel1);
     // sim.add_sensor(&gyro1);

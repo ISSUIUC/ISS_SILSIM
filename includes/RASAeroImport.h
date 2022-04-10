@@ -32,7 +32,8 @@ struct RASAeroCoefficients {
 
 class RASAeroImport {
    public:
-    RASAeroImport(std::string file_path);
+    RASAeroImport(std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink,
+                  std::string file_path);
 
     /**************** Retrieve Aero Parameters of Rocket **********************/
     RASAeroCoefficients get_aero_coefficients(double mach, double alpha,

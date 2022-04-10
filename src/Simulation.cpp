@@ -34,7 +34,7 @@
 
 using Eigen::Vector3d;
 
-Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
+Simulation::Simulation(std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink, double tStep, PhysicsEngine* engine, Rocket& rocket,
                        RocketMotor& motor, CpuState& cpu, std::string filename
                        // std::vector<Sensor&>& sensors
                        )
@@ -45,8 +45,9 @@ Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
       motor_(motor),
       cpu_(cpu),
       filename_(filename) {
-    sim_log =
-        spdlog::basic_logger_mt("Simulation_Logger", "logs/simulation.log");
+
+    sim_log = std::make_shared<spdlog::logger>("Simulation_Logger", sink);
+    spdlog::register_logger(sim_log);
 }
 
 void Simulation::run(int steps) {
