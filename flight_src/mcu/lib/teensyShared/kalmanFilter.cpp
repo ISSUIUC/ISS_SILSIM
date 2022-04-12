@@ -1,6 +1,6 @@
 #include "kalmanFilter.h"
 #define EIGEN_MATRIX_PLUGIN "MatrixAddons.h"
-
+#include <iostream>
 KalmanFilter::KalmanFilter(struct pointers* pointer_struct) {
     gz_L = &pointer_struct->sensorDataPointer->lowG_data.gz;
     gz_H = &pointer_struct->sensorDataPointer->highG_data.hg_az;
@@ -101,12 +101,13 @@ void KalmanFilter::update() {
     K = (P_priori * H.transpose()) * temp;
 
     // Sensor Measurements
-    chMtxLock(mutex_lowG_);
-    y_k(1,0) = *gz_H + 9.81;
-    chMtxUnlock(mutex_lowG_);
+    chMtxLock(mutex_highG_);
+    y_k(1,0) = (*gz_H);
+    chMtxUnlock(mutex_highG_);
 
     chMtxLock(dataMutex_barometer_);
     y_k(0,0) = *b_alt;
+    // std::cout<< y_k(0,0) <<std::endl;
     chMtxUnlock(dataMutex_barometer_);
     
     // # Posteriori Update

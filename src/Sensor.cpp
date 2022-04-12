@@ -83,10 +83,11 @@ Accelerometer::Accelerometer(std::string name, Rocket& rocket,
     noise_ = {0, 0, 0};
     bias_ = {0, 0, 0};
 }
-
+#include<iostream>
 void Accelerometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
         data_ = rocket_.i2r(rocket_.get_r_ddot());
+        data_.z() += 9.81;
         new_data_ = true;
 
         if (inject_noise_) {

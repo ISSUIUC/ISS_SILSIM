@@ -2,7 +2,7 @@
 #include <spdlog/spdlog.h>
 
 #include <iostream>
-
+#include <vector>
 #include "CpuState.h"
 #include "Rocket.h"
 #include "Sensor.h"
@@ -29,6 +29,9 @@ int main() {
                            sin(angle / 2.0) * 0.707, 0};
     rocket.set_q_ornt(start_ornt);
 
+    rocket.set_r_dot(Eigen::Vector3d{0, 0, 958.75});
+    rocket.set_r_vect(Eigen::Vector3d{0, 0, 362.47128485035});
+
     // Construct some sensors
     Accelerometer accelerometer("LSM9_accel", rocket, 100);
     accelerometer.enable_noise_injection();
@@ -39,7 +42,7 @@ int main() {
     Magnetometer magnetometer("LSM9_magnetometer", rocket, 100);
 
     // 3.5 second burn time @ 4000 Newton constant thrust (L ish motor I think)
-    SolidMotor motor(3.5, 4000.0);
+    SolidMotor motor(0.0, 0.0);
 
     // ForwardEuler engine(rocket, motor);
     RungeKutta engine(rocket, motor);

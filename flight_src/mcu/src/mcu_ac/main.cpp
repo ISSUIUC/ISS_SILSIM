@@ -202,11 +202,14 @@ class Kalman_Filter_THD : public CpuThread {
         Kf.kfTickFunction();
         array<float, 2> init = {Kf.x_k[0], Kf.x_k[1]};
         // Serial.println(std::to_string(controller_sim.sim_apogee(init, 0.1)[0]).c_str());
-        Serial.println("Predicted Alt:");
-        Serial.println(std::to_string(Kf.x_k(0, 0)).c_str());
-        Serial.println("Predicted Vel:");
-        Serial.println(std::to_string(Kf.x_k(1,0)).c_str());
-        // Serial.println(std::to_string(*Kf.gy_H).c_str());
+        // Serial.println("Predicted Alt:");
+        // Serial.println(std::to_string(Kf.x_k(0, 0)).c_str());
+        // Serial.println("Predicted Vel:");
+        // Serial.println(std::to_string(Kf.x_k(1,0)).c_str());
+
+        chMtxLock(Kf.mutex_highG_);
+        Serial.println(std::to_string(*Kf.gz_H).c_str());
+        chMtxUnlock(Kf.mutex_highG_);
 #ifdef THREAD_DEBUG
         Serial.println("### Kalman_Filter thread entrance");
 #endif
