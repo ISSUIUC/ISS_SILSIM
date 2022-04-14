@@ -90,9 +90,9 @@ if draw_plots:
     ax.title.set_text("rocket trajectory")
 
     ax = fig.add_subplot(132, projection='3d')
-    ax.plot(rocketx, rockety, rocketz, 'r', zdir='z', linewidth=1.0)
-    ax.scatter(rocketx[0], rockety[0], rocketz[0],color='g', marker='^')
-    ax.scatter(rocketx[-1], rockety[-1], rocketz[-1], color='r', marker='x')
+    ax.plot(rocketX, rocketY, rocketZ, 'r', zdir='z', linewidth=1.0)
+    ax.scatter(rocketX[0], rocketY[0], rocketZ[0],color='g', marker='^')
+    ax.scatter(rocketX[-1], rocketY[-1], rocketZ[-1], color='r', marker='x')
     ax.axes.set_xlim3d(left=-1.5, right=1.5)
     ax.axes.set_ylim3d(bottom=-1.5, top=1.5)
     ax.axes.set_zlim3d(bottom=-1.5, top=1.5)
