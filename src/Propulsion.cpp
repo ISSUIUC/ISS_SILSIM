@@ -19,6 +19,10 @@
 
 using Eigen::Vector3d;
 
+/*****************************************************************************/
+/* RocketMotor Member Functions                                              */
+/*****************************************************************************/
+
 /**
  * @brief Transitions state of Motor to ignited (producing thrust)
  *
@@ -39,6 +43,10 @@ bool RocketMotor::is_burning(double tStamp) const {
     double burn_end_tStamp = ignition_tStamp_ + max_burn_duration_;
     return (tStamp > burn_end_tStamp);
 }
+
+/*****************************************************************************/
+/* ConstantThrustSolidMotor Member Functions                                 */
+/*****************************************************************************/
 
 /**
  * @brief Get the magnitude of the thrust force the motor is generating
@@ -62,6 +70,10 @@ double ConstantThrustSolidMotor::current_thrust(double tStamp) const {
 Vector3d ConstantThrustSolidMotor::get_thrust_vector(double tStamp) const {
     return {0.0, 0.0, current_thrust(tStamp)};
 }
+
+/*****************************************************************************/
+/* ThrustCurveSolidMotor Member Functions                                    */
+/*****************************************************************************/
 
 /**
  * @brief Constructor for the ThrustCurveSolidMotor class
