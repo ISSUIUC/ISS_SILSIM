@@ -108,7 +108,6 @@ def main():
             for k in range(2):
                 pyautogui.hotkey('shift', 'tab')
 
-
         # reset for next file
         for j in range(2):
                 pyautogui.press('tab')
