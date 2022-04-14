@@ -34,9 +34,11 @@ int main() {
     accel1.enable_noise_injection();
     Gyroscope gyro1("LSM9_gyro", rocket, 100);
 
-    // Modeling Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop
-    // weight
-    SolidMotor motor(3.49, 5800.0, 9.021);
+    // 3.5 second burn time @ 4000 Newton constant thrust (L ish motor I think)
+    // ConstantThrustSolidMotor motor(3.594, 5772.1);
+
+    // Cesaroni N5800 Motor
+    ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv");
 
     // ForwardEuler engine(rocket, motor);
     RungeKutta engine(rocket, motor);

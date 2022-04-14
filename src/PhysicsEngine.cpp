@@ -23,7 +23,7 @@ using Eigen::Vector3d;
 
 #define RAD2DEG (180.0 / 3.14159265)
 
-ForwardEuler::ForwardEuler(Rocket& rocket, SolidMotor& motor)
+ForwardEuler::ForwardEuler(Rocket& rocket, RocketMotor& motor)
     : PhysicsEngine(rocket, motor) {
     euler_logger =
         spdlog::basic_logger_mt("Euler_Logger", "logs/forward_euler.log");
@@ -72,8 +72,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     double c_D = rocket_.get_Cd();    // drag coefficient
 
     // Motor thrust vector, rocket frame
-    Vector3d thrust_rf =
-        motor_.get_thrust(tStamp);  // thrust of rocket at current timestamp
+    Vector3d thrust_rf = motor_.get_thrust_vector(tStamp);
 
     /********************* Calculate forces and torques ***********************/
     Vector3d f_aero_rf;   // Aerodynamic forces, rocket frame
@@ -302,7 +301,7 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
 
     /*************** Retrieve Instantaneous Rocket Parameters *****************/
 
-    Vector3d thrust_rf = motor_.get_thrust(tStamp);
+    Vector3d thrust_rf = motor_.get_thrust_vector(tStamp);
 
     double total_mass = rocket_.get_total_mass();
     double area = rocket_.get_A_ref();
