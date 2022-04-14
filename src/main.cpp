@@ -14,7 +14,7 @@ constexpr double deg2rad = 3.14159265 / 180.0;
 constexpr double kLbsToKg = 0.453592;
 constexpr double kInchToMeters = 0.0254;
 
-/***************** Intrepid MK4 Parameters *****************/
+/***************** Intrepid MK6 Parameters *****************/
 constexpr double kIntrepidDryMass = 47.41 * kLbsToKg;
 constexpr double kIntrepidWetMass = 67.30 * kLbsToKg;
 constexpr double kIntrepidWetCGLocation = 82.79 * kInchToMeters;

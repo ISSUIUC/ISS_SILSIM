@@ -6,4 +6,4 @@
 	url = https://gitlab.com/libeigen/eigen
 [submodule "lib/rapidcsv"]
 	path = lib/rapidcsv
-	url = https://github.com/d99kris/rapidcsv/
+	url = https://github.com/d99kris/rapidcsv.git
