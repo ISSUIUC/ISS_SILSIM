@@ -4,7 +4,7 @@ import numpy as np
 import csv
 
 # Config flags
-draw_plots = False
+draw_plots = True
 
 plt.style.use('dark_background')
 
@@ -113,18 +113,18 @@ if draw_plots:
 
     fig = plt.figure()
     ax = fig.add_subplot(311)
-    plt.plot(timestamps, aX, color='r', linewidth=2.0, label="X Accel Truth")
-    plt.plot(timestamps, sensorX, color='g', label="X Accel Sensor Output")
+    plt.plot(timestamps, aX, color='r', linewidth=2.0, label="x accel truth")
+    plt.plot(timestamps, sensorX, color='g', label="x accel sensor output")
     plt.grid()
     plt.legend()
     ax = fig.add_subplot(312)
-    plt.plot(timestamps, ay, color='r', linewidth=2.0, label="Y Accel Truth")
-    plt.plot(timestamps, sensorY, color='g', label="Y Accel Sensor Output")
+    plt.plot(timestamps, ay, color='r', linewidth=2.0, label="y accel truth")
+    plt.plot(timestamps, sensorY, color='g', label="y accel sensor output")
     plt.grid()
     plt.legend()
     ax = fig.add_subplot(313)
-    plt.plot(timestamps, az, color='r', linewidth=2.0, label="Z Accel Truth")
-    plt.plot(timestamps, sensorZ, color='g', label="Z Accel Sensor Output")
+    plt.plot(timestamps, az, color='r', linewidth=2.0, label="z accel truth")
+    plt.plot(timestamps, sensorZ, color='g', label="z accel sensor output")
     plt.grid()
     plt.legend()
 
