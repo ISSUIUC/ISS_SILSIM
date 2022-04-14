@@ -38,6 +38,7 @@ class RocketMotor {
    public:
     void ignite(double tStamp);
     bool is_burning(double tStamp) const;
+    double get_propellant_mass(double tStamp) const;
 
     virtual double current_thrust(double tStamp) const = 0;
     virtual Vector3d get_thrust_vector(double tStamp) const = 0;
@@ -46,6 +47,7 @@ class RocketMotor {
     bool ignition_ = false;
     double ignition_tStamp_{0.0};
     double max_burn_duration_{0.0};
+    double initial_propellant_mass_{0.0};
 };
 
 /** ConstantThrustSolidMotor Derived Class

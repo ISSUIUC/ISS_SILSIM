@@ -17,7 +17,7 @@ int main() {
 
     Rocket rocket;
 
-    double mass = rocket.get_mass();
+    double mass = rocket.get_structural_mass();
     std::array<double, 9> I_tensor{};
     I_tensor[0] = (1.0 / 12.0) * mass * 5.182 * 5.182 * 25;
     I_tensor[4] = I_tensor[0];

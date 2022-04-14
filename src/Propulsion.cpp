@@ -44,6 +44,24 @@ bool RocketMotor::is_burning(double tStamp) const {
     return (tStamp > burn_end_tStamp);
 }
 
+/**
+ * @brief Calculate the mass of propellant currently in motor
+ *
+ * Performs a simple linear interpolation between the initial motor propellant
+ * mass and zero depending on how long motor has been burning
+ *
+ * @param tStamp Current simulation timestamp
+ * @return double Current propellant mass within the motor
+ */
+double RocketMotor::get_propellant_mass(double tStamp) const {
+    if (!ignition_) return initial_propellant_mass_;
+
+    if ((tStamp - ignition_tStamp_) > max_burn_duration_) return 0.0;
+
+    return initial_propellant_mass_ *
+           (1.0 - ((tStamp - ignition_tStamp_) / max_burn_duration_));
+}
+
 /*****************************************************************************/
 /* ConstantThrustSolidMotor Member Functions                                 */
 /*****************************************************************************/

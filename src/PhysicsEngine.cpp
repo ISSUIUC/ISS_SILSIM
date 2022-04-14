@@ -66,10 +66,10 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     std::array<double, 9> I_tens = rocket_.get_I();  // moment of inertia
 
     // parameters
-    double mass = rocket_.get_mass();    // mass of rocket
-    double A_ref = rocket_.get_A_ref();  // ref area in m^2
-    double c_Na = rocket_.get_Cna();     // normal force coefficient derivative
-    double c_D = rocket_.get_Cd();       // drag coefficient
+    double total_mass = rocket_.get_total_mass();  // total mass of rocket
+    double A_ref = rocket_.get_A_ref();            // ref area in m^2
+    double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
+    double c_D = rocket_.get_Cd();    // drag coefficient
 
     // Motor thrust vector, rocket frame
     Vector3d thrust_rf = motor_.get_thrust_vector(tStamp);
@@ -133,7 +133,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
                              std::cos(rad_dif.x())};
 
     f_net_enu = rocket_.r2enu(f_aero_rf + thrust_rf);
-    f_net_enu -= (gravity_geod * 9.81 * mass);
+    f_net_enu -= (gravity_geod * 9.81 * total_mass);
 
     t_net_rf = t_aero_rf;
     t_net_enu = rocket_.r2enu(t_aero_rf);
@@ -142,7 +142,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
 
     r_vect_enu += r_dot_enu * tStep;
     r_dot_enu += r_ddot_enu * tStep;
-    r_ddot_enu = f_net_enu / mass;
+    r_ddot_enu = f_net_enu / total_mass;
 
     q_ornt = update_quaternion(q_ornt, w_vect_enu, tStep);
 
@@ -222,7 +222,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     std::array<double, 9> inertia = rocket_.get_I();  // moment of inertia
 
-    double mass = rocket_.get_mass();
+    double total_mass = rocket_.get_total_mass();
 
     /******************** Calculate Intermediate States **********************/
     // Each state is used to calculate the next state
@@ -255,7 +255,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     Vector3d net_force_enu = calc_net_force(tStamp, pos_enu, vel_avg);
     Vector3d net_torque_enu = calc_net_torque(vel_avg, pos_enu);
 
-    accel_enu = net_force_enu / mass;
+    accel_enu = net_force_enu / total_mass;
 
     ang_vel_enu += tStep * ang_accel_avg;
     ang_accel_enu.x() = net_torque_enu.x() / inertia[0];
@@ -303,7 +303,7 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
 
     Vector3d thrust_rf = motor_.get_thrust_vector(tStamp);
 
-    double mass = rocket_.get_mass();
+    double total_mass = rocket_.get_total_mass();
     double area = rocket_.get_A_ref();
     double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
     double drag_coef = rocket_.get_Cd();
@@ -350,7 +350,7 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
                              std::cos(rad_dif.x())};
 
     Vector3d net_force_enu = rocket_.r2enu(aero_force_rf + thrust_rf);
-    net_force_enu -= (gravity_geod * 9.81 * mass);
+    net_force_enu -= (gravity_geod * 9.81 * total_mass);
 
     return net_force_enu;
 }
@@ -441,7 +441,7 @@ RungeKutta::RungeKuttaState RungeKutta::calc_state(double tStamp, double tStep,
     Vector3d pos_k = pos_initial + k.vel * tStep;
     Vector3d vel_k = vel_initial + k.accel * tStep;
     Vector3d accel_k =
-        calc_net_force(tStamp, k.pos, k.vel) / rocket_.get_mass();
+        calc_net_force(tStamp, k.pos, k.vel) / rocket_.get_total_mass();
     Vector3d ang_vel_k = ang_vel_initial + (k.ang_accel * tStep);
     Vector3d net_torque_new = calc_net_torque(k.vel, k.pos);
     Vector3d ang_accel_k;
