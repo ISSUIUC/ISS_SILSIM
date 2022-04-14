@@ -35,7 +35,7 @@
 using Eigen::Vector3d;
 
 Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
-                       SolidMotor& motor, CpuState& cpu, std::string filename
+                       RocketMotor& motor, CpuState& cpu, std::string filename
                        // std::vector<Sensor&>& sensors
                        )
     : tStamp_(0),
@@ -51,6 +51,11 @@ Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
 
 void Simulation::run(int steps) {
     std::ofstream dataFile(filename_);
+
+    // Initial update of total mass to include propellant mass
+    double rocket_structural_mass = rocket_.get_structural_mass();
+    rocket_.set_total_mass(rocket_structural_mass +
+                           motor_.get_propellant_mass(tStamp_));
 
     motor_.ignite(tStamp_);
     for (int iter = 0; iter < steps; ++iter) {
@@ -90,6 +95,10 @@ void Simulation::run(int steps) {
         sim_log->debug("alphaSIM: {}  [deg]", alpha * RAD2DEG);
         Vector3d rocket_axis(0, 0, 1);
         rocket_axis = rocket_.r2enu(rocket_axis);
+
+        // Update total mass to include new propellant mass
+        rocket_.set_total_mass(rocket_structural_mass +
+                               motor_.get_propellant_mass(tStamp_));
 
         engine_->march_step(tStamp_, tStep_);
 
