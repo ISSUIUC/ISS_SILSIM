@@ -55,21 +55,21 @@ with open("sim_data/data.csv") as csvfile:
             data_lists[i].append(float(val))
 
 
-# print some stats:
+# Print some stats:
 apogee = np.max(rz) 
-print(f"apogee altitude = {apogee} m\n\t\t= {apogee * 3.28} ft")
+print(f"Apogee Altitude = {apogee} m\n\t\t= {apogee * 3.28} ft")
 max_vel = np.max(vz)
-print(f"max vertical velocity\t= {max_vel} m/s\n\t\t\t= {max_vel * 3.28} ft/s\n\t\t\t= {max_vel / 343} mach")
+print(f"Max Vertical Velocity\t= {max_vel} m/s\n\t\t\t= {max_vel * 3.28} ft/s\n\t\t\t= {max_vel / 343} mach")
 
 
 if draw_plots:
 
     plt.figure()
-    plt.plot(timestamps, rz, label="altitude")
-    plt.plot(timestamps, vz, label="vertical velocity")
-    plt.plot(timestamps, az, label="vertical acceleration")
-    plt.plot(timestamps, roll, label="roll")
-    plt.plot(timestamps, pitch, label="pitch")
+    plt.plot(timestamps, rz, label="Altitude")
+    plt.plot(timestamps, vz, label="Vertical Velocity")
+    plt.plot(timestamps, az, label="Vertical Acceleration")
+    plt.plot(timestamps, roll, label="Roll")
+    plt.plot(timestamps, pitch, label="Pitch")
     plt.plot(timestamps, yaw, label="yaw")
     plt.grid()
     plt.legend()
@@ -84,10 +84,10 @@ if draw_plots:
     ax.axes.set_xlim3d(left=-3000, right=3000)
     ax.axes.set_ylim3d(bottom=-3000, top=3000)
     ax.axes.set_zlim3d(bottom=0.00001, top=15000)
-    ax.set_xlabel("x [m]")
-    ax.set_ylabel("y [m]")
-    ax.set_zlabel("z [m]")
-    ax.title.set_text("rocket trajectory")
+    ax.set_xlabel("X [m]")
+    ax.set_ylabel("Y [m]")
+    ax.set_zlabel("Z [m]")
+    ax.title.set_text("Rocket Trajectory")
 
     ax = fig.add_subplot(132, projection='3d')
     ax.plot(rocketX, rocketY, rocketZ, 'r', zdir='z', linewidth=1.0)
@@ -96,18 +96,18 @@ if draw_plots:
     ax.axes.set_xlim3d(left=-1.5, right=1.5)
     ax.axes.set_ylim3d(bottom=-1.5, top=1.5)
     ax.axes.set_zlim3d(bottom=-1.5, top=1.5)
-    ax.title.set_text("rocket axis evolution")
+    ax.title.set_text("Rocket Axis Evolution")
 
     ax = fig.add_subplot(333)
-    ax.plot(timestamps, roll, 'r', label="roll")
+    ax.plot(timestamps, roll, 'r', label="Roll")
     ax.grid()
     ax.legend()
     ax = fig.add_subplot(336)
-    ax.plot(timestamps, pitch, 'g', label="pitch")
+    ax.plot(timestamps, pitch, 'g', label="Pitch")
     ax.grid()
     ax.legend()
     ax = fig.add_subplot(339)
-    ax.plot(timestamps, yaw, 'b', label="yaw")
+    ax.plot(timestamps, yaw, 'b', label="Yaw")
     ax.grid()
     ax.legend()
 
