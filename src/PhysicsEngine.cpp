@@ -23,6 +23,8 @@ using Eigen::Vector3d;
 
 #define RAD2DEG (180.0 / 3.14159265)
 
+constexpr double kFeetToMeters = 0.3048;
+
 ForwardEuler::ForwardEuler(Rocket& rocket, RocketMotor& motor)
     : PhysicsEngine(rocket, motor) {
     euler_logger =
@@ -152,7 +154,7 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     w_dot_enu.z() = t_net_enu.z() / I_tens[8];
 
     // Naively accounting for launch rail
-    if (r_vect_enu.norm() < 4.50) {
+    if (r_vect_enu.norm() < (17 * kFeetToMeters)) {
         w_dot_enu.x() = 0;
         w_dot_enu.y() = 0;
         w_dot_enu.z() = 0;
