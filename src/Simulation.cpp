@@ -60,7 +60,7 @@ void Simulation::run(int steps) {
     motor_.ignite(tStamp_);
     for (int iter = 0; iter < steps; ++iter) {
         Vector3d r_vect =
-            rocket_.ecef2geod(rocket_.enu2ecef(rocket_.get_r_vect()));
+            rocket_.ecef2geod(rocket_.position_enu2ecef(rocket_.get_r_vect()));
         Vector3d r_dot = rocket_.get_r_dot();
         Vector3d r_ddot = rocket_.get_r_ddot();
         Vector3d f_net = rocket_.get_f_net();

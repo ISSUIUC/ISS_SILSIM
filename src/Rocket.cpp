@@ -19,6 +19,10 @@
 using Eigen::Quaterniond;
 using Eigen::Vector3d;
 
+/*****************************************************************************/
+/*                       ENU FRAME <-> ROCKET FRAME                          */
+/*****************************************************************************/
+
 /**
  * @brief Performs a quaternion rotation to translate a vector from the inertial
  * frame to the rocket body frame.
@@ -46,6 +50,10 @@ Vector3d Rocket::r2enu(Vector3d vector) {
     return p.vec();
 }
 
+/*****************************************************************************/
+/*                        ENU FRAME <-> ECEF FRAME                           */
+/*****************************************************************************/
+
 /**
  * @brief Converts the rocket's ENU coordinates to ECEF
  *
@@ -61,9 +69,9 @@ Vector3d Rocket::r2enu(Vector3d vector) {
  * origin
  *
  * ECEF is the distance the rocket is from the center of mass of the earth
- * The X axis is the prime meridian and 180 degrees longitude, on the equator
- * The Y axis is 90 degrees east and 90 degrees west, on the equator
- * The Z axis is north and south
+ * The X axis points to the prime meridian at 180deg longitude, on the equator
+ * The Y axis points 90deg east and lies on the equator
+ * The Z axis points north to form a right-handed coordinate system
  *
  * https://en.wikipedia.org/wiki/Geographic_coordinate_conversion
  * "From ENU to ECEF"
@@ -72,23 +80,69 @@ Vector3d Rocket::r2enu(Vector3d vector) {
  * @return Vector3d Position of the rocket in the Earth-Centered-Earth-Fixed
  * reference frame
  */
-Vector3d Rocket::enu2ecef(Vector3d pos_enu) {
-    double lambda =
-        get_launch_geod().y() * M_PI / 180;           // longitude of launchpad
-    double lat = get_launch_geod().x() * M_PI / 180;  // latitude of launchpad
-    Vector3d ecef;
+Vector3d Rocket::position_enu2ecef(Vector3d pos_enu) {
+    using std::sin, std::cos;
 
-    Eigen::Matrix<double, 3, 3> transform{
-        {-std::sin(lambda), -std::sin(lat) * std::cos(lambda),
-         std::cos(lat) * std::cos(lambda)},
-        {std::cos(lambda), -std::sin(lat) * std::sin(lambda),
-         std::cos(lat) * std::sin(lambda)},
-        {0, std::cos(lat), std::sin(lat)}};
+    // longitude and latitude of launchpad converted to radians
+    double lambda = get_launch_geod().y() * M_PI / 180;
+    double lat = get_launch_geod().x() * M_PI / 180;
 
-    ecef = (transform * pos_enu) + get_launch_ecef();
+    Eigen::Matrix3d transform{
+        {-sin(lambda), -sin(lat) * cos(lambda), cos(lat) * cos(lambda)},
+        {cos(lambda), -sin(lat) * sin(lambda), cos(lat) * sin(lambda)},
+        {0, cos(lat), sin(lat)}};
 
-    return ecef;
+    return (transform * pos_enu) + get_launch_ecef();
 }
+
+Vector3d Rocket::position_ecef2enu(Vector3d pos_ecef) {
+    using std::sin, std::cos;
+
+    // longitude and latitude of launchpad converted to radians
+    double lambda = get_launch_geod().y() * M_PI / 180;
+    double lat = get_launch_geod().x() * M_PI / 180;
+
+    Eigen::Matrix3d transform{
+        {-sin(lambda), -sin(lat) * cos(lambda), cos(lat) * cos(lambda)},
+        {cos(lambda), -sin(lat) * sin(lambda), cos(lat) * sin(lambda)},
+        {0, cos(lat), sin(lat)}};
+
+    return transform.transpose() * (pos_ecef - get_launch_ecef());
+}
+
+Vector3d Rocket::enu2ecef(Vector3d vector) {
+    using std::sin, std::cos;
+
+    // longitude and latitude of launchpad converted to radians
+    double lambda = get_launch_geod().y() * M_PI / 180;
+    double lat = get_launch_geod().x() * M_PI / 180;
+
+    Eigen::Matrix3d transform{
+        {-sin(lambda), -sin(lat) * cos(lambda), cos(lat) * cos(lambda)},
+        {cos(lambda), -sin(lat) * sin(lambda), cos(lat) * sin(lambda)},
+        {0, cos(lat), sin(lat)}};
+
+    return transform * vector;
+}
+
+Vector3d Rocket::ecef2enu(Vector3d vector) {
+    using std::sin, std::cos;
+
+    // longitude and latitude of launchpad converted to radians
+    double lambda = get_launch_geod().y() * M_PI / 180;
+    double lat = get_launch_geod().x() * M_PI / 180;
+
+    Eigen::Matrix3d transform{
+        {-sin(lambda), -sin(lat) * cos(lambda), cos(lat) * cos(lambda)},
+        {cos(lambda), -sin(lat) * sin(lambda), cos(lat) * sin(lambda)},
+        {0, cos(lat), sin(lat)}};
+
+    return transform.transpose() * vector;
+}
+
+/*****************************************************************************/
+/*                      ECEF FRAME <-> GEODETIC FRAME                        */
+/*****************************************************************************/
 
 /**
  * @brief Converts the rocket's Earth-Centered-Earth-Fixed coordinates into
@@ -100,9 +154,9 @@ Vector3d Rocket::enu2ecef(Vector3d pos_enu) {
  * not significant and only come from the reference math.
  *
  * ECEF is the distance the rocket is from the center of mass of the earth
- * The X axis is the prime meridian and 180 degrees longitude, on the equator
- * The Y axis is 90 degrees east and 90 degrees west, on the equator
- * The Z axis is north and south
+ * The X axis points to the prime meridian at 180deg longitude, on the equator
+ * The Y axis points 90deg east and lies on the equator
+ * The Z axis points north to form a right-handed coordinate system
  *
  * Geodetic is the latitude, longitude, and altitude of the rocket based on a
  * spheroid (squished) earth
@@ -144,4 +198,23 @@ Vector3d Rocket::ecef2geod(Vector3d ecef) {
     geod.y() = std::atan2(ecef.y(), ecef.x()) * 180 / M_PI;
 
     return geod;
+}
+
+/*****************************************************************************/
+/*                         GRAVITY DIRECTION VECTOR                          */
+/*****************************************************************************/
+
+Vector3d Rocket::gravity_direction_vector_ecef() {
+    Vector3d pos_ecef = enu2ecef(r_vect_);
+    return -pos_ecef.normalized();
+}
+
+Vector3d Rocket::gravity_direction_vector_enu() {
+    Vector3d grav_ecef = gravity_direction_vector_ecef();
+    return ecef2enu(grav_ecef);
+}
+
+Vector3d Rocket::gravity_direction_vector_rocket() {
+    Vector3d grav_enu = gravity_direction_vector_enu();
+    return enu2r(grav_enu);
 }

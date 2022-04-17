@@ -52,20 +52,19 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     Vector3d f_net_enu = rocket_.get_f_net();    // net force (Newtons)
     Vector3d t_net_enu = rocket_.get_t_net();    // net torque (Newtons*meters)
 
-    Vector3d geod =
-        rocket_.ecef2geod(rocket_.enu2ecef(r_vect_enu));  // lat, long, alt
+    // Get the Geodetic coordinates of the rocket
+    Vector3d geod = rocket_.ecef2geod(rocket_.position_enu2ecef(r_vect_enu));
 
     // Quaternion from ENU to rocket frame
-    Quaterniond q_ornt = rocket_.get_q_ornt();  // orientation of rocket
+    Quaterniond q_ornt = rocket_.get_q_ornt();
 
     // CG to Cp vector
-    Vector3d Cp_vect_rf =
-        rocket_.get_Cp_vect();  // CG to Cp (center of pressure) vector
+    Vector3d Cp_vect_rf = rocket_.get_Cp_vect();
 
     // Get moment of inertia tenspr
-    std::array<double, 9> I_tens = rocket_.get_I();  // moment of inertia
+    std::array<double, 9> I_tens = rocket_.get_I();
 
-    // parameters
+    // Aerodynamic Parameters
     double total_mass = rocket_.get_total_mass();  // total mass of rocket
     double A_ref = rocket_.get_A_ref();            // ref area in m^2
     double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
@@ -133,7 +132,11 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
                              std::cos(rad_dif.x())};
 
     f_net_enu = rocket_.r2enu(f_aero_rf + thrust_rf);
+
+    // hmmmmm
     f_net_enu -= (gravity_geod * 9.81 * total_mass);
+    // f_net_enu -= (rocket_.gravity_direction_vector_enu() * 9.81 *
+    // total_mass);
 
     t_net_rf = t_aero_rf;
     t_net_enu = rocket_.r2enu(t_aero_rf);
@@ -308,7 +311,7 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
     double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
     double drag_coef = rocket_.get_Cd();
 
-    Vector3d geod = rocket_.ecef2geod(rocket_.enu2ecef(pos_enu));
+    Vector3d geod = rocket_.ecef2geod(rocket_.position_enu2ecef(pos_enu));
 
     /************************* Calculate Net Force ****************************/
 
@@ -373,7 +376,7 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_enu, Vector3d pos_enu) {
     double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
     double drag_coef = rocket_.get_Cd();
 
-    Vector3d geod = rocket_.ecef2geod(rocket_.enu2ecef(pos_enu));
+    Vector3d geod = rocket_.ecef2geod(rocket_.position_enu2ecef(pos_enu));
 
     /************************ Calculate Net Torque ***************************/
     Vector3d aero_torque_rf;
