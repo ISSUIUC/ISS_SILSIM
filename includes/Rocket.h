@@ -116,17 +116,26 @@ class Rocket {
     /************************ Internal State Update ***************************/
     void update_aero_coefficients(bool poweron, double protuberance_perecent);
 
-    // Converts vector from ENU frame to rocket reference frame
+    /********************** Reference Frame Conversions ***********************/
+    // Converts arbitrary vector to/from ENU frame and rocket reference frame
     Vector3d enu2r(Vector3d vector);
-
-    // Converts vector from rocket frame to ENU reference frame
     Vector3d r2enu(Vector3d vector);
 
-    // Converts vector from ENU frame to ECEF reference frame
-    Vector3d enu2ecef(Vector3d pos_enu);
+    // Converts rocket position vector to/from ENU frame and ECEF frame
+    Vector3d position_enu2ecef(Vector3d pos_enu);
+    Vector3d position_ecef2enu(Vector3d pos_ecef);
 
-    // Converts vector from ECEF frame to Geodetic reference frame
+    // Converts arbitrary vector to/from ENU frame and ECEF frame
+    Vector3d enu2ecef(Vector3d vector);
+    Vector3d ecef2enu(Vector3d vector);
+
+    // Converts rocket position  vector from ECEF frame to Geodetic coordinates
     Vector3d ecef2geod(Vector3d ecef);
+
+    // Returns the *unit* vector in the direction of gravity in various frames
+    Vector3d gravity_vector_ecef();
+    Vector3d gravity_vector_enu();
+    Vector3d gravity_vector_rf();
 
    private:
     // The following are in ENU frame

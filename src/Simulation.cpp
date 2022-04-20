@@ -62,13 +62,17 @@ void Simulation::run(int steps) {
     motor_.ignite(tStamp_);
 
     for (int iter = 0; iter < steps; ++iter) {
-        Vector3d r_vect =
-            rocket_.ecef2geod(rocket_.enu2ecef(rocket_.get_r_vect()));
-        Vector3d r_dot = rocket_.get_r_dot();
-        Vector3d r_ddot = rocket_.get_r_ddot();
-        Vector3d f_net = rocket_.get_f_net();
-        Vector3d w_net = rocket_.get_w_vect();
+        // Get ENU frame rocket state
+        Vector3d r_vect_enu = rocket_.get_r_vect();
+        Vector3d r_dot_enu = rocket_.get_r_dot();
         Quaterniond q_ornt = rocket_.get_q_ornt();
+
+        // Get rocket frame state
+        Vector3d r_dot = rocket_.enu2r(rocket_.get_r_dot());
+        Vector3d r_ddot = rocket_.enu2r(rocket_.get_r_ddot());
+        Vector3d f_net = rocket_.enu2r(rocket_.get_f_net());
+        Vector3d w_net = rocket_.enu2r(rocket_.get_w_vect());
+        Vector3d t_net = rocket_.enu2r(rocket_.get_t_net());
 
         double s = q_ornt.w();
         double x = q_ornt.x();
@@ -84,20 +88,22 @@ void Simulation::run(int steps) {
             atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
             RAD2DEG;
 
-        double alpha = acos(rocket_.enu2r(r_dot).z() / (r_dot.norm()));
+        double alpha = acos(r_dot.z() / r_dot.norm());
         sim_log->debug("Timestamp: {}", tStamp_);
-        sim_log->debug("R-Vector: <{}, {}, {}>", r_vect.x(), r_vect.y(),
-                       r_vect.z());
-        sim_log->debug("Velocity: <{}, {}, {}>", r_dot.x(), r_dot.y(),
-                       r_dot.z());
-        sim_log->debug("Accel: <{}, {}, {}>", r_ddot.x(), r_ddot.y(),
-                       r_ddot.z());
-        sim_log->debug("F-Net: <{}, {}, {}>", f_net.x(), f_net.y(), f_net.z());
-        sim_log->debug("W-Net: <{}, {}, {}>", w_net.x(), w_net.y(), w_net.z());
+        sim_log->debug("ENU Frame R-Vector: <{}, {}, {}>", r_vect_enu.x(),
+                       r_vect_enu.y(), r_vect_enu.z());
+        sim_log->debug("Rocket Frame Velocity: <{}, {}, {}>", r_dot.x(),
+                       r_dot.y(), r_dot.z());
+        sim_log->debug("Rocket Frame Accel: <{}, {}, {}>", r_ddot.x(),
+                       r_ddot.y(), r_ddot.z());
+        sim_log->debug("Rocket Frame F-Net: <{}, {}, {}>", f_net.x(), f_net.y(),
+                       f_net.z());
+        sim_log->debug("Rocket Frame W-Net: <{}, {}, {}>", w_net.x(), w_net.y(),
+                       w_net.z());
+        sim_log->debug("Rocket Frame T-Net: <{}, {}, {}>", t_net.x(), t_net.y(),
+                       t_net.z());
         sim_log->debug("ROLL: {} PITCH: {} YAW: {}  [deg]", roll, pitch, yaw);
         sim_log->debug("alphaSIM: {}  [deg]", alpha * RAD2DEG);
-        Vector3d rocket_axis(0, 0, 1);
-        rocket_axis = rocket_.r2enu(rocket_axis);
 
         rocket_.update_aero_coefficients(motor_.is_burning(tStamp_), 0.0);
 
@@ -111,8 +117,12 @@ void Simulation::run(int steps) {
 
         cpu_.tick(tStamp_);
 
+        Vector3d rocket_axis(0, 0, 1);
+        rocket_axis = rocket_.r2enu(rocket_axis);
+
         dataFile << tStamp_ << ",";
-        dataFile << r_vect.x() << "," << r_vect.y() << "," << r_vect.z() << ",";
+        dataFile << r_vect_enu.x() << "," << r_vect_enu.y() << ","
+                 << r_vect_enu.z() << ",";
         dataFile << r_dot.x() << "," << r_dot.y() << "," << r_dot.z() << ",";
         dataFile << r_ddot.x() << "," << r_ddot.y() << "," << r_ddot.z() << ",";
         dataFile << f_net.x() << "," << f_net.y() << "," << f_net.z() << ",";
@@ -130,7 +140,7 @@ void Simulation::run(int steps) {
 
         tStamp_ += tStep_;
 
-        if (r_dot.z() < -3.0) {
+        if (r_dot_enu.z() < -3.0) {
             break;
         }
     }
