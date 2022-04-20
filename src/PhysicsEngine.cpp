@@ -90,7 +90,6 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     // Set aerodynamic forces and torques to zero if velocity is small. This
     // avoids calculations returning NaN values.
     if (r_dot_enu.norm() > 0.01) {
-
         Vector3d v_rf = rocket_.enu2r(r_dot_enu);
         Vector3d f_N_rf;  // normal aerodynamic force
 
@@ -268,10 +267,11 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     ang_vel_enu += tStep * ang_accel_avg;
 
-    Vector3d ang_accel_rf {net_torque_rf.x() / inertia[0],
-                           net_torque_rf.y() / inertia[4],
-                           net_torque_rf.z() / inertia[8]};
-    ang_accel_enu = rocket_.r2enu(ang_accel_rf);;
+    Vector3d ang_accel_rf{net_torque_rf.x() / inertia[0],
+                          net_torque_rf.y() / inertia[4],
+                          net_torque_rf.z() / inertia[8]};
+    ang_accel_enu = rocket_.r2enu(ang_accel_rf);
+    ;
 
     orient = update_quaternion(orient, ang_vel_avg, tStep);
 
@@ -308,12 +308,14 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 }
 
 /**
- * @brief Takes in time and velocity to calculate net force in the Rocket body frame
+ * @brief Takes in time and velocity to calculate net force in the Rocket body
+ * frame
  *
  * @param tStamp Current time stamp in the simulation
  * @param pos_enu Rocket's current position in the ENU frame
  * @param vel_enu Rocket's current velocity in the ENU frame
- * @return Vector3d The net force vector acting on the rocket in the Rocket body frame
+ * @return Vector3d The net force vector acting on the rocket in the Rocket body
+ * frame
  */
 Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
                                     Vector3d vel_enu) {
@@ -367,12 +369,14 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
 }
 
 /**
- * @brief Takes in time and angular velocity to calculate net torque in the Rocket body frame
+ * @brief Takes in time and angular velocity to calculate net torque in the
+ * Rocket body frame
  *
  * @param pos_enu Rocket's current position in the ENU frame
  * @param vel_enu Rocket's current velocity in the ENU frame
- * @return Vector3d The net torque vector acting on the rocket in the Rocket body frame  
-*/
+ * @return Vector3d The net torque vector acting on the rocket in the Rocket
+ * body frame
+ */
 Vector3d RungeKutta::calc_net_torque(Vector3d pos_enu, Vector3d vel_enu) {
     /*************** Retrieve Instantaneous Rocket Parameters *****************/
 
