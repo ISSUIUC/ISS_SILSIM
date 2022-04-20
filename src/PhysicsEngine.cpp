@@ -23,6 +23,8 @@ using Eigen::Vector3d;
 
 #define RAD2DEG (180.0 / 3.14159265)
 
+constexpr double kFeetToMeters = 0.3048;
+
 ForwardEuler::ForwardEuler(Rocket& rocket, RocketMotor& motor)
     : PhysicsEngine(rocket, motor) {
     euler_logger =
@@ -59,17 +61,19 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     Quaterniond q_ornt = rocket_.get_q_ornt();  // orientation of rocket
 
     // CG to Cp vector
-    Vector3d Cp_vect_rf =
-        rocket_.get_Cp_vect();  // CG to Cp (center of pressure) vector
+    Vector3d cp_vect_rf =
+        rocket_.get_cp_vect();  // CG to Cp (center of pressure) vector
 
-    // Get moment of inertia tenspr
+    // Aerodynamic and Inertial parameters
     std::array<double, 9> I_tens = rocket_.get_I();  // moment of inertia
-
-    // parameters
-    double total_mass = rocket_.get_total_mass();  // total mass of rocket
-    double A_ref = rocket_.get_A_ref();            // ref area in m^2
-    double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
-    double c_D = rocket_.get_Cd();    // drag coefficient
+    double total_mass = rocket_.get_total_mass();    // total mass of rocket
+    double A_ref = rocket_.get_reference_area();     // ref area in m^2
+    double CN =
+        rocket_.get_total_normal_force_coeff();  // normal force coefficient
+    double CA =
+        rocket_.get_total_axial_force_coeff();  // axial force coefficient
+    double alpha = rocket_.get_alpha();
+    double mach = rocket_.get_mach();
 
     // Motor thrust vector, rocket frame
     Vector3d thrust_rf = motor_.get_thrust_vector(tStamp);
@@ -87,14 +91,11 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     // avoids calculations returning NaN values.
     if (r_dot_enu.norm() > 0.01) {
         Vector3d rocket_axis_rf(0, 0, 1);
-        Vector3d v_rf = rocket_.enu2r(r_dot_enu);
-        double alpha =
-            acos(v_rf.z() /
-                 v_rf.norm());  // angle between velocity vector and rocket axis
-        Vector3d f_N_rf;        // normal aerodynamic force
 
-        double c_N = c_Na * alpha;
-        double f_N_mag = c_N * 0.5 * Atmosphere::get_density(geod.z()) *
+        Vector3d v_rf = rocket_.enu2r(r_dot_enu);
+        Vector3d f_N_rf;  // normal aerodynamic force
+
+        double f_N_mag = CN * 0.5 * Atmosphere::get_density(geod.z()) *
                          v_rf.squaredNorm() *
                          A_ref;  // norm of normal force (assuming constant
                                  // 0.5 is a coefficient in the equation
@@ -106,13 +107,13 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         f_N_rf.normalize();
         f_N_rf = f_N_rf * f_N_mag;
 
-        double f_D_mag = c_D * 0.5 * Atmosphere::get_density(geod.z()) *
+        double f_A_mag = CA * 0.5 * Atmosphere::get_density(geod.z()) *
                          v_rf.squaredNorm() * A_ref;
-        // make drag force apply in the opposite direction to rocket travel
-        Vector3d f_D_rf(0, 0, std::copysign(f_D_mag, -v_rf.z()));
+        // make axial force apply in the opposite direction to rocket travel
+        Vector3d f_A_rf(0, 0, std::copysign(f_A_mag, -v_rf.z()));
 
-        f_aero_rf = f_N_rf + f_D_rf;
-        t_aero_rf = Cp_vect_rf.cross(f_aero_rf);
+        f_aero_rf = f_N_rf + f_A_rf;
+        t_aero_rf = cp_vect_rf.cross(f_aero_rf);
 
     } else {
         f_aero_rf.x() = 0;
@@ -153,13 +154,22 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     w_dot_enu.z() = t_net_enu.z() / I_tens[8];
 
     // Naively accounting for launch rail
-    if (r_vect_enu.norm() < 4.50) {
+    if (r_vect_enu.norm() < (17 * kFeetToMeters)) {
         w_dot_enu.x() = 0;
         w_dot_enu.y() = 0;
         w_dot_enu.z() = 0;
         w_vect_enu.x() = 0;
         w_vect_enu.y() = 0;
         w_vect_enu.z() = 0;
+    }
+
+    // Do not calculate rocket's angle-of-attack and mach number if velocity is
+    // small to avoid NaN values
+    if (r_dot_enu.norm() > 0.01) {
+        Vector3d v_rf = rocket_.enu2r(r_dot_enu);
+        alpha = acos(v_rf.z() / v_rf.norm());
+        mach =
+            r_dot_enu.norm() / Atmosphere::get_speed_of_sound(r_vect_enu.z());
     }
 
     euler_logger->debug("Timestamp {}", tStamp);
@@ -178,6 +188,8 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     euler_logger->debug("r_ddot_enu = <{}, {}, {}>", r_ddot_enu.x(),
                         r_ddot_enu.y(), r_ddot_enu.z());
 
+    rocket_.set_alpha(alpha);
+    rocket_.set_mach(mach);
     rocket_.set_r_vect(r_vect_enu);
     rocket_.set_r_dot(r_dot_enu);
     rocket_.set_r_ddot(r_ddot_enu);
@@ -221,8 +233,9 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     Quaterniond orient = rocket_.get_q_ornt();
 
     std::array<double, 9> inertia = rocket_.get_I();  // moment of inertia
-
     double total_mass = rocket_.get_total_mass();
+    double alpha = rocket_.get_alpha();
+    double mach = rocket_.get_mach();
 
     /******************** Calculate Intermediate States **********************/
     // Each state is used to calculate the next state
@@ -275,7 +288,17 @@ void RungeKutta::march_step(double tStamp, double tStep) {
         ang_accel_enu.z() = 0;
     }
 
+    // Do not calculate rocket's angle-of-attack and mach number if velocity is
+    // small to avoid NaN values
+    if (vel_enu.norm() > 0.01) {
+        Vector3d vel_rf = rocket_.enu2r(vel_enu);
+        alpha = acos(vel_rf.z() / vel_rf.norm());
+        mach = vel_enu.norm() / Atmosphere::get_speed_of_sound(pos_enu.z());
+    }
+
     //---- Set Values ----
+    rocket_.set_alpha(alpha);
+    rocket_.set_mach(mach);
     rocket_.set_r_vect(pos_enu);
     rocket_.set_r_dot(vel_enu);
     rocket_.set_r_ddot(accel_enu);
@@ -304,9 +327,10 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
     Vector3d thrust_rf = motor_.get_thrust_vector(tStamp);
 
     double total_mass = rocket_.get_total_mass();
-    double area = rocket_.get_A_ref();
-    double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
-    double drag_coef = rocket_.get_Cd();
+    double area = rocket_.get_reference_area();
+    double CN =
+        rocket_.get_total_normal_force_coeff();  // normal force coefficient
+    double CA = rocket_.get_total_axial_force_coeff();
 
     Vector3d geod = rocket_.ecef2geod(rocket_.enu2ecef(pos_enu));
 
@@ -320,23 +344,19 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
         Vector3d vel_rf = rocket_.enu2r(vel_enu);
         Vector3d normal_force_rf;
 
-        double alpha =
-            acos(vel_rf.z() / vel_rf.norm());  // angle between velocity
-                                               // vector and rocket axis
-        double normal_coef = c_Na * alpha;
-
-        double normal_force_mag = 0.5 * normal_coef * vel_rf.squaredNorm() *
-                                  area * Atmosphere::get_density(geod.z());
+        double normal_force_mag = 0.5 * CN * vel_rf.squaredNorm() * area *
+                                  Atmosphere::get_density(geod.z());
         normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
 
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
-        double drag_mag = 0.5 * drag_coef * vel_rf.squaredNorm() * area *
-                          Atmosphere::get_density(geod.z());
-        Vector3d drag_rf{0, 0, std::copysign(drag_mag, -vel_rf.z())};
+        double axial_force_mag = 0.5 * CA * vel_rf.squaredNorm() * area *
+                                 Atmosphere::get_density(geod.z());
+        Vector3d axial_force_rf{0, 0,
+                                std::copysign(axial_force_mag, -vel_rf.z())};
 
-        aero_force_rf = normal_force_rf + drag_rf;
+        aero_force_rf = normal_force_rf + axial_force_rf;
     } else {
         aero_force_rf = {0, 0, 0};
     }
@@ -367,11 +387,12 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
 Vector3d RungeKutta::calc_net_torque(Vector3d vel_enu, Vector3d pos_enu) {
     /*************** Retrieve Instantaneous Rocket Parameters *****************/
 
-    Vector3d Cp_vect_rf = rocket_.get_Cp_vect();
+    Vector3d cp_vect_rf = rocket_.get_cp_vect();
 
-    double area = rocket_.get_A_ref();
-    double c_Na = rocket_.get_Cna();  // normal force coefficient derivative
-    double drag_coef = rocket_.get_Cd();
+    double area = rocket_.get_reference_area();
+    double CN =
+        rocket_.get_total_normal_force_coeff();  // normal force coefficient
+    double CA = rocket_.get_total_axial_force_coeff();
 
     Vector3d geod = rocket_.ecef2geod(rocket_.enu2ecef(pos_enu));
 
@@ -381,24 +402,20 @@ Vector3d RungeKutta::calc_net_torque(Vector3d vel_enu, Vector3d pos_enu) {
     if (vel_enu.norm() > 0.01) {
         Vector3d vel_rf = rocket_.enu2r(vel_enu);
 
-        // angle between velocity vector and rocket axis
-        double alpha = acos(vel_rf.z() / vel_rf.norm());
-
-        double normal_coef = c_Na * alpha;
-
-        double normal_force_mag = 0.5 * normal_coef * vel_rf.squaredNorm() *
-                                  area * Atmosphere::get_density(geod.z());
+        double normal_force_mag = 0.5 * CN * vel_rf.squaredNorm() * area *
+                                  Atmosphere::get_density(geod.z());
         Vector3d normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
 
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
-        double drag_mag = 0.5 * drag_coef * vel_rf.squaredNorm() * area *
-                          Atmosphere::get_density(geod.z());
-        Vector3d drag_rf{0, 0, std::copysign(drag_mag, -vel_rf.z())};
+        double axial_force_mag = 0.5 * CA * vel_rf.squaredNorm() * area *
+                                 Atmosphere::get_density(geod.z());
+        Vector3d axial_force_rf{0, 0,
+                                std::copysign(axial_force_mag, -vel_rf.z())};
 
-        Vector3d aero_force_rf = normal_force_rf + drag_rf;
-        aero_torque_rf = Cp_vect_rf.cross(aero_force_rf);
+        Vector3d aero_force_rf = normal_force_rf + axial_force_rf;
+        aero_torque_rf = cp_vect_rf.cross(aero_force_rf);
     } else {
         aero_torque_rf = {0, 0, 0};
     }

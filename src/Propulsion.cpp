@@ -103,7 +103,8 @@ Vector3d ConstantThrustSolidMotor::get_thrust_vector(double tStamp) const {
  * @param tStamp Current simulation timestamp
  * @return Vector3d The motor's current thrust vector
  */
-ThrustCurveSolidMotor::ThrustCurveSolidMotor(std::string filename) {
+ThrustCurveSolidMotor::ThrustCurveSolidMotor(std::string filename,
+                                             double initial_propellant_mass) {
     rapidcsv::Document csv(filename);
     std::vector<double> time_vals = csv.GetColumn<double>("Time");
     std::vector<double> thrust_vals = csv.GetColumn<double>("Thrust");
@@ -117,6 +118,7 @@ ThrustCurveSolidMotor::ThrustCurveSolidMotor(std::string filename) {
     }
 
     max_burn_duration_ = time_vals[data_points_ - 1];
+    initial_propellant_mass_ = initial_propellant_mass;
 }
 
 /**
