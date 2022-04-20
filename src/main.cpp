@@ -40,8 +40,8 @@ int main() {
     // Cesaroni N5800 Motor
     ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv");
 
-    ForwardEuler engine(rocket, motor);
-    // RungeKutta engine(rocket, motor);
+    // ForwardEuler engine(rocket, motor);
+    RungeKutta engine(rocket, motor);
     CpuState cpu;
 
     Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
