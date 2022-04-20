@@ -111,9 +111,9 @@ class Rocket {
     Vector3d ecef2geod(Vector3d ecef);
 
     // Returns the *unit* vector in the direction of gravity in various frames
-    Vector3d gravity_direction_vector_ecef();
-    Vector3d gravity_direction_vector_enu();
-    Vector3d gravity_direction_vector_rocket();
+    Vector3d gravity_vector_ecef();
+    Vector3d gravity_vector_enu();
+    Vector3d gravity_vector_rf();
 
    private:
     // The following are in ENU frame

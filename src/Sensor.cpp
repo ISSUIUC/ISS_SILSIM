@@ -88,8 +88,7 @@ void Accelerometer::update_data(double tStep) {
         // Subtract the gravity vector from the rocket's total acceleration to
         // yield specific force
         Vector3d total_accel = rocket_.enu2r(rocket_.get_r_ddot());
-        Vector3d gravity_rocket_frame =
-            rocket_.gravity_direction_vector_rocket() * 9.81;
+        Vector3d gravity_rocket_frame = rocket_.gravity_vector_rf() * 9.81;
         Vector3d specific_force = total_accel - gravity_rocket_frame;
 
         data_ = specific_force;

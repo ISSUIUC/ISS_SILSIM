@@ -262,8 +262,8 @@ Vector3d Rocket::ecef2geod(Vector3d ecef) {
  *
  * @return Vector3d Gravity direction vector in ECEF frame
  */
-Vector3d Rocket::gravity_direction_vector_ecef() {
-    Vector3d pos_ecef = enu2ecef(r_vect_);
+Vector3d Rocket::gravity_vector_ecef() {
+    Vector3d pos_ecef = position_enu2ecef(r_vect_);
     return -pos_ecef.normalized();
 }
 
@@ -272,8 +272,8 @@ Vector3d Rocket::gravity_direction_vector_ecef() {
  *
  * @return Vector3d Gravity direction vector in ENU frame
  */
-Vector3d Rocket::gravity_direction_vector_enu() {
-    Vector3d grav_ecef = gravity_direction_vector_ecef();
+Vector3d Rocket::gravity_vector_enu() {
+    Vector3d grav_ecef = gravity_vector_ecef();
     return ecef2enu(grav_ecef);
 }
 
@@ -283,7 +283,7 @@ Vector3d Rocket::gravity_direction_vector_enu() {
  *
  * @return Vector3d Gravity direction vector in Rocket body frame
  */
-Vector3d Rocket::gravity_direction_vector_rocket() {
-    Vector3d grav_enu = gravity_direction_vector_enu();
+Vector3d Rocket::gravity_vector_rf() {
+    Vector3d grav_enu = gravity_vector_enu();
     return enu2r(grav_enu);
 }

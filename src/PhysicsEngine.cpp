@@ -123,11 +123,9 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         t_aero_rf.z() = 0;
     }
 
-    f_net_enu = rocket_.r2enu(f_aero_rf + thrust_rf);
+    Vector3d grav_rf = rocket_.gravity_vector_rf() * 9.81 * total_mass;
 
-    // Add force of gravity to net force vector
-    Vector3d gravity_enu = rocket_.gravity_direction_vector_enu() * 9.81;
-    f_net_enu += (gravity_enu * total_mass);
+    f_net_enu = rocket_.r2enu(f_aero_rf + thrust_rf + grav_rf);
 
     t_net_rf = t_aero_rf;
     t_net_enu = rocket_.r2enu(t_aero_rf);
@@ -142,9 +140,10 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
 
     w_vect_enu += w_dot_enu * tStep;
 
-    w_dot_enu.x() = t_net_enu.x() / I_tens[0];
-    w_dot_enu.y() = t_net_enu.y() / I_tens[4];
-    w_dot_enu.z() = t_net_enu.z() / I_tens[8];
+    Vector3d w_dot_rf{t_net_rf.x() / I_tens[0], t_net_rf.y() / I_tens[4],
+                      t_net_rf.z() / I_tens[8]};
+
+    w_dot_enu = rocket_.r2enu(w_dot_rf);
 
     // Naively accounting for launch rail
     if (r_vect_enu.norm() < 4.50) {
@@ -252,6 +251,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     accel_enu = net_force_enu / total_mass;
 
     ang_vel_enu += tStep * ang_accel_avg;
+
     ang_accel_enu.x() = net_torque_enu.x() / inertia[0];
     ang_accel_enu.y() = net_torque_enu.y() / inertia[4];
     ang_accel_enu.z() = net_torque_enu.z() / inertia[8];
@@ -335,11 +335,9 @@ Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
         aero_force_rf = {0, 0, 0};
     }
 
-    Vector3d net_force_enu = rocket_.r2enu(aero_force_rf + thrust_rf);
+    Vector3d grav_rf = rocket_.gravity_vector_rf() * 9.81 * total_mass;
 
-    // Add force of gravity to net force vector
-    Vector3d gravity_enu = rocket_.gravity_direction_vector_enu() * 9.81;
-    net_force_enu += (gravity_enu * total_mass);
+    Vector3d net_force_enu = rocket_.r2enu(aero_force_rf + thrust_rf + grav_rf);
 
     return net_force_enu;
 }
