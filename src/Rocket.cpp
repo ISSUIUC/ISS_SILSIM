@@ -15,9 +15,42 @@
 
 #include <Eigen/Dense>
 #include <cmath>
+#include <iostream>
 
 using Eigen::Quaterniond;
 using Eigen::Vector3d;
+
+
+/*****************************************************************************/
+/*                     INTERNAL STATE UPDATE FUNCTIONS                       */
+/*****************************************************************************/
+
+/**
+ * @brief Updates the internally stored aerodynamic coefficients of the Rocket
+ * obtained from the RASAero lookup table
+ *
+ * Function fails gracefully without mutating anything if a RASAeroImport class
+ * is not associated with this rocket.
+ *
+ * @param poweron True if the rocket motor is currently burning
+ * @param protuberance The current amount of protuberance [0.0 - 1.0]
+ */
+void Rocket::update_aero_coefficients(bool poweron, double protuberance) {
+    constexpr double kInchToMeters = 0.0254;
+    if (rasaero_import_) {
+        RASAeroCoefficients coefficients =
+            rasaero_import_->get_aero_coefficients(mach_, alpha_, protuberance);
+
+        if (poweron) {
+            set_total_axial_force_coeff(coefficients.ca_poweron);
+        } else {
+            set_total_axial_force_coeff(coefficients.ca_poweroff);
+        }
+
+        set_total_normal_force_coeff(coefficients.cn_total);
+        set_nose_to_cp(coefficients.cp_total * kInchToMeters);
+    }
+}
 
 /*****************************************************************************/
 /*                       ENU FRAME <-> ROCKET FRAME                          */

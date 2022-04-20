@@ -38,6 +38,8 @@ class RocketMotor {
    public:
     void ignite(double tStamp);
     bool is_burning(double tStamp) const;
+
+    // Should this be a virtual implemented function?
     double get_propellant_mass(double tStamp) const;
 
     virtual double current_thrust(double tStamp) const = 0;
@@ -59,9 +61,11 @@ class RocketMotor {
  */
 class ConstantThrustSolidMotor : public RocketMotor {
    public:
-    ConstantThrustSolidMotor(double max_burn_duration, double thrust_value)
+    ConstantThrustSolidMotor(double max_burn_duration, double thrust_value,
+                             double initial_propellant_mass)
         : thrust_value_(thrust_value) {
         max_burn_duration_ = max_burn_duration;
+        initial_propellant_mass_ = initial_propellant_mass;
     };
 
     double current_thrust(double tStamp) const override;
@@ -83,7 +87,7 @@ class ConstantThrustSolidMotor : public RocketMotor {
  */
 class ThrustCurveSolidMotor : public RocketMotor {
    public:
-    ThrustCurveSolidMotor(std::string filename);
+    ThrustCurveSolidMotor(std::string filename, double initial_propellant_mass);
 
     double current_thrust(double tStamp) const override;
     Vector3d get_thrust_vector(double tStamp) const override;

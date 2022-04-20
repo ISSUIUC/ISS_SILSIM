@@ -52,12 +52,15 @@ Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
 void Simulation::run(int steps) {
     std::ofstream dataFile(filename_);
 
+    rocket_.update_aero_coefficients(motor_.is_burning(tStamp_), 0.0);
+
     // Initial update of total mass to include propellant mass
     double rocket_structural_mass = rocket_.get_structural_mass();
     rocket_.set_total_mass(rocket_structural_mass +
                            motor_.get_propellant_mass(tStamp_));
 
     motor_.ignite(tStamp_);
+
     for (int iter = 0; iter < steps; ++iter) {
         // Get ENU frame rocket state
         Vector3d r_vect_enu = rocket_.get_r_vect();
@@ -101,6 +104,8 @@ void Simulation::run(int steps) {
                        t_net.z());
         sim_log->debug("ROLL: {} PITCH: {} YAW: {}  [deg]", roll, pitch, yaw);
         sim_log->debug("alphaSIM: {}  [deg]", alpha * RAD2DEG);
+
+        rocket_.update_aero_coefficients(motor_.is_burning(tStamp_), 0.0);
 
         // Update total mass to include new propellant mass
         rocket_.set_total_mass(rocket_structural_mass +
