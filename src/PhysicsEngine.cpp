@@ -386,12 +386,12 @@ void RungeKutta::march_step(double tStamp, double tStep) {
  * state
  *
  * Method performs a basic Euler step on the velocity and angular velocity of
- * the rocket, as well as recalculating forces, accereration, angular
+ * the rocket, as well as recalculating forces, acceleration, angular
  * acceleration, and orientation, using the initial state of the rocket and the
  * data from the state an inputed state
  *
  * @param k The state of the rocket being used to calculate the next state
- * @return RungeKuttaState  Velocity, accereration, angular velocity, and
+ * @return RungeKuttaState  Velocity, acceleration, angular velocity, and
  * angular acceleration at a moment
  */
 RungeKutta::RungeKuttaState RungeKutta::calc_state(double tStamp, double tStep,
