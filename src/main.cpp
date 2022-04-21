@@ -64,10 +64,7 @@ int main() {
     // Cesaroni N5800 Motor
     ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425);
 
-    // HELLO, RUNGEKUTTA?
-    // RUNGEKUTTA BROKE
     RungeKutta engine(rocket, motor);
-    // UNDERSTANDABLE. HAVE A GREAT DAY
     // ForwardEuler engine(rocket, motor);
 
     CpuState cpu;
