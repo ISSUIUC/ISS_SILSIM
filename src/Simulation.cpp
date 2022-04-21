@@ -72,7 +72,7 @@ void Simulation::run(int steps) {
         Vector3d r_ddot = rocket_.enu2r(rocket_.get_r_ddot());
         Vector3d f_net = rocket_.enu2r(rocket_.get_f_net());
         Vector3d w_net = rocket_.enu2r(rocket_.get_w_vect());
-        Vector3d t_net = rocket_.enu2r(rocket_.get_t_net());
+        Vector3d m_net = rocket_.enu2r(rocket_.get_m_net());
 
         double s = q_ornt.w();
         double x = q_ornt.x();
@@ -100,8 +100,8 @@ void Simulation::run(int steps) {
                        f_net.z());
         sim_log->debug("Rocket Frame W-Net: <{}, {}, {}>", w_net.x(), w_net.y(),
                        w_net.z());
-        sim_log->debug("Rocket Frame T-Net: <{}, {}, {}>", t_net.x(), t_net.y(),
-                       t_net.z());
+        sim_log->debug("Rocket Frame T-Net: <{}, {}, {}>", m_net.x(), m_net.y(),
+                       m_net.z());
         sim_log->debug("ROLL: {} PITCH: {} YAW: {}  [deg]", roll, pitch, yaw);
         sim_log->debug("alphaSIM: {}  [deg]", alpha * RAD2DEG);
 

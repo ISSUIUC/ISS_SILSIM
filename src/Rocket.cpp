@@ -78,7 +78,6 @@ Vector3d Rocket::enu2r(Vector3d vector) {
 Vector3d Rocket::r2enu(Vector3d vector) {
     Quaterniond p{0, vector.x(), vector.y(), vector.z()};
     p = (q_ornt_ * p) * q_ornt_.conjugate();
-
     return p.vec();
 }
 
