@@ -31,6 +31,138 @@ ForwardEuler::ForwardEuler(Rocket& rocket, RocketMotor& motor)
         spdlog::basic_logger_mt("Euler_Logger", "logs/forward_euler.log");
 }
 
+/*****************************************************************************/
+/*                         PHYSICS ENGINE FUNCTIONS                          */
+/*****************************************************************************/
+
+/**
+ * @brief Calculates the net force and net moment acting on the rocket in the
+ * rocket body frame
+ *
+ * @param tStamp Current time stamp in the simulation
+ * @param pos_enu Rocket's current position in the ENU frame
+ * @param vel_enu Rocket's current velocity in the ENU frame
+ * @return Vector3d,Vector3d The net force and net moment vectors acting on the
+ * rocket in the Rocket body frame
+ */
+std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
+    double tStamp, Vector3d pos_enu, Vector3d vel_enu) {
+    // {variable}_rf = rocket frame (stuck to rocket)
+    // {variable}_enu = ENU frame (stuck to earth)
+
+    /*************** Retrieve Instantaneous Rocket Parameters *****************/
+
+    Vector3d thrust_rf = motor_.get_thrust_vector(tStamp);
+    Vector3d cp_vect_rf = rocket_.get_cp_vect();
+
+    double total_mass = rocket_.get_total_mass();
+    double area = rocket_.get_reference_area();
+    double CN = rocket_.get_total_normal_force_coeff();
+    double CA = rocket_.get_total_axial_force_coeff();
+
+    // enu2r pulls a quaternion from the rocket, be sure to set orientation
+    // beforehand
+    Vector3d vel_rf = rocket_.enu2r(vel_enu);
+    double velocity_magnitude = vel_rf.squaredNorm();
+
+    Vector3d geod = rocket_.ecef2geod(rocket_.position_enu2ecef(pos_enu));
+
+    double altitude = Atmosphere::get_density(geod.z());
+
+    /************************* Calculate Net Force ****************************/
+    Vector3d aero_force_rf;
+
+    if (vel_enu.norm() > 0.01) {
+        Vector3d normal_force_rf;
+
+        double normal_force_mag =
+            0.5 * CN * velocity_magnitude * area * altitude;
+        normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
+
+        normal_force_rf.normalize();
+        normal_force_rf = normal_force_rf * normal_force_mag;
+
+        double axial_force_mag =
+            0.5 * CA * velocity_magnitude * area * altitude;
+        Vector3d axial_force_rf{0, 0,
+                                std::copysign(axial_force_mag, -vel_rf.z())};
+
+        aero_force_rf = normal_force_rf + axial_force_rf;
+    } else {
+        aero_force_rf = {0, 0, 0};
+    }
+
+    Vector3d grav_rf = rocket_.gravity_vector_rf() * 9.81 * total_mass;
+    Vector3d net_force_rf = aero_force_rf + thrust_rf + grav_rf;
+
+    /************************ Calculate Net Torque ***************************/
+    Vector3d aero_moment_rf;
+
+    if (vel_enu.norm() > 0.01) {
+        double normal_force_mag =
+            0.5 * CN * velocity_magnitude * area * altitude;
+        Vector3d normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
+        normal_force_rf.normalize();
+        normal_force_rf = normal_force_rf * normal_force_mag;
+
+        double axial_force_mag =
+            0.5 * CA * velocity_magnitude * area * altitude;
+        Vector3d axial_force_rf{0, 0,
+                                std::copysign(axial_force_mag, -vel_rf.z())};
+        Vector3d aero_force_rf = normal_force_rf + axial_force_rf;
+        aero_moment_rf = cp_vect_rf.cross(aero_force_rf);
+
+    } else {
+        aero_moment_rf = {0, 0, 0};
+    }
+
+    Vector3d net_moment_rf = aero_moment_rf;
+
+    return {net_force_rf, net_moment_rf};
+}
+
+/**
+ * @brief Updates the orientation quaternion of the rocket from an angular
+ * velocity vector
+ *
+ * Method creates a rotation quaternion that represents the total rotation the
+ * rocket will undergo throughout the particular timestep using the axis-angle
+ * method. It then applies this rotation to the current orientation quaterion by
+ * left-multiplying it.
+ *
+ * @param q_ornt    The current orientation quaternion
+ * @param omega_enu  The angular velocity vector in ENU frame
+ * @param tStep     Simulation time step size
+ *
+ * @return Quaterniond Updated quaterion with the applied rotation
+ */
+Quaterniond PhysicsEngine::update_quaternion(Quaterniond q_ornt,
+                                             Vector3d omega_enu,
+                                             double tStep) const {
+    // Calculate half-angle traveled during this timestep
+    double half_angle = 0.5 * omega_enu.norm() * tStep;
+
+    // Normalize the axis of rotation before using in axis-angle method
+    omega_enu.normalize();
+
+    // Assemble quaternion using axis-angle representation
+    Quaterniond q_rotation{cos(half_angle), sin(half_angle) * omega_enu.x(),
+                           sin(half_angle) * omega_enu.y(),
+                           sin(half_angle) * omega_enu.z()};
+
+    // Apply the rotation to the rocket's orientation quaternion
+    q_ornt = q_rotation * q_ornt;
+
+    // Orientation quaternions must always stay at unit norm
+    q_ornt.normalize();
+
+    return q_ornt;
+}
+
+/*****************************************************************************/
+/*                         FORWARD EULER FUNCTIONS                           */
+/*****************************************************************************/
+
 /**
  * @brief Calculates forces and moments and integrates with a simple euler step
  *
@@ -46,124 +178,60 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     /*************** Retrieve instantaneous rocket parameters *****************/
 
     // ENU frame dynamics parameters
-    Vector3d r_vect_enu = rocket_.get_r_vect();  // position
-    Vector3d r_dot_enu = rocket_.get_r_dot();    // velocity
-    Vector3d r_ddot_enu = rocket_.get_r_ddot();  // acceleration
-    Vector3d w_vect_enu = rocket_.get_w_vect();  // angular velocity (omega)
-    Vector3d w_dot_enu = rocket_.get_w_dot();    // angular acceleration
-    Vector3d f_net_enu = rocket_.get_f_net();    // net force (Newtons)
-    Vector3d m_net_enu = rocket_.get_m_net();    // net moment (Newtons*meters)
-
-    // Get the Geodetic coordinates of the rocket
-    Vector3d geod = rocket_.ecef2geod(rocket_.position_enu2ecef(r_vect_enu));
+    Vector3d pos_enu = rocket_.get_r_vect();       // position
+    Vector3d vel_enu = rocket_.get_r_dot();        // velocity
+    Vector3d accel_enu = rocket_.get_r_ddot();     // acceleration
+    Vector3d ang_vel_enu = rocket_.get_w_vect();   // angular velocity (omega)
+    Vector3d ang_accel_enu = rocket_.get_w_dot();  // angular acceleration
 
     // Quaternion from ENU to rocket frame
     Quaterniond q_ornt = rocket_.get_q_ornt();
 
-    // CG to Cp vector
-    Vector3d cp_vect_rf =
-        rocket_.get_cp_vect();  // CG to Cp (center of pressure) vector
-
     // Aerodynamic and Inertial parameters
     std::array<double, 9> I_tens = rocket_.get_I();  // moment of inertia
     double total_mass = rocket_.get_total_mass();    // total mass of rocket
-    double A_ref = rocket_.get_reference_area();     // ref area in m^2
-    double CN =
-        rocket_.get_total_normal_force_coeff();  // normal force coefficient
-    double CA =
-        rocket_.get_total_axial_force_coeff();  // axial force coefficient
     double alpha = rocket_.get_alpha();
     double mach = rocket_.get_mach();
 
-    // Motor thrust vector, rocket frame
-    Vector3d thrust_rf = motor_.get_thrust_vector(tStamp);
+    std::pair<Vector3d, Vector3d> force_and_moment =
+        calc_forces_and_moments(tStamp, pos_enu, vel_enu);
+    Vector3d net_force_rf = force_and_moment.first;
+    Vector3d net_moment_rf = force_and_moment.second;
 
-    /********************* Calculate forces and moments ***********************/
-    Vector3d f_aero_rf;   // Aerodynamic forces, rocket frame
-    Vector3d t_aero_rf;   // Aerodynamic moments, rocket frame
-    Vector3d f_aero_enu;  // Aerodynamic forces, ENU frame
-    Vector3d t_aero_enu;  // Aerodynamic moments, ENU frame
-
-    Vector3d f_net_rf;  // net force
-    Vector3d m_net_rf;  // net moment
-
-    // Set aerodynamic forces and moments to zero if velocity is small. This
-    // avoids calculations returning NaN values.
-    if (r_dot_enu.norm() > 0.01) {
-        Vector3d v_rf = rocket_.enu2r(r_dot_enu);
-        Vector3d f_N_rf;  // normal aerodynamic force
-
-        double f_N_mag = CN * 0.5 * Atmosphere::get_density(geod.z()) *
-                         v_rf.squaredNorm() *
-                         A_ref;  // norm of normal force (assuming constant
-                                 // 0.5 is a coefficient in the equation
-
-        f_N_rf.x() = (-v_rf.x());
-        f_N_rf.y() = (-v_rf.y());
-        f_N_rf.z() = 0;
-
-        f_N_rf.normalize();
-        f_N_rf = f_N_rf * f_N_mag;
-
-        double f_A_mag = CA * 0.5 * Atmosphere::get_density(geod.z()) *
-                         v_rf.squaredNorm() * A_ref;
-        // make axial force apply in the opposite direction to rocket travel
-        Vector3d f_A_rf(0, 0, std::copysign(f_A_mag, -v_rf.z()));
-
-        f_aero_rf = f_N_rf + f_A_rf;
-        t_aero_rf = cp_vect_rf.cross(f_aero_rf);
-
-    } else {
-        f_aero_rf.x() = 0;
-        f_aero_rf.y() = 0;
-        f_aero_rf.z() = 0;
-
-        t_aero_rf.x() = 0;
-        t_aero_rf.y() = 0;
-        t_aero_rf.z() = 0;
-    }
-
-    Vector3d grav_rf = rocket_.gravity_vector_rf() * 9.81 * total_mass;
-
-    f_net_enu = rocket_.r2enu(f_aero_rf + thrust_rf + grav_rf);
-
-    m_net_rf = t_aero_rf;
-    m_net_enu = rocket_.r2enu(t_aero_rf);
+    Vector3d net_force_enu = rocket_.r2enu(net_force_rf);
+    Vector3d net_moment_enu = rocket_.r2enu(net_moment_rf);
 
     /************************** Perform euler step ****************************/
 
-    r_vect_enu += r_dot_enu * tStep;
-    r_dot_enu += r_ddot_enu * tStep;
-    r_ddot_enu = f_net_enu / total_mass;
+    pos_enu += vel_enu * tStep;
+    vel_enu += accel_enu * tStep;
+    accel_enu = net_force_enu / total_mass;
 
-    q_ornt = update_quaternion(q_ornt, w_vect_enu, tStep);
+    q_ornt = update_quaternion(q_ornt, ang_vel_enu, tStep);
 
-    w_vect_enu += w_dot_enu * tStep;
+    ang_vel_enu += ang_accel_enu * tStep;
 
-    Vector3d w_dot_rf{m_net_rf.x() / I_tens[0], m_net_rf.y() / I_tens[4],
-                      m_net_rf.z() / I_tens[8]};
+    Vector3d ang_accel_rf{net_moment_rf.x() / I_tens[0],
+                          net_moment_rf.y() / I_tens[4],
+                          net_moment_rf.z() / I_tens[8]};
 
-    w_dot_enu = rocket_.r2enu(w_dot_rf);
+    ang_accel_enu = rocket_.r2enu(ang_accel_rf);
 
     // Naively accounting for launch rail
-    if (r_vect_enu.norm() < (17 * kFeetToMeters)) {
-        w_dot_enu.x() = 0;
-        w_dot_enu.y() = 0;
-        w_dot_enu.z() = 0;
-        w_vect_enu.x() = 0;
-        w_vect_enu.y() = 0;
-        w_vect_enu.z() = 0;
+    if (pos_enu.norm() < (17 * kFeetToMeters)) {
+        ang_accel_enu = {0, 0, 0};
+        ang_vel_enu = {0, 0, 0};
     }
 
     // Do not calculate rocket's angle-of-attack and mach number if velocity is
     // small to avoid NaN values
-    if (r_dot_enu.norm() > 0.01) {
-        Vector3d v_rf = rocket_.enu2r(r_dot_enu);
+    if (vel_enu.norm() > 0.01) {
+        Vector3d v_rf = rocket_.enu2r(vel_enu);
         alpha = acos(v_rf.z() / v_rf.norm());
-        mach =
-            r_dot_enu.norm() / Atmosphere::get_speed_of_sound(r_vect_enu.z());
+        mach = vel_enu.norm() / Atmosphere::get_speed_of_sound(pos_enu.z());
     }
 
+    /*
     euler_logger->debug("Timestamp {}", tStamp);
     euler_logger->debug("thrust_rf = <{}, {}, {}>", thrust_rf.x(),
                         thrust_rf.y(), thrust_rf.z());
@@ -179,18 +247,23 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
                         r_dot_enu.y(), r_dot_enu.z());
     euler_logger->debug("r_ddot_enu = <{}, {}, {}>", r_ddot_enu.x(),
                         r_ddot_enu.y(), r_ddot_enu.z());
+    */
 
     rocket_.set_alpha(alpha);
     rocket_.set_mach(mach);
-    rocket_.set_r_vect(r_vect_enu);
-    rocket_.set_r_dot(r_dot_enu);
-    rocket_.set_r_ddot(r_ddot_enu);
-    rocket_.set_w_vect(w_vect_enu);
-    rocket_.set_w_dot(w_dot_enu);
-    rocket_.set_f_net(f_net_enu);
-    rocket_.set_m_net(m_net_enu);
+    rocket_.set_r_vect(pos_enu);
+    rocket_.set_r_dot(vel_enu);
+    rocket_.set_r_ddot(accel_enu);
+    rocket_.set_w_vect(ang_vel_enu);
+    rocket_.set_w_dot(ang_accel_enu);
+    rocket_.set_f_net(net_force_enu);
+    rocket_.set_m_net(net_moment_enu);
     rocket_.set_q_ornt(q_ornt);
 }
+
+/*****************************************************************************/
+/*                          RUNGE KUTTA FUNCTIONS                            */
+/*****************************************************************************/
 
 /**
  * @brief Performs a fourth-order Runge Kutta method to advance the physics
@@ -257,10 +330,12 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     pos_enu += tStep * vel_avg;
     vel_enu += tStep * accel_avg;
 
-    Vector3d net_force_rf = calc_net_force(tStamp, pos_enu, vel_avg);
-    Vector3d net_force_enu = rocket_.r2enu(net_force_rf);
+    std::pair<Vector3d, Vector3d> force_and_moment =
+        calc_forces_and_moments(tStamp, pos_enu, vel_enu);
+    Vector3d net_force_rf = force_and_moment.first;
+    Vector3d net_moment_rf = force_and_moment.second;
 
-    Vector3d net_moment_rf = calc_net_moment(pos_enu, vel_avg);
+    Vector3d net_force_enu = rocket_.r2enu(net_force_rf);
     Vector3d net_moment_enu = rocket_.r2enu(net_moment_rf);
 
     accel_enu = net_force_enu / total_mass;
@@ -271,7 +346,6 @@ void RungeKutta::march_step(double tStamp, double tStep) {
                           net_moment_rf.y() / inertia[4],
                           net_moment_rf.z() / inertia[8]};
     ang_accel_enu = rocket_.r2enu(ang_accel_rf);
-    ;
 
     orient = update_quaternion(orient, ang_vel_avg, tStep);
 
@@ -308,117 +382,6 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 }
 
 /**
- * @brief Takes in time and velocity to calculate net force in the Rocket body
- * frame
- *
- * @param tStamp Current time stamp in the simulation
- * @param pos_enu Rocket's current position in the ENU frame
- * @param vel_enu Rocket's current velocity in the ENU frame
- * @return Vector3d The net force vector acting on the rocket in the Rocket body
- * frame
- */
-Vector3d RungeKutta::calc_net_force(double tStamp, Vector3d pos_enu,
-                                    Vector3d vel_enu) {
-    // {variable}_rf = rocket frame (stuck to rocket)
-    // {variable}_enu = ENU frame (stuck to earth)
-
-    /*************** Retrieve Instantaneous Rocket Parameters *****************/
-
-    Vector3d thrust_rf = motor_.get_thrust_vector(tStamp);
-
-    double total_mass = rocket_.get_total_mass();
-    double area = rocket_.get_reference_area();
-    double CN =
-        rocket_.get_total_normal_force_coeff();  // normal force coefficient
-    double CA = rocket_.get_total_axial_force_coeff();
-
-    Vector3d geod = rocket_.ecef2geod(rocket_.position_enu2ecef(pos_enu));
-
-    /************************* Calculate Net Force ****************************/
-
-    Vector3d aero_force_rf;
-
-    if (vel_enu.norm() > 0.01) {
-        // i2r pulls a quaternion from the rocket, be sure to set orientation
-        // beforehand
-        Vector3d vel_rf = rocket_.enu2r(vel_enu);
-        Vector3d normal_force_rf;
-
-        double normal_force_mag = 0.5 * CN * vel_rf.squaredNorm() * area *
-                                  Atmosphere::get_density(geod.z());
-        normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
-
-        normal_force_rf.normalize();
-        normal_force_rf = normal_force_rf * normal_force_mag;
-
-        double axial_force_mag = 0.5 * CA * vel_rf.squaredNorm() * area *
-                                 Atmosphere::get_density(geod.z());
-        Vector3d axial_force_rf{0, 0,
-                                std::copysign(axial_force_mag, -vel_rf.z())};
-
-        aero_force_rf = normal_force_rf + axial_force_rf;
-    } else {
-        aero_force_rf = {0, 0, 0};
-    }
-
-    Vector3d grav_rf = rocket_.gravity_vector_rf() * 9.81 * total_mass;
-
-    Vector3d net_force_rf = aero_force_rf + thrust_rf + grav_rf;
-
-    return net_force_rf;
-}
-
-/**
- * @brief Takes in time and angular velocity to calculate net moment in the
- * Rocket body frame
- *
- * @param pos_enu Rocket's current position in the ENU frame
- * @param vel_enu Rocket's current velocity in the ENU frame
- * @return Vector3d The net moment vector acting on the rocket in the Rocket
- * body frame
- */
-Vector3d RungeKutta::calc_net_moment(Vector3d pos_enu, Vector3d vel_enu) {
-    /*************** Retrieve Instantaneous Rocket Parameters *****************/
-
-    Vector3d cp_vect_rf = rocket_.get_cp_vect();
-
-    double area = rocket_.get_reference_area();
-    double CN =
-        rocket_.get_total_normal_force_coeff();  // normal force coefficient
-    double CA = rocket_.get_total_axial_force_coeff();
-
-    Vector3d geod = rocket_.ecef2geod(rocket_.position_enu2ecef(pos_enu));
-
-    /************************ Calculate Net Torque ***************************/
-    Vector3d aero_moment_rf;
-
-    if (vel_enu.norm() > 0.01) {
-        Vector3d vel_rf = rocket_.enu2r(vel_enu);
-
-        double normal_force_mag = 0.5 * CN * vel_rf.squaredNorm() * area *
-                                  Atmosphere::get_density(geod.z());
-        Vector3d normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
-
-        normal_force_rf.normalize();
-        normal_force_rf = normal_force_rf * normal_force_mag;
-
-        double axial_force_mag = 0.5 * CA * vel_rf.squaredNorm() * area *
-                                 Atmosphere::get_density(geod.z());
-        Vector3d axial_force_rf{0, 0,
-                                std::copysign(axial_force_mag, -vel_rf.z())};
-
-        Vector3d aero_force_rf = normal_force_rf + axial_force_rf;
-        aero_moment_rf = cp_vect_rf.cross(aero_force_rf);
-    } else {
-        aero_moment_rf = {0, 0, 0};
-    }
-
-    Vector3d net_moment_rf = aero_moment_rf;
-
-    return net_moment_rf;
-}
-
-/**
  * @brief Calculates a possible rocket state based on the initial and inputed
  * state
  *
@@ -445,60 +408,26 @@ RungeKutta::RungeKuttaState RungeKutta::calc_state(double tStamp, double tStep,
     Quaterniond orient = update_quaternion(orient_true, k.ang_vel, tStep);
     rocket_.set_q_ornt(orient);  // sets the orientation to the current state in
                                  // order to calculate net forces
+
+    std::pair<Vector3d, Vector3d> force_and_moment =
+        calc_forces_and_moments(tStamp, k.pos, k.vel);
+    Vector3d net_force_rf = force_and_moment.first;
+    Vector3d net_moment_rf = force_and_moment.second;
+    Vector3d net_force_enu = rocket_.r2enu(net_force_rf);
+
     // Euler Step: y = x + (dx * t)
     // x = initial state of the rocket
     // dx = taken from state k
     Vector3d pos_k = pos_initial + k.vel * tStep;
     Vector3d vel_k = vel_initial + k.accel * tStep;
-    Vector3d accel_k =
-        calc_net_force(tStamp, k.pos, k.vel) / rocket_.get_total_mass();
+    Vector3d accel_k = net_force_enu / rocket_.get_total_mass();
     Vector3d ang_vel_k = ang_vel_initial + (k.ang_accel * tStep);
-    Vector3d net_moment_new = calc_net_moment(k.vel, k.pos);
-    Vector3d ang_accel_k;
-    ang_accel_k.x() = net_moment_new.x() / inertia[0];
-    ang_accel_k.y() = net_moment_new.y() / inertia[4];
-    ang_accel_k.z() = net_moment_new.z() / inertia[8];
+    Vector3d ang_accel_k{net_moment_rf.x() / inertia[0],
+                         net_moment_rf.y() / inertia[4],
+                         net_moment_rf.z() / inertia[8]};
 
     rocket_.set_q_ornt(orient_true);  // resets the orientation to the initial
 
     // Set the values of the State structure
     return {pos_k, vel_k, accel_k, ang_vel_k, ang_accel_k};
-}
-
-/**
- * @brief Updates the orientation quaternion of the rocket from an angular
- * velocity vector
- *
- * Method creates a rotation quaternion that represents the total rotation the
- * rocket will undergo throughout the particular timestep using the axis-angle
- * method. It then applies this rotation to the current orientation quaterion by
- * left-multiplying it.
- *
- * @param q_ornt    The current orientation quaternion
- * @param omega_enu  The angular velocity vector in ENU frame
- * @param tStep     Simulation time step size
- *
- * @return Quaterniond Updated quaterion with the applied rotation
- */
-Quaterniond PhysicsEngine::update_quaternion(Quaterniond q_ornt,
-                                             Vector3d omega_enu,
-                                             double tStep) const {
-    // Calculate half-angle traveled during this timestep
-    double half_angle = 0.5 * omega_enu.norm() * tStep;
-
-    // Normalize the axis of rotation before using in axis-angle method
-    omega_enu.normalize();
-
-    // Assemble quaternion using axis-angle representation
-    Quaterniond q_rotation{cos(half_angle), sin(half_angle) * omega_enu.x(),
-                           sin(half_angle) * omega_enu.y(),
-                           sin(half_angle) * omega_enu.z()};
-
-    // Apply the rotation to the rocket's orientation quaternion
-    q_ornt = q_rotation * q_ornt;
-
-    // Orientation quaternions must always stay at unit norm
-    q_ornt.normalize();
-
-    return q_ornt;
 }
