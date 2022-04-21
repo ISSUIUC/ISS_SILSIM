@@ -53,7 +53,7 @@ class Rocket {
     Vector3d get_w_dot() const { return w_dot_; };
 
     Vector3d get_f_net() const { return f_net_; };
-    Vector3d get_t_net() const { return t_net_; };
+    Vector3d get_m_net() const { return m_net_; };
 
     double get_structural_mass() const { return structural_mass_; };
     double get_total_mass() const { return total_mass_; };
@@ -90,7 +90,7 @@ class Rocket {
     void set_w_dot(Vector3d vector) { w_dot_ = vector; };
 
     void set_f_net(Vector3d vector) { f_net_ = vector; };
-    void set_t_net(Vector3d vector) { t_net_ = vector; };
+    void set_m_net(Vector3d vector) { m_net_ = vector; };
 
     void set_structural_mass(double mass) { structural_mass_ = mass; };
     void set_total_mass(double mass) { total_mass_ = mass; };
@@ -147,7 +147,7 @@ class Rocket {
 
     // The following are in ENU frame
     Vector3d f_net_{0, 0, 0};  // net force in Netwons
-    Vector3d t_net_{0, 0, 0};  // net torque in Newton*meters
+    Vector3d m_net_{0, 0, 0};  // net moment in Newton*meters
 
     Quaterniond q_ornt_{};  // ENU -> rocket frame quaternion
 
