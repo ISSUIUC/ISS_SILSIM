@@ -25,7 +25,7 @@ class KalmanFilter {
     mutex_t* mutex_highG_;
     mutex_t* dataMutex_barometer_;
     mutex_t* dataMutex_state_;
-    struct stateData* stateData_;
+    struct StateData* stateData_;
     float* b_alt;
     float* gz_L;
     float* gz_H;

@@ -128,7 +128,6 @@ class Rocket {
     // Converts arbitrary vector to/from ENU frame and ECEF frame
     Vector3d enu2ecef(Vector3d vector);
     Vector3d ecef2enu(Vector3d vector);
->>>>>>> master
 
     // Converts rocket position  vector from ECEF frame to Geodetic coordinates
     Vector3d ecef2geod(Vector3d ecef);

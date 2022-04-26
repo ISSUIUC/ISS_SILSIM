@@ -70,7 +70,7 @@ struct BarometerData {
  * @brief Structure for all values tracked for state estimation
  *
  */
-struct stateData {
+struct StateData {
     float state_q0 = 0;
     float state_q1 = 0;
     float state_q2 = 0;
@@ -131,7 +131,7 @@ struct sensorDataStruct_t {
 
     // State variables
     bool has_state_data;
-    stateData state_data;
+    StateData state_data;
 
     // Rocket State
     bool has_rocketState_data;
@@ -153,7 +153,7 @@ struct DataLogBuffer {
     FifoBuffer<LowGData, FIFO_SIZE> lowGFifo{};
     FifoBuffer<HighGData, FIFO_SIZE> highGFifo{};
     FifoBuffer<GpsData, FIFO_SIZE> gpsFifo{};
-    FifoBuffer<stateData, FIFO_SIZE> stateFifo{};
+    FifoBuffer<StateData, FIFO_SIZE> stateFifo{};
     FifoBuffer<rocketStateData, FIFO_SIZE> rocketStateFifo{};
     FifoBuffer<BarometerData, FIFO_SIZE> barometerFifo{};
 
@@ -180,7 +180,7 @@ struct pointers {
 
     DataLogBuffer dataloggerTHDVarsPointer;
 
-    stateData stateData;
+    StateData stateData;
 };
 
 void dataLoggerTickFunction(pointers*);
