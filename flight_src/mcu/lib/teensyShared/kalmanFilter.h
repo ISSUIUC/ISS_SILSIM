@@ -19,7 +19,7 @@ class KalmanFilter {
 
     // private:
 
-    float s_dt = 0.001;
+    float s_dt = 0.006;
 
     mutex_t* mutex_lowG_;
     mutex_t* mutex_highG_;

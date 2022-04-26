@@ -114,6 +114,15 @@ void KalmanFilter::update() {
     x_k = x_priori + K * (y_k - (H * x_priori));
     P_k = (identity - K*H) * P_priori;
 
+    // check overflow on Kalman gain
+    for(int i = 0; i < 3; i++) {
+        for(int j = 0; j < 3; j++) {
+            if(P_k(i,j) > 1000000) {
+                P_k(i, j) = 1000000;
+            }
+        }
+    }
+
     chMtxLock(dataMutex_state_);
     stateData_->state_x = x_k(0,0);
     stateData_->state_vx = x_k(1,0);
