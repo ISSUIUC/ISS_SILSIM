@@ -7,6 +7,8 @@ set(EIGEN_BUILD_DOC OFF)
 set(LIB ${CMAKE_SOURCE_DIR}/lib)
 
 add_subdirectory(${LIB}/spdlog)
+add_subdirectory(${LIB}/eigen)
+add_subdirectory(${LIB}/rapidcsv)
 
 add_subdirectory(flight_src/mcu)
 
@@ -19,7 +21,11 @@ add_executable(ISS_SILSIM src/main.cpp
         src/Sensor.cpp
         src/Simulation.cpp
         src/Atmosphere.cpp
-        src/CpuStateContext.cpp)
+        src/CpuStateContext.cpp
+        src/RASAeroImport.cpp
+        )
+
+target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog Eigen3::Eigen rapidcsv)
 
 
 #set highest warning levels

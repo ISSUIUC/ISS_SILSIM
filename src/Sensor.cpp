@@ -56,7 +56,7 @@ Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
 
 void Gyroscope::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
-        data_ = rocket_.i2r(rocket_.get_w_vect());
+        data_ = rocket_.enu2r(rocket_.get_w_vect());
         new_data_ = true;
 
         if (inject_noise_) {
@@ -86,8 +86,13 @@ Accelerometer::Accelerometer(std::string name, Rocket& rocket,
 #include<iostream>
 void Accelerometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
-        data_ = rocket_.i2r(rocket_.get_r_ddot());
-        data_.z() += 9.81;
+        // Subtract the gravity vector from the rocket's total acceleration to
+        // yield specific force
+        Vector3d total_accel = rocket_.enu2r(rocket_.get_r_ddot());
+        Vector3d gravity_rocket_frame = rocket_.gravity_vector_rf() * 9.81;
+        Vector3d specific_force = total_accel - gravity_rocket_frame;
+
+        data_ = specific_force;
         new_data_ = true;
 
         if (inject_noise_) {
