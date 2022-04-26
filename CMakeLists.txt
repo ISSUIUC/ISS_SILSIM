@@ -7,7 +7,7 @@ set(EIGEN_BUILD_DOC OFF)
 set(LIB ${CMAKE_SOURCE_DIR}/lib)
 
 add_subdirectory(${LIB}/spdlog)
-add_subdirectory(${LIB}/eigen)
+#add_subdirectory(${LIB}/eigen)
 add_subdirectory(${LIB}/rapidcsv)
 
 add_subdirectory(flight_src/mcu)
@@ -25,9 +25,6 @@ add_executable(ISS_SILSIM src/main.cpp
         src/RASAeroImport.cpp
         )
 
-target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog Eigen3::Eigen rapidcsv)
-
-
 #set highest warning levels
 if(MSVC)
     target_compile_options(ISS_SILSIM PRIVATE /W3)
@@ -36,5 +33,5 @@ else()
     target_compile_options(ISS_SILSIM PRIVATE -Wall -Wextra -Wpedantic -Wno-unknown-pragmas)
 endif()
 
-target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog flight_emu)
+target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog rapidcsv flight_emu)
 target_include_directories(ISS_SILSIM PUBLIC ${CMAKE_SOURCE_DIR}/includes/)
