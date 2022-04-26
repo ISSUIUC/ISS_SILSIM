@@ -10,3 +10,6 @@
 [submodule "lib/rapidcsv"]
 	path = lib/rapidcsv
 	url = https://github.com/d99kris/rapidcsv.git
+[submodule "flight_src/mcu/lib/spdlog"]
+	path = flight_src/mcu/lib/spdlog
+	url = https://github.com/gabime/spdlog

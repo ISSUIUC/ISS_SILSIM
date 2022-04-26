@@ -6,7 +6,7 @@ set(EIGEN_BUILD_DOC OFF)
 
 set(LIB ${CMAKE_SOURCE_DIR}/lib)
 
-add_subdirectory(${LIB}/spdlog)
+#add_subdirectory(${LIB}/spdlog)
 #add_subdirectory(${LIB}/eigen)
 add_subdirectory(${LIB}/rapidcsv)
 
@@ -33,5 +33,5 @@ else()
     target_compile_options(ISS_SILSIM PRIVATE -Wall -Wextra -Wpedantic -Wno-unknown-pragmas)
 endif()
 
-target_link_libraries(ISS_SILSIM PRIVATE spdlog::spdlog rapidcsv flight_emu)
+target_link_libraries(ISS_SILSIM PRIVATE rapidcsv flight_emu)
 target_include_directories(ISS_SILSIM PUBLIC ${CMAKE_SOURCE_DIR}/includes/)
