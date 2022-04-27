@@ -77,7 +77,11 @@ Download dependencies
 
 In visual studio choose "Open a local folder" and open the cloned repo
 
-After visual studio finishes loading the project go to "Select Startup Item" in the top center of the screen and select "ISS_SILSIM.exe" from the dropdown
+After visual studio finishes loading the project go to "Select Startup Item" in the top center of the screen and select the dropdown arrow.
+
+In the submenu select show/hide debug targets, deselect all and turn just ISS_SILSIM.exe on from the list, the list may be very long
+
+Close that menu and open the select startup dropdown again, now ISS_SILSIM.exe should appear as a target, select it.
 
 By default visual studio will run the program in out/build/<build-type>. To make silsim run in the correct directory go to "Debug" > "Debug and launch settings for ISS_SILSIM".
 
