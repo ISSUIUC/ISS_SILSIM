@@ -108,7 +108,7 @@ void KalmanFilter::update() {
 
     // Sensor Measurements
     chMtxLock(mutex_highG_);
-    y_k(1,0) = (*gz_H) * 9.82;
+    y_k(1,0) = (*gz_H) * 9.81;
     // Serial.println("HIGH G ACCEL Z: ");
     // Serial.println(std::to_string((*gz_H)*9.81).c_str());
     chMtxUnlock(mutex_highG_);
