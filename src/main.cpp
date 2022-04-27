@@ -52,12 +52,12 @@ int main() {
                            sin(angle / 2.0) * 0.707, 0};
     rocket.set_q_ornt(start_ornt);
 
-    rocket.set_r_dot(Eigen::Vector3d{0, 0, 958.75});
-    rocket.set_r_vect(Eigen::Vector3d{0, 0, 362.47128485035});
+    // rocket.set_r_dot(Eigen::Vector3d{0, 0, 958.75});
+    // rocket.set_r_vect(Eigen::Vector3d{0, 0, 362.47128485035});
 
     // Construct some sensors
     Accelerometer accelerometer("LSM9_accel", rocket, 100);
-    accelerometer.enable_noise_injection();
+    // accelerometer.enable_noise_injection();
     Gyroscope gyroscope("LSM9_gyro", rocket, 100);
     Thermometer thermometer("MS5611_thermometer", rocket, 100);
     Barometer barometer("MS5611_barometer", rocket, 100);

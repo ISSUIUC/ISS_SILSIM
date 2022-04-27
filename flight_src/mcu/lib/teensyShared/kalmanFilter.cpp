@@ -1,6 +1,12 @@
+
 #include "kalmanFilter.h"
+
 #define EIGEN_MATRIX_PLUGIN "MatrixAddons.h"
+
 #include <iostream>
+
+#include "GlobalVars.h"
+
 KalmanFilter::KalmanFilter(struct pointers* pointer_struct) {
     gz_L = &pointer_struct->sensorDataPointer->lowG_data.gz;
     gz_H = &pointer_struct->sensorDataPointer->highG_data.hg_az;
@@ -97,12 +103,14 @@ void KalmanFilter::priori() {
 
 void KalmanFilter::update() {
     // Update Kalman Gain
-    temp = (((H * P_priori * H.transpose()) + R).array().inverse());
+    temp = (((H * P_priori * H.transpose()) + R).inverse());
     K = (P_priori * H.transpose()) * temp;
 
     // Sensor Measurements
     chMtxLock(mutex_highG_);
-    y_k(1,0) = (*gz_H);
+    y_k(1,0) = (*gz_H) * 9.82;
+    // Serial.println("HIGH G ACCEL Z: ");
+    // Serial.println(std::to_string((*gz_H)*9.81).c_str());
     chMtxUnlock(mutex_highG_);
 
     chMtxLock(dataMutex_barometer_);
@@ -117,9 +125,8 @@ void KalmanFilter::update() {
     // check overflow on Kalman gain
     for(int i = 0; i < 3; i++) {
         for(int j = 0; j < 3; j++) {
-            if(P_k(i,j) > 1000000) {
-                P_k(i, j) = 1000000;
-            }
+            if(P_k(i,j) > 1e6) 
+                P_k(i, j) = 1e6;
         }
     }
 

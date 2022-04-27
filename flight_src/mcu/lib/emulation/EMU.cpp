@@ -70,7 +70,7 @@ void KX134::update_data() {
     Eigen::Vector3d data;
     global_context->accelerometer_pointer->get_data(data);
 
-    Eigen::Vector3d scaled = data * 2048;
+    Eigen::Vector3d scaled = (data/9.81) * 1024;
     x_accel = scaled.x();
     y_accel = scaled.y();
     z_accel = scaled.z();
@@ -82,17 +82,17 @@ int16_t KX134::get_y_accel_raw() { return y_accel; }
 int16_t KX134::get_z_accel_raw() { return z_accel; }
 float KX134::get_x_gforce() {
     int16_t decimal = get_x_accel_raw();
-    float gForce = (float)decimal / 2048;
+    float gForce = (float)decimal / 1024;
     return gForce;
 }
 float KX134::get_y_gforce() {
     int16_t decimal = get_y_accel_raw();
-    float gForce = (float)decimal / 2048;
+    float gForce = (float)decimal / 1024;
     return gForce;
 }
 float KX134::get_z_gforce() {
     int16_t decimal = get_z_accel_raw();
-    float gForce = (float)decimal / 2048;
+    float gForce = (float)decimal / 1024;
     return gForce;
 }
 float KX134::get_x_accel() {
