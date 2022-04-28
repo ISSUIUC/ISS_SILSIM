@@ -29,9 +29,9 @@ array<float, 2> rk4::rk4_step(array<float, 2> state, float dt, float rho) {
     // rk4 iteration 
     array<float, 2> y1 = accel(state, rho);
 
-    array<float, 2> u1 = {state[0] + .5*dt*y1[0], state[1] + .5*dt*y1[1]};
-    array<float, 2> u2 = {state[0] + .5*dt*y2[0], state[1] + .5*dt*y2[1]};
-    array<float, 2> u3 = {state[0] + dt*y3[0], state[1] + dt*y3[1]};
+    array<float, 2> u1 = {(float)(state[0] + .5*dt*y1[0]), (float)(state[1] + .5*dt*y1[1])};
+    array<float, 2> u2 = {(float)(state[0] + .5*dt*y2[0]), (float)(state[1] + .5*dt*y2[1])};
+    array<float, 2> u3 = {(float)(state[0] + dt*y3[0]), (float)(state[1] + dt*y3[1])};
 
     array<float, 2> y2 = accel(u1, rho);
     array<float, 2> y3 = accel(u2, rho);
