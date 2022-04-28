@@ -61,16 +61,30 @@ print(f"Apogee Altitude = {apogee} m\n\t\t= {apogee * 3.28} ft")
 max_vel = np.max(vz)
 print(f"Max Vertical Velocity\t= {max_vel} m/s\n\t\t\t= {max_vel * 3.28} ft/s\n\t\t\t= {max_vel / 343} mach")
 
+# KF plotting
+import pandas as pd
+
+kalman_df = pd.read_csv("Kalman.csv")
+kx = kalman_df["Pos"]
+kv = kalman_df["Vel"]
+ka = kalman_df["Accel"]
 
 if draw_plots:
 
     plt.figure()
     plt.plot(timestamps, rz, label="Altitude")
-    plt.plot(timestamps, vz, label="Vertical Velocity")
-    plt.plot(timestamps, az, label="Vertical Acceleration")
-    plt.plot(timestamps, roll, label="Roll")
-    plt.plot(timestamps, pitch, label="Pitch")
-    plt.plot(timestamps, yaw, label="yaw")
+    # plt.plot(timestamps, vz, label="Vertical Velocity")
+    # plt.plot(timestamps, az, label="Vertical Acceleration")
+    # plt.plot(timestamps, roll, label="Roll")
+    # plt.plot(timestamps, pitch, label="Pitch")
+    # plt.plot(timestamps, yaw, label="yaw")
+    
+    # KF Plotting
+    timestamps_kf = np.arange(0.003,(len(kalman_df)) * 0.006, 0.006)
+    plt.plot(timestamps_kf, kx, label="KF Altitude")
+    # plt.plot(timestamps_kf, kv, label="KF Velocity")
+    # plt.plot(timestamps_kf, ka, label="KF Acceleration")
+    plt.ylim(-100, 12000)
     plt.grid()
     plt.legend()
 

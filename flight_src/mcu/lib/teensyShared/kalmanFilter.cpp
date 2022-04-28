@@ -4,6 +4,8 @@
 #define EIGEN_MATRIX_PLUGIN "MatrixAddons.h"
 
 #include <iostream>
+#include <string>
+#include <fstream>
 
 #include "GlobalVars.h"
 
@@ -43,23 +45,34 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
     H(1,2) = 1;
 
     // set P_k
-    P_k(0,0) = .018;
-    P_k(0,1) = .009;
-    P_k(0,2) = .005;
-    P_k(1,1) = .009;
-    P_k(2,2) = 10.0;
-    P_k(1,2) = .0045;
+    P_k(0,0) = .058;
+    P_k(0,1) = .024;
+    P_k(0,2) = .004;
+    P_k(1,1) = .019;
+    P_k(2,2) = .0086;
+    P_k(1,2) = .007;
     P_k(2,1) = P_k(1,2);
     P_k(1,0) = P_k(0,1);
     P_k(2,0) = P_k(0,2);
     P_k(1,0) = P_k(0,1);
 
     // set Q
-    
+    Q(0,0) = pow(s_dt,5) / 20;
+    Q(0,1) = pow(s_dt,4) / 8;
+    Q(0,2) = pow(s_dt,3) / 6;
+    Q(1,1) = pow(s_dt,3) / 8;
+    Q(1,2) = pow(s_dt,2) / 2;
+    Q(2,2) = s_dt;
+    Q(1,0) = Q(0,1);
+    Q(2,0) = Q(0,2);
+    Q(2,1) = Q(1,2);
+
+    float scale_fact = 22.19;
+    Q = Q * scale_fact;
 
     // set R
-    R(0,0) = 12;
-    R(1,1) = 1.4;
+    R(0,0) = 2;
+    R(1,1) = 0.01;
 
     // set B
     B(2,0) = -1;
@@ -130,9 +143,25 @@ void KalmanFilter::update() {
         }
     }
 
+    std::cout << "STATE ESTIMATION: " << std::endl;
+    std::cout << x_k(0,0) << " m" << std::endl;
+    std::cout << x_k(1,0) << " m/s" << std::endl;
+    std::cout << x_k(2,0) << " m/s^2" << std::endl;
+
+    // if (x_k(0,0) > 9200) {
+    //     std::cout << x_k(0,0) << std::endl;
+    // }
+
     chMtxLock(dataMutex_state_);
     stateData_->state_x = x_k(0,0);
     stateData_->state_vx = x_k(1,0);
     stateData_->state_ax = x_k(2,0);
     chMtxUnlock(dataMutex_state_);
+
+    std::string str = std::to_string(x_k(0,0)) + "," + std::to_string(x_k(1,0)) + "," + std::to_string(x_k(2,0)) + '\n';
+
+    std::ofstream Kalman;
+    Kalman.open("Kalman.csv", std::ios::app);
+    Kalman << str;
+    Kalman.close();
 }
