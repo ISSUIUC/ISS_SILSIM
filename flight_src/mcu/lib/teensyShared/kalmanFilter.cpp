@@ -18,6 +18,11 @@ KalmanFilter::KalmanFilter(struct pointers* pointer_struct) {
     dataMutex_barometer_ = &pointer_struct->dataloggerTHDVarsPointer.dataMutex_barometer;
     dataMutex_state_ = &pointer_struct->dataloggerTHDVarsPointer.dataMutex_state;
     stateData_ = &pointer_struct->stateData;
+
+    std::ofstream Kalman;
+    Kalman.open("Kalman.csv");
+    Kalman << "Pos,Vel,Accel,invertboi_00,invertboi_01,invertboi_10,invertboi_11\n";
+    Kalman.close();
 }
 
 void KalmanFilter::kfTickFunction() {
@@ -158,7 +163,8 @@ void KalmanFilter::update() {
     stateData_->state_ax = x_k(2,0);
     chMtxUnlock(dataMutex_state_);
 
-    std::string str = std::to_string(x_k(0,0)) + "," + std::to_string(x_k(1,0)) + "," + std::to_string(x_k(2,0)) + '\n';
+    std::string str = std::to_string(x_k(0,0)) + "," + std::to_string(x_k(1,0)) + "," + std::to_string(x_k(2,0)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(0,0)) + 
+    "," + std::to_string(((H * P_priori * H.transpose()) + R)(0,1)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(1,0)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(1,1)) +'\n';
 
     std::ofstream Kalman;
     Kalman.open("Kalman.csv", std::ios::app);
