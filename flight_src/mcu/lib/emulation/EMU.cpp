@@ -2,6 +2,7 @@
 // Created by 16182 on 10/5/2021.
 //
 #include "../../../../includes/CpuStateContext.h"
+#include<algorithm>
 #include "Arduino.h"
 #include "ChRt.h"
 #include "KX134-1211.h"
@@ -136,7 +137,24 @@ void LSM9DS1::readAccel() {
     Eigen::Vector3d data;
     global_context->accelerometer_pointer->get_data(data);
 
+
+    double clamp_val = 0;
+    if(aRes == SENSITIVITY_ACCELEROMETER_2){
+        clamp_val = 2;
+    } else if(aRes == SENSITIVITY_ACCELEROMETER_4){
+        clamp_val = 4;
+    } else if(aRes == SENSITIVITY_ACCELEROMETER_8){
+        clamp_val = 8;
+    } else if(aRes == SENSITIVITY_ACCELEROMETER_16){
+        clamp_val = 16;
+    }
+
+    data.x() = std::clamp(data.x(), -clamp_val, clamp_val);
+    data.y() = std::clamp(data.y(), -clamp_val, clamp_val);
+    data.z() = std::clamp(data.z(), -clamp_val, clamp_val);
+
     Eigen::Vector3d scaled = data / aRes;
+
     ax = scaled.x();
     ay = scaled.y();
     az = scaled.z();
