@@ -9,9 +9,8 @@
  *
  * @param value The value determined by the control algorithm.
  */
-ServoControl::ServoControl(PWMServo* servo_cw, PWMServo* servo_ccw) {
-    servo_cw_ = servo_cw;
-    servo_ccw_ = servo_ccw;
+ServoControl::ServoControl(PWMServo* servo) {
+    servo_ = servo;
 }
 // TODO check values for max
 void ServoControl::roundOffAngle(float& value) {
@@ -32,7 +31,7 @@ void ServoControl::roundOffAngle(float& value) {
  * @param length_two The length of the flap extension for the clockwise flaps.
  *
  */
-void ServoControl::servoActuation(float length_one, float length_two) {
+void ServoControl::servoActuation(float length) {
     // These are correcting factors for finding the angle. We still need to
     // calculate what these values are. These are placeholders for now. m and
     // offset should include the radian to degree conversion.
@@ -41,15 +40,12 @@ void ServoControl::servoActuation(float length_one, float length_two) {
 
     // This is the actual conversion from the inputted length to the angles
     // desired for the servos.
-    float ccw_angle = (length_one * m + offset);
-    float cw_angle = (length_two * m + offset);
+    float angle = (length * m + offset);
 
-    roundOffAngle(cw_angle);
-    roundOffAngle(ccw_angle);
+    roundOffAngle(angle);
 
     // servo_cs rotates backwards
-    servo_cw_->write(126 - cw_angle);
-    servo_ccw_->write(ccw_angle);
+    servo_->write(126 - angle);
 
 #ifdef SERVO_DEBUG
     Serial.print("\nclockwise: ");

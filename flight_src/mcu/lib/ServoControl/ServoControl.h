@@ -12,18 +12,17 @@
 
 class ServoControl {
    public:
-    ServoControl(PWMServo* servo_cw, PWMServo* servo_ccw);
+    ServoControl(PWMServo* servo);
     // ServoControl& operator==(const ServoControl&) = default;
     /**
      * @brief actuats servos based on State Estimation.
      * runs during servo thread
      */
-    void servoActuation(float length_one, float length_two);
+    void servoActuation(float length_one);
 
    private:
     float radius = 0.0127;  // pitch radius of gear
-    PWMServo* servo_cw_;
-    PWMServo* servo_ccw_;
+    PWMServo* servo_;
 
     /**
      * @brief ensures angle written to servo is between 0 and 180

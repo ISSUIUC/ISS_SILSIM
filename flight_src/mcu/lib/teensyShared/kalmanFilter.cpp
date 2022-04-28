@@ -7,6 +7,7 @@
 #include <string>
 #include <fstream>
 
+#include <String>
 #include "GlobalVars.h"
 
 KalmanFilter::KalmanFilter(struct pointers* pointer_struct) {
@@ -157,11 +158,11 @@ void KalmanFilter::update() {
     //     std::cout << x_k(0,0) << std::endl;
     // }
 
-    chMtxLock(dataMutex_state_);
-    stateData_->state_x = x_k(0,0);
-    stateData_->state_vx = x_k(1,0);
-    stateData_->state_ax = x_k(2,0);
-    chMtxUnlock(dataMutex_state_);
+    // chMtxLock(dataMutex_state_);
+    // stateData_->state_x = x_k(0,0);
+    // stateData_->state_vx = x_k(1,0);
+    // stateData_->state_ax = x_k(2,0);
+    // chMtxUnlock(dataMutex_state_);
 
     std::string str = std::to_string(x_k(0,0)) + "," + std::to_string(x_k(1,0)) + "," + std::to_string(x_k(2,0)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(0,0)) + 
     "," + std::to_string(((H * P_priori * H.transpose()) + R)(0,1)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(1,0)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(1,1)) +'\n';

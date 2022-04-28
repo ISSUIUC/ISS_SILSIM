@@ -44,8 +44,7 @@
 
 #include "GlobalVars.h"
 #include <iostream>
-// rk4 apogee simulation
-#include "rk4.h"
+
 using std::array;
 #include<string>
 using std::string;
@@ -200,9 +199,7 @@ class Kalman_Filter_THD : public CpuThread {
 
    double loop() override {
         Kf.kfTickFunction();
-        array<float, 2> init = {Kf.x_k[0], Kf.x_k[1]};
-        //Serial.println(std::to_string(controller_sim.sim_apogee(init, 0.1)[0]).c_str());
-        // Serial.println("Predicted Alt:");
+        //Serial.println("Predicted Alt:");
         // Serial.println(std::to_string(Kf.x_k(0, 0)).c_str());
         // Serial.println("Predicted Vel:");
         // Serial.println(std::to_string(Kf.x_k(1,0)).c_str());
@@ -219,7 +216,6 @@ class Kalman_Filter_THD : public CpuThread {
    private:
     KalmanFilter Kf;
     struct pointers *pointer_struct;
-    rk4 controller_sim;
 };
 
 /******************************************************************************/
@@ -230,22 +226,22 @@ class servo_THD : public CpuThread {
     servo_THD(void *arg, uint8_t prio)
         : CpuThread(prio),
           pointer_struct((struct pointers *)arg),
-          ac(pointer_struct, &servo_cw, &servo_ccw) {}
+          ac(pointer_struct, &servo_cw) {}
 
     double loop() override {
 #ifdef THREAD_DEBUG
         Serial.println("### Servo thread entrance");
 #endif
 
-        ac.acTickFunction();
-
+        ac.ctrlTickFunction();
+        //std::cout<<ac.rk4_.sim_apogee()<<std::endl;
         return 6.0;  // FSM runs at 100 Hz
     }
 
    private:
     pointers *pointer_struct;
 
-    ActiveControl ac;
+    Controller ac;
 };
 
 /******************************************************************************/
@@ -341,7 +337,7 @@ void chSetup() {
     chThdCreateStatic(highgIMU_WA, sizeof(highgIMU_WA), NORMALPRIO,
                       highgIMU_THD, &sensor_pointers);
     chThdCreateStatic(servo_WA, sizeof(servo_WA), NORMALPRIO, servo_THD,
-                      &sensor_pointers);
+                      &sensor_pointers, &servo_cw);
     chThdCreateStatic(lowg_dataLogger_WA, sizeof(lowg_dataLogger_WA),
                       NORMALPRIO, dataLogger_THD, &sensor_pointers);
     chThdCreateStatic(mpuComm_WA, sizeof(mpuComm_WA), NORMALPRIO, mpuComm_THD,
@@ -439,7 +435,6 @@ void emu_setup() {
 
     // Servo Setup
     servo_cw.attach(SERVO_CW_PIN, 770, 2250);
-    servo_ccw.attach(SERVO_CCW_PIN, 770, 2250);
 
 
     Serial.println("Starting ChibiOS");

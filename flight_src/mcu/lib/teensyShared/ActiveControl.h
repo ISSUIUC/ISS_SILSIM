@@ -1,39 +1,23 @@
-#include "Eigen30.h"
-#include "ServoControl.h"
-#include "acShared.h"
+#include<rk4.h>
+#include <PWMServo.h>
 #include "dataLog.h"
-#include "sensors.h"
+#include "ServoControl.h"
 
-class ActiveControl {
-   public:
-    ActiveControl(struct pointers* pointer_struct, PWMServo* ccw, PWMServo* cw);
-
+class Controller {
+    public:
+    void ctrlTickFunction();
     bool ActiveControl_ON();
+    Controller(struct pointers* pointer_struct, PWMServo* twisty_boi);
 
-    // Frequency should match output of sensor ready (angular velocity)
-    // AV_X is x angular acceleration (roll) from LOWG IMU
-    void acTickFunction();
-
-   private:
-    mutex_t* mutex_lowG_;
-
-    // These matrices are solely for October launch, only roll control
-    Eigen::Matrix<float, 2, 1> k_p{0.003, -0.003};
-
-    Eigen::Matrix<float, 2, 1> k_i{.0000007, -.0000007};
-
-    Eigen::Matrix<float, 2, 1> k_d{.0000007, -.0000007};
-
-    float l1_prev = 0;
-    float l2_prev = 0;
-    float* gy;
-    float du_max = .0001;  // TODO test value
-    float dt = .006;       // seconds
-
-    // goals
-    float omega_goal = 0;
-    float e_sum = 0;
-    float e_prev = 0;
+    PWMServo* twisty_boi_;
+    mutex_t* dataMutex_state_;
+    struct StateData* stateData_;
+    rk4 rk4_;
+    float kp = 0.00008;
+    float apogee_des = 11000;
+    float dt = .006;
+    float prev_u = 0;
+    float du_max = 0.001;
     FSM_State* current_state;
     ServoControl activeControlServos;
 };
