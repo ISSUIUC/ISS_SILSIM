@@ -48,7 +48,7 @@ array<float, 2> rk4::sim_apogee(array<float, 2> state, float dt) {
     
     // Approximation - use the area of a circle for reference area
     float Sref_a = .007854;
-    
+
     while (state[1] > 0) {
         
         // Define initial flap length at start of control time
@@ -59,9 +59,8 @@ array<float, 2> rk4::sim_apogee(array<float, 2> state, float dt) {
         float vel_f = state[1];
         
         // Density varies with altitude
+        //TODO: Add varying density
         float rho = 1.225;
-        
-        
         
         // rk4 iteration 
         rk4_kp1 = rk4_step(state, dt, rho);

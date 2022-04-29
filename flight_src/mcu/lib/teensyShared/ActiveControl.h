@@ -15,6 +15,8 @@ class Controller {
     rk4 rk4_;
     float kp = 0.00008;
     float apogee_des = 11000;
+    float min_extension = 0;
+    float max_extension = 20.7264 / 1000;
     float dt = .006;
     float prev_u = 0;
     float du_max = 0.001;

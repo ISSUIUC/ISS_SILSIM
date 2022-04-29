@@ -23,6 +23,13 @@ void Controller::ctrlTickFunction() {
     u = u + ((u - prev_u)/dt)/abs((u - prev_u)/dt)*min*dt;
     prev_u = u;
 
+    //Set flap extension limits
+    if (u < min_extension) {
+        u = min_extension;
+    } else if (u > max_extension) {
+        u = max_extension;
+    }
+
     if (ActiveControl_ON()) {
         activeControlServos.servoActuation(u);
     } else {
