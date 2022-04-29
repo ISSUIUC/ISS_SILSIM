@@ -7,7 +7,7 @@
 #include <string>
 #include <fstream>
 
-#include <String>
+#include <string>
 #include "GlobalVars.h"
 
 KalmanFilter::KalmanFilter(struct pointers* pointer_struct) {

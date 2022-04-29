@@ -2,6 +2,7 @@
 #define SERVO_CPP
 
 #include "ServoControl.h"
+#include <cmath>
 
 /**
  * @brief A function to keep the value sent to the servo between 0 and 180
@@ -32,20 +33,14 @@ void ServoControl::roundOffAngle(float& value) {
  *
  */
 void ServoControl::servoActuation(float length) {
-    // These are correcting factors for finding the angle. We still need to
-    // calculate what these values are. These are placeholders for now. m and
-    // offset should include the radian to degree conversion.
-    float m = (1.0 / radius) * (180.0 / (3.1415));  // degrees / meter
-    float offset = 0;
-
-    // This is the actual conversion from the inputted length to the angles
-    // desired for the servos.
-    float angle = (length * m + offset);
+    // The angle is found through utilizing a fft and mapping extension/angle values to 
+    // a sine function
+    float angle = asin(((length - (-0.0705732))/18.07384) - 0.958137) / 0.0160488;
 
     roundOffAngle(angle);
 
     // servo_cs rotates backwards
-    servo_->write(126 - angle);
+    servo_->write(angle);
 
 #ifdef SERVO_DEBUG
     Serial.print("\nclockwise: ");
