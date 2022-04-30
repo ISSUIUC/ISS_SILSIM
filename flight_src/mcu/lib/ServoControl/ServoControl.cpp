@@ -40,7 +40,7 @@ void ServoControl::servoActuation(float length) {
     roundOffAngle(angle);
 
     // servo_cs rotates backwards
-    servo_->write(126 - angle);
+    servo_->write(50 + angle);
 
 #ifdef SERVO_DEBUG
     Serial.print("\nclockwise: ");
