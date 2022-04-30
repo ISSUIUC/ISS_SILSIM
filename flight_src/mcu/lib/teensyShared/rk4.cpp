@@ -7,6 +7,14 @@ using namespace std::chrono;
 
 using std::array;
 
+float rk4::cd(float mach) {
+    double cd = 0;
+    for(int i = 0; i < 151; i++) {
+        cd += poly[i]*pow(mach, 150-i);
+    }
+    return float(cd);
+}
+
 array<float, 2> rk4::accel(array<float, 2> u, float rho) {
     float r1 = u[0];
     float v1 = u[1];
@@ -14,7 +22,7 @@ array<float, 2> rk4::accel(array<float, 2> u, float rho) {
     // Approximation - use the area of a circle for reference area
     float Sref_a = .007854;
     // Cd_total = rasaero.drag_lookup_1dof(pos_f,vel_f,RASaero,dic["CD"])
-    float Cd_total = 0.56;
+    float Cd_total = cd(0.8);
 
     float F_a = -((rho* (v1*v1) * Sref_a * Cd_total) / 2);
     float accel_a = F_a/21; // Acceleration due to Aerodynamic Forces
@@ -48,7 +56,7 @@ array<float, 2> rk4::sim_apogee(array<float, 2> state, float dt) {
     
     // Approximation - use the area of a circle for reference area
     float Sref_a = .007854;
-
+    
     while (state[1] > 0) {
         
         // Define initial flap length at start of control time
@@ -59,8 +67,9 @@ array<float, 2> rk4::sim_apogee(array<float, 2> state, float dt) {
         float vel_f = state[1];
         
         // Density varies with altitude
-        //TODO: Add varying density
         float rho = 1.225;
+        
+        
         
         // rk4 iteration 
         rk4_kp1 = rk4_step(state, dt, rho);

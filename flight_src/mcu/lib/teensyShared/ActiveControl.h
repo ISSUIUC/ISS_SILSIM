@@ -2,13 +2,19 @@
 #include <PWMServo.h>
 #include "dataLog.h"
 #include "ServoControl.h"
+#include "Eigen30.h"
+#include "Eigen/Core"
+#include <math.h>
+#include <array>
+
+using std::array;
 
 class Controller {
     public:
     void ctrlTickFunction();
     bool ActiveControl_ON();
     Controller(struct pointers* pointer_struct, PWMServo* twisty_boi);
-
+    
     PWMServo* twisty_boi_;
     mutex_t* dataMutex_state_;
     struct StateData* stateData_;

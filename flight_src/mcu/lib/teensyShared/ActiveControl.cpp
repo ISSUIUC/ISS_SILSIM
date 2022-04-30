@@ -13,6 +13,7 @@ void Controller::ctrlTickFunction() {
     array<float, 2> init = {stateData_->state_x, stateData_->state_vx};
     // chMtxUnlock(dataMutex_state_);
     float apogee_est = rk4_.sim_apogee(init, 0.1)[0];
+    std::cout<<apogee_est<<std::endl;
     float u = kp*(apogee_est - apogee_des);
     float min = (u - prev_u)/dt;
 
