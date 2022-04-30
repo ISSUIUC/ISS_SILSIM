@@ -20,6 +20,7 @@ class Controller {
     float dt = .006;
     float prev_u = 0;
     float du_max = 0.001;
+    float flap_width = 35.1 / 1000; // m
     FSM_State* current_state;
     ServoControl activeControlServos;
 };
