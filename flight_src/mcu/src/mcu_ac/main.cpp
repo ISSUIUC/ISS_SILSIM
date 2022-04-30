@@ -234,13 +234,11 @@ class servo_THD : public CpuThread {
 #endif
 
         ac.ctrlTickFunction();
-        //std::cout<<ac.rk4_.sim_apogee()<<std::endl;
         return 6.0;  // FSM runs at 100 Hz
     }
 
    private:
     pointers *pointer_struct;
-
     Controller ac;
 };
 
