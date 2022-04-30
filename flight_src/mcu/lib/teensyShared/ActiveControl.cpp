@@ -20,7 +20,7 @@ void Controller::ctrlTickFunction() {
     if (du_max < min) {
         min = du_max;
     }
-    
+
     u = u + ((u - prev_u)/dt)/abs((u - prev_u)/dt)*min*dt;
     prev_u = u;
 
@@ -36,6 +36,8 @@ void Controller::ctrlTickFunction() {
     } else {
         activeControlServos.servoActuation(0);
     }
+
+    // return 2*u*flap_width/0.00225806; Protuberance Percentage, assuming 3.5 in^2 max area
 
 }
 
