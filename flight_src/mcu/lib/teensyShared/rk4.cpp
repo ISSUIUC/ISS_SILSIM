@@ -7,7 +7,13 @@ using namespace std::chrono;
 
 using std::array;
 
-float rk4::cd(float mach) {
+rk4::rk4() {
+        Atmosphere atmo;
+        atmo_ = atmo;
+    }
+
+float rk4::cd(float alt, float vel) {
+    float mach = vel/(atmo_.get_speed_of_sound(alt));
     double cd = 0;
     for(int i = 0; i < 151; i++) {
         cd += poly[i]*pow(mach, 150-i);
@@ -22,7 +28,7 @@ array<float, 2> rk4::accel(array<float, 2> u, float rho) {
     // Approximation - use the area of a circle for reference area
     float Sref_a = .007854;
     // Cd_total = rasaero.drag_lookup_1dof(pos_f,vel_f,RASaero,dic["CD"])
-    float Cd_total = cd(0.8);
+    float Cd_total = cd(r1, v1);
 
     float F_a = -((rho* (v1*v1) * Sref_a * Cd_total) / 2);
     float accel_a = F_a/21; // Acceleration due to Aerodynamic Forces
@@ -67,7 +73,7 @@ array<float, 2> rk4::sim_apogee(array<float, 2> state, float dt) {
         float vel_f = state[1];
         
         // Density varies with altitude
-        float rho = 1.225;
+        float rho = atmo_.get_density(state[0]);
         
         
         

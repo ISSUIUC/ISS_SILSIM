@@ -323,7 +323,7 @@ class dataLogger_THD : public CpuThread {
  */
 void chSetup() {
     // added play_THD for creation
-
+    
     chThdCreateStatic(rocket_FSM_WA, sizeof(rocket_FSM_WA), NORMALPRIO,
                       rocket_FSM, &sensor_pointers);
     chThdCreateStatic(gps_WA, sizeof(gps_WA), NORMALPRIO, gps_THD,
