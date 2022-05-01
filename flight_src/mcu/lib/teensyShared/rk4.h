@@ -3,6 +3,8 @@
 #include <chrono>
 #include "Atmosphere.h"
 
+#pragma once
+
 using std::array;
 
 class rk4 {

@@ -4,6 +4,7 @@
 #include "acShared.h"
 #include "dataLog.h"
 #include "sensors.h"
+#include "rk4.h"
 
 class KalmanFilter { 
     public:

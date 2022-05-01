@@ -54,7 +54,6 @@ with open("sim_data/data.csv") as csvfile:
         for i, val in enumerate(row):
             data_lists[i].append(float(val))
 
-
 # Print some stats:
 apogee = np.max(rz) 
 print(f"Apogee Altitude = {apogee} m\n\t\t= {apogee * 3.28} ft")
@@ -73,26 +72,28 @@ pk01 = kalman_df["invertboi_01"]
 pk10 = kalman_df["invertboi_10"]
 pk11 = kalman_df["invertboi_11"]
 
+apogee_df = pd.read_csv("apogee.csv")
 
 if draw_plots:
 
     plt.figure()
-    # plt.plot(timestamps, rz, label="Altitude")
-    # plt.plot(timestamps, vz, label="Vertical Velocity")
-    # plt.plot(timestamps, az, label="Vertical Acceleration")
+    plt.plot(timestamps, rz, label="Altitude")
+    plt.plot(timestamps, vz, label="Vertical Velocity")
+    plt.plot(timestamps, az, label="Vertical Acceleration")
     # plt.plot(timestamps, roll, label="Roll")
     # plt.plot(timestamps, pitch, label="Pitch")
     # plt.plot(timestamps, yaw, label="yaw")
     
     # KF Plotting
     timestamps_kf = np.arange(0.003,(len(kalman_df)) * 0.006, 0.006)
-    plt.plot(timestamps_kf,pk00, label="invertboi00")
-    plt.plot(timestamps_kf,pk01, label="invertboi01")
-    plt.plot(timestamps_kf,pk10,label="invertboi10")
-    plt.plot(timestamps_kf,pk11, label="invertboi11")
-    # plt.plot(timestamps_kf, kx, label="KF Altitude")
-    # plt.plot(timestamps_kf, kv, label="KF Velocity")
-    # plt.plot(timestamps_kf, ka, label="KF Acceleration")
+    # plt.plot(timestamps_kf,pk00, label="invertboi00")
+    # plt.plot(timestamps_kf,pk01, label="invertboi01")
+    # plt.plot(timestamps_kf,pk10,label="invertboi10")
+    # plt.plot(timestamps_kf,pk11, label="invertboi11")
+    plt.plot(timestamps_kf, apogee_df["apogee"], label="RK4 Apogee")
+    plt.plot(timestamps_kf, kx, label="KF Altitude")
+    plt.plot(timestamps_kf, kv, label="KF Velocity")
+    plt.plot(timestamps_kf, ka, label="KF Acceleration")
     # plt.ylim(-100, 12000)
     plt.grid()
     plt.legend()
