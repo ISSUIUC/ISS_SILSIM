@@ -61,7 +61,7 @@ class Rocket {
     Vector3d get_w_dot() const { return w_dot_; };
 
     Vector3d get_f_net() const { return f_net_; };
-    Vector3d get_t_net() const { return t_net_; };
+    Vector3d get_m_net() const { return m_net_; };
 
     double get_structural_mass() const { return structural_mass_; };
     double get_total_mass() const { return total_mass_; };
@@ -98,7 +98,7 @@ class Rocket {
     void set_w_dot(Vector3d vector) { w_dot_ = vector; };
 
     void set_f_net(Vector3d vector) { f_net_ = vector; };
-    void set_t_net(Vector3d vector) { t_net_ = vector; };
+    void set_m_net(Vector3d vector) { m_net_ = vector; };
 
     void set_structural_mass(double mass) { structural_mass_ = mass; };
     void set_total_mass(double mass) { total_mass_ = mass; };
@@ -124,17 +124,26 @@ class Rocket {
     /************************ Internal State Update ***************************/
     void update_aero_coefficients(bool poweron, double protuberance_perecent);
 
-    // Converts vector from ENU frame to rocket reference frame
+    /********************** Reference Frame Conversions ***********************/
+    // Converts arbitrary vector to/from ENU frame and rocket reference frame
     Vector3d enu2r(Vector3d vector);
-
-    // Converts vector from rocket frame to ENU reference frame
     Vector3d r2enu(Vector3d vector);
 
-    // Converts vector from ENU frame to ECEF reference frame
-    Vector3d enu2ecef(Vector3d pos_enu);
+    // Converts rocket position vector to/from ENU frame and ECEF frame
+    Vector3d position_enu2ecef(Vector3d pos_enu);
+    Vector3d position_ecef2enu(Vector3d pos_ecef);
 
-    // Converts vector from ECEF frame to Geodetic reference frame
+    // Converts arbitrary vector to/from ENU frame and ECEF frame
+    Vector3d enu2ecef(Vector3d vector);
+    Vector3d ecef2enu(Vector3d vector);
+
+    // Converts rocket position  vector from ECEF frame to Geodetic coordinates
     Vector3d ecef2geod(Vector3d ecef);
+
+    // Returns the *unit* vector in the direction of gravity in various frames
+    Vector3d gravity_vector_ecef();
+    Vector3d gravity_vector_enu();
+    Vector3d gravity_vector_rf();
 
    private:
     // The following are in ENU frame
@@ -146,7 +155,7 @@ class Rocket {
 
     // The following are in ENU frame
     Vector3d f_net_{0, 0, 0};  // net force in Netwons
-    Vector3d t_net_{0, 0, 0};  // net torque in Newton*meters
+    Vector3d m_net_{0, 0, 0};  // net moment in Newton*meters
 
     Quaterniond q_ornt_{};  // ENU -> rocket frame quaternion
 

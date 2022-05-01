@@ -14,13 +14,13 @@ constexpr double deg2rad = 3.14159265 / 180.0;
 constexpr double kLbsToKg = 0.453592;
 constexpr double kInchToMeters = 0.0254;
 
-/***************** Intrepid MK4 Parameters *****************/
-constexpr double kIntrepidDryMass = 47.41 * kLbsToKg;
+/***************** Intrepid MK6 Parameters *****************/
+constexpr double kIntrepidDryMass = 46.52 * kLbsToKg;
 constexpr double kIntrepidWetMass = 67.30 * kLbsToKg;
 constexpr double kIntrepidWetCGLocation = 82.79 * kInchToMeters;
 constexpr double kIntrepidDryCGLocation = 73.06 * kInchToMeters;
 constexpr double kIntrepidTotalLength = 130.0 * kInchToMeters;
-constexpr double kIntrepidDiameter = 4.0 * kInchToMeters;
+constexpr double kIntrepidDiameter = 4.02 * kInchToMeters;
 constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
 int main() {
@@ -71,10 +71,11 @@ int main() {
     // ConstantThrustSolidMotor motor(3.49, 5800.0, 9.021);
 
     // Cesaroni N5800 Motor
-    ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.021);
+    ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425);
 
-    // ForwardEuler engine(rocket, motor);
     RungeKutta engine(rocket, motor);
+    // ForwardEuler engine(rocket, motor);
+
     CpuState cpu;
 
     Simulation sim(silsim_sink, 0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
