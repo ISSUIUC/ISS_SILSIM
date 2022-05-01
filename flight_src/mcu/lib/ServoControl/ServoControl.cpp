@@ -15,8 +15,8 @@ ServoControl::ServoControl(PWMServo* servo) {
 }
 // TODO check values for max
 void ServoControl::roundOffAngle(float& value) {
-    if (value > 126) {
-        value = 126;
+    if (value > 189) {
+        value = 189;
     }
     if (value < 0) {
         value = 0;
@@ -34,13 +34,14 @@ void ServoControl::roundOffAngle(float& value) {
  */
 void ServoControl::servoActuation(float length) {
     // The angle is found through utilizing a fft and mapping extension/angle values to 
-    // a sine function
-    float angle = asin(((length - (-0.0705732))/18.07384) - 0.958137) / 0.0160488;
+    // a sine function. len (mm), pass in ang (rad)
+    
+    float angle = 136.050812741891 - 62.3098522547825*asin(0.0553285866373617*length + 0.00390471397714149);
 
     roundOffAngle(angle);
 
     // servo_cs rotates backwards
-    servo_->write(50 + angle);
+    servo_->write(angle);
 
 #ifdef SERVO_DEBUG
     Serial.print("\nclockwise: ");
