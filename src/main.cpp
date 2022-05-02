@@ -72,7 +72,8 @@ int main() {
     ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425);
 
     RungeKutta engine(rocket, motor);
-    CpuState cpu(&accelerometer, &thermometer, &barometer, &gyroscope, &gps, &magnetometer);
+    CpuState cpu(&accelerometer, &thermometer, &barometer, &gyroscope, &gps,
+                 &magnetometer, &rocket.get_flaps());
 
     Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
 

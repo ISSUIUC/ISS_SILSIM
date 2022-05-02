@@ -111,9 +111,12 @@ float KX134::get_z_accel() {
 
 PWMServo::PWMServo() {}
 uint8_t PWMServo::attach(int pinArg, int min, int max) { return 0; }
-void PWMServo::write(int angleArg) {}
+void PWMServo::write(int angleArg) {
+    double extension = std::clamp(angleArg / 180.0, 0.0, 1.0);
+    global_context->flaps->write_extension(extension);
+}
 void PWMServo::detach() {}
-uint8_t PWMServo::attached() { return 0; }
+uint8_t PWMServo::attached() { return 1; }
 
 
 

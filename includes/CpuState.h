@@ -9,9 +9,14 @@
 #include <vector>
 
 #include "CpuThread.h"
+#include "Flaps.h"
+
 class CpuState {
    public:
-    CpuState(Accelerometer* accelerometer, Thermometer* thermometer, Barometer* barometer, Gyroscope* gyroscope, GPSSensor* gps, Magnetometer* mag): context() {
+    CpuState(Accelerometer* accelerometer, Thermometer* thermometer,
+             Barometer* barometer, Gyroscope* gyroscope, GPSSensor* gps,
+             Magnetometer* mag, Flaps* flaps)
+        : context() {
         context.accelerometer_pointer = accelerometer;
         context.barometer_pointer = barometer;
         context.gyroscope_pointer = gyroscope;
@@ -21,6 +26,7 @@ class CpuState {
         context.add_thread = [&](void * thd_class){
             add_thread(std::unique_ptr<CpuThread>(static_cast<CpuThread*>(thd_class)));
         };
+        context.flaps = flaps;
     }
 
     void add_thread(std::unique_ptr<CpuThread> thread);
