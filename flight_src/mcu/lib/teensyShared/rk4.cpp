@@ -1,6 +1,7 @@
 #include <iostream>
 #include <array>
 #include <chrono>
+#include <cmath>
 #include "rk4.h"
 
 using namespace std::chrono;
@@ -16,7 +17,7 @@ float rk4::cd(float alt, float vel) {
     float mach = vel/(atmo_.get_speed_of_sound(alt));
     double cd = 0;
     for(int i = 0; i < 151; i++) {
-        cd += poly[i]*pow(mach, 150-i);
+        cd += poly[i]*std::pow(mach, 150-i);
     }
     return float(cd);
 }

@@ -23,7 +23,9 @@
 #include <string>
 #include <vector>
 
+
 #include "RASAeroImport.h"
+#include "Flaps.h"
 
 using Eigen::Vector3d;
 
@@ -77,6 +79,8 @@ class Rocket {
 
     std::array<double, 9> get_I() const { return I_; };
 
+    Flaps& get_flaps(){return flaps_; }
+
     /**************************** Set parameters ******************************/
     void set_r_vect(Vector3d vector) { r_vect_ = vector; };
     void set_r_dot(Vector3d vector) { r_dot_ = vector; };
@@ -114,7 +118,8 @@ class Rocket {
     };
 
     /************************ Internal State Update ***************************/
-    void update_aero_coefficients(bool poweron, double protuberance_perecent);
+    void update_aero_coefficients(bool poweron);
+    void update_flaps(double dt){ flaps_.update(dt);}
 
     /********************** Reference Frame Conversions ***********************/
     // Converts arbitrary vector to/from ENU frame and rocket reference frame
@@ -174,6 +179,9 @@ class Rocket {
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
     double mach_ = 0.0;         // Freestream air mach number
     double alpha_ = 0.0;        // Rocket total angle-of-attack to air
+
+    //----------- Flap Parameters ---------
+    Flaps flaps_{};
 };
 
 #endif

@@ -8,6 +8,7 @@
 #include <dataLog.h>
 #include <PWMServo.h>
 #include "Sensor.h"
+#include "Flaps.h"
 #include <functional>
 
 struct CpuStateContext {
@@ -43,6 +44,7 @@ struct CpuStateContext {
     GPSSensor* gps_pointer;
     Thermometer* thermometer_pointer;
     Magnetometer* magnetometer_pointer;
+    Flaps* flaps;
 };
 
 #endif  // SILSIM_CPUSTATECONTEXT_H
