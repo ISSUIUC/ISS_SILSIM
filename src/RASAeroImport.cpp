@@ -22,6 +22,8 @@
 #include <iostream>
 #include <string>
 
+// #define RASAERO_DEBUG
+
 /**
  * @brief RASAeroImport class constructor. Parses data into lookup table
  *
@@ -29,13 +31,15 @@
  *
  */
 RASAeroImport::RASAeroImport(
-    std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink,
+    spdlog_basic_sink_ptr silsim_sink,
     std::string file_path) {
+    rasaero_logger_ = std::make_shared<spdlog::logger>("RASAeroImport", silsim_sink);
 
-    rasaero_logger_ =
-        std::make_shared<spdlog::logger>("RASAeroImport_Logger", sink);
-
-    spdlog::register_logger(rasaero_logger_);
+#ifdef RASAERO_DEBUG
+    rasaero_logger_->set_level(spdlog::level::debug);
+#else
+    rasaero_logger_->set_level(spdlog::level::info);
+#endif
 
     rapidcsv::Document csv(file_path);
 
@@ -243,35 +247,31 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
     RASAeroCoefficients result{row_z(3), row_z(4), row_z(5),
                                row_z(6), row_z(7), row_z(8)};
 
-#ifdef RASAERO_DEBUG
-    std::cout << std::endl;
-    std::cout << "### [RASAeroImport get_aero_coefficients() debug above/below "
-                 "finding]:"
-              << std::endl;
-    std::cout << "mach_below = " << mach_below << std::endl;
-    std::cout << "closest_mach = " << closest_mach << std::endl;
-    std::cout << "alpha_below = " << alpha_below << std::endl;
-    std::cout << "alpha_above = " << alpha_above << std::endl;
-    std::cout << "prot_below = " << prot_below << std::endl;
-    std::cout << "prot_above = " << prot_above << std::endl;
+    rasaero_logger_->debug(
+        "[RASAeroImport get_aero_coefficients() debug above/below finding]:");
+    rasaero_logger_->debug("mach_below = {}", mach_below);
+    rasaero_logger_->debug("closest_mach = {}", closest_mach);
+    rasaero_logger_->debug("alpha_below = {}", alpha_below);
+    rasaero_logger_->debug("alpha_above = {}", alpha_above);
+    rasaero_logger_->debug("prot_below = {}", prot_below);
+    rasaero_logger_->debug("prot_above = {}", prot_above);
 
-    std::cout << std::endl;
-    std::cout
-        << "### [RASAeroImport get_aero_coefficients() debug index finding]:"
-        << std::endl;
-    std::cout << "mach_start_index = " << mach_start_index << std::endl;
-    std::cout << "row_a_offset = " << row_a_offset << std::endl;
-    std::cout << "row_b_offset = " << row_b_offset << std::endl;
-    std::cout << "row_c_offset = " << row_c_offset << std::endl;
-    std::cout << "row_d_offset = " << row_d_offset << std::endl;
+    rasaero_logger_->debug(
+        "[RASAeroImport get_aero_coefficients() debug index finding]:");
+    rasaero_logger_->debug("mach_start_index = {}", mach_start_index);
+    rasaero_logger_->debug("row_a_offset = {}", row_a_offset);
+    rasaero_logger_->debug("row_b_offset = {}", row_b_offset);
+    rasaero_logger_->debug("row_c_offset = {}", row_c_offset);
+    rasaero_logger_->debug("row_d_offset = {}", row_d_offset);
 
-    std::cout << std::endl;
-
-    std::cout << "### [RASAeroImport get_aero_coefficients() debug result]:"
-              << std::endl;
-    // std::cout << "given alpha = " << alpha << std::endl;
-    std::cout << row_z << std::endl;
-#endif
+    rasaero_logger_->debug(
+        "[RASAeroImport get_aero_coefficients() debug result]:");
+    rasaero_logger_->debug("cd_poweroff = {}", result.cd_poweroff);
+    rasaero_logger_->debug("cd_poweron = {}", result.cd_poweron);
+    rasaero_logger_->debug("ca_poweroff = {}", result.ca_poweroff);
+    rasaero_logger_->debug("ca_poweron = {}", result.ca_poweron);
+    rasaero_logger_->debug("cn_total = {}", result.cn_total);
+    rasaero_logger_->debug("cp_total = {}", result.cp_total);
 
     return result;
 }

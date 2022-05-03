@@ -21,6 +21,9 @@
 #include <string>
 #include <vector>
 
+// Shortening the typename for   a e s t h e t i c s
+typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt> spdlog_basic_sink_ptr;
+
 struct RASAeroCoefficients {
     double cd_poweroff;
     double cd_poweron;
@@ -32,7 +35,7 @@ struct RASAeroCoefficients {
 
 class RASAeroImport {
    public:
-    RASAeroImport(std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink,
+    RASAeroImport(spdlog_basic_sink_ptr silsim_sink,
                   std::string file_path);
 
     /**************** Retrieve Aero Parameters of Rocket **********************/

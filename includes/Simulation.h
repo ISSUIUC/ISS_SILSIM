@@ -33,7 +33,8 @@
 
 class Simulation {
    public:
-    Simulation(std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink, double tStep, PhysicsEngine* engine, Rocket& rocket,
+    Simulation(std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink,
+               double tStep, PhysicsEngine* engine, Rocket& rocket,
                RocketMotor& motor, CpuState& cpu, std::string filename
                // std::vector<Sensor&>& sensors
     );

@@ -34,7 +34,8 @@
 
 using Eigen::Vector3d;
 
-Simulation::Simulation(std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink, double tStep, PhysicsEngine* engine, Rocket& rocket,
+Simulation::Simulation(std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink,
+                       double tStep, PhysicsEngine* engine, Rocket& rocket,
                        RocketMotor& motor, CpuState& cpu, std::string filename
                        // std::vector<Sensor&>& sensors
                        )
@@ -45,7 +46,6 @@ Simulation::Simulation(std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink, 
       motor_(motor),
       cpu_(cpu),
       filename_(filename) {
-
     sim_log = std::make_shared<spdlog::logger>("Simulation_Logger", sink);
     spdlog::register_logger(sim_log);
 }
@@ -61,6 +61,9 @@ void Simulation::run(int steps) {
                            motor_.get_propellant_mass(tStamp_));
 
     motor_.ignite(tStamp_);
+
+    rocket_.log_rocket_state(tStamp_);
+    motor_.log_motor_state(tStamp_);
 
     for (int iter = 0; iter < steps; ++iter) {
         // Get ENU frame rocket state
@@ -146,6 +149,9 @@ void Simulation::run(int steps) {
         dataFile << "\n";
 
         tStamp_ += tStep_;
+
+        rocket_.log_rocket_state(tStamp_);
+        motor_.log_motor_state(tStamp_);
 
         if (r_dot_enu.z() < -3.0) {
             break;

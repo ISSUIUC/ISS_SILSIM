@@ -24,14 +24,11 @@ constexpr double kIntrepidDiameter = 4.02 * kInchToMeters;
 constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
 int main() {
-
     std::shared_ptr<spdlog::sinks::basic_file_sink_mt> silsim_sink =
         std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/hmmm.log");
 
-    std::shared_ptr<spdlog::logger> test_logger = std::make_shared<spdlog::logger>("Test_Logger", silsim_sink);
-    test_logger->log(spdlog::level::info, "hmmm test log");
+    silsim_sink->set_level(spdlog::level::debug);
 
-    spdlog::set_level(spdlog::level::debug);
     // comment below is used if we want to change the format of the logging
     // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
 
@@ -68,17 +65,18 @@ int main() {
 
     // Modeling Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop
     // weight
-    // ConstantThrustSolidMotor motor(3.49, 5800.0, 9.021);
+    // ConstantThrustSolidMotor motor(3.49, 5800.0, 9.021, silsim_sink);
 
     // Cesaroni N5800 Motor
-    ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425);
+    ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425, silsim_sink);
 
     RungeKutta engine(rocket, motor);
     // ForwardEuler engine(rocket, motor);
 
     CpuState cpu;
 
-    Simulation sim(silsim_sink, 0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
+    Simulation sim(silsim_sink, 0.01, &engine, rocket, motor, cpu,
+                   "sim_data/data.csv");
 
     sim.add_sensor(&accel1);
     // sim.add_sensor(&gyro1);
