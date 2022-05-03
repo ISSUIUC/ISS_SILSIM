@@ -41,7 +41,7 @@ void RocketMotor::ignite(double tStamp) {
  */
 bool RocketMotor::is_burning(double tStamp) const {
     double burn_end_tStamp = ignition_tStamp_ + max_burn_duration_;
-    return (tStamp > burn_end_tStamp);
+    return (ignition_ && (tStamp <= burn_end_tStamp));
 }
 
 /**
