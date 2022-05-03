@@ -1,4 +1,5 @@
 #include "ActiveControl.h"
+#include "Rocket.h"
 
 Controller::Controller(struct pointers* pointer_struct, PWMServo* twisty_boi): activeControlServos(twisty_boi) {
     twisty_boi_ = twisty_boi;
@@ -36,6 +37,8 @@ void Controller::ctrlTickFunction() {
     } else {
         activeControlServos.servoActuation(0);
     }
+
+    
 
     // return 2*u*flap_width/0.00225806; Protuberance Percentage, assuming 3.5 in^2 max area
 

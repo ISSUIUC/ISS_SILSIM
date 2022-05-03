@@ -73,7 +73,7 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
     Q(2,0) = Q(0,2);
     Q(2,1) = Q(1,2);
 
-    float scale_fact = 22.19;
+    float scale_fact = 13.25;
     Q = Q * scale_fact;
 
     // set R

@@ -36,7 +36,7 @@ void ServoControl::servoActuation(float length) {
     // The angle is found through utilizing a fft and mapping extension/angle values to 
     // a sine function. len (mm), pass in ang (rad)
     
-    float angle = 136.050812741891 - 62.3098522547825*asin(0.0553285866373617*length + 0.00390471397714149);
+    float angle = 136.050812741891 - 62.3098522547825*asin(0.0553285866373617*(length * 1000) + 0.00390471397714149);
 
     roundOffAngle(angle);
 
