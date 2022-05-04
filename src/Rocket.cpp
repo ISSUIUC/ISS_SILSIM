@@ -327,6 +327,8 @@ Vector3d Rocket::gravity_vector_rf() {
 void Rocket::log_rocket_state(double tStamp) {
     std::stringstream datalog_ss;
 
+    datalog_ss << "[DATA] ";
+
     datalog_ss << tStamp << ",";
 
     datalog_ss << r_vect_.x() << ","

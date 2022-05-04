@@ -81,7 +81,7 @@ class ConstantThrustSolidMotor : public RocketMotor {
         initial_propellant_mass_ = initial_propellant_mass;
 
         motor_logger_ = std::make_shared<spdlog::logger>("ConstantThrustSolidMotor", silsim_sink);
-        motor_logger_->info("[DATALOG_FORMAT]" + datalog_format_string);
+        motor_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
     };
 
     double current_thrust(double tStamp) const override;
