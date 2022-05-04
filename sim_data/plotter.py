@@ -73,6 +73,10 @@ pk01 = kalman_df["invertboi_01"]
 pk10 = kalman_df["invertboi_10"]
 pk11 = kalman_df["invertboi_11"]
 
+# Flap Extension
+extension_df = pd.read_csv("extension.csv")
+extension_vals = extension_df["Flap Extension (m)"]
+
 
 if draw_plots:
 
@@ -91,11 +95,13 @@ if draw_plots:
     # plt.plot(timestamps_kf,pk10,label="invertboi10")
     # plt.plot(timestamps_kf,pk11, label="invertboi11")
     plt.plot(timestamps_kf, kx, label="KF Altitude")
-    plt.plot(timestamps_kf, kv, label="KF Velocity")
-    plt.plot(timestamps_kf, ka, label="KF Acceleration")
+    # plt.plot(timestamps_kf, kv, label="KF Velocity")
+    # plt.plot(timestamps_kf, ka, label="KF Acceleration")
     # plt.ylim(-100, 12000)
     plt.grid()
     plt.legend()
+    
+    # Flap Extension plotting
 
     fig = plt.figure()
     fig.subplots_adjust(left=0.000, top=0.980, bottom=0.045, right=0.980, wspace=0.100, hspace=0.100)
