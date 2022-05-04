@@ -51,7 +51,7 @@ void Controller::ctrlTickFunction() {
         u = max_extension;
     }
 
-    std::cout << "Controller Flap Extension: " << u << std::endl;
+    // std::cout << "Controller Flap Extension: " << u << std::endl;
 
 
     if (ActiveControl_ON()) {
@@ -69,27 +69,27 @@ bool Controller::ActiveControl_ON() {
     bool active_control_on = true;
     switch (*current_state) {
         case STATE_INIT:
-            std::cout << "INIT" << std::endl;
+            // std::cout << "INIT" << std::endl;
             active_control_on = false;
             break;
         case STATE_IDLE:
-            std::cout << "IDLE" << std::endl;
+            // std::cout << "IDLE" << std::endl;
             active_control_on = false;
             break;
         case STATE_LAUNCH_DETECT:
-            std::cout << "Launch Detect" << std::endl;
+            // std::cout << "Launch Detect" << std::endl;
             active_control_on = false;
             break;
         case STATE_BOOST:
-            std::cout << "BOOST" << std::endl;
+            // std::cout << "BOOST" << std::endl;
             active_control_on = false;
             break;
         case STATE_COAST:
-            std::cout << "COAST" << std::endl;
+            // std::cout << "COAST" << std::endl;
             active_control_on = true;
             break;
         case STATE_APOGEE_DETECT:
-            std::cout << "Apogee" << std::endl;
+            // std::cout << "Apogee" << std::endl;
             active_control_on = false;
             break;
         default:

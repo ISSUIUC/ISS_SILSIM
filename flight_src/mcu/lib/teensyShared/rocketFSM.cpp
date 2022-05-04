@@ -75,7 +75,7 @@ void rocketFSM::tickFSM() {
         case STATE_LAUNCH_DETECT:
 
             // If the acceleration was too brief, go back to IDLE
-            std::cout<<"Launch_dect"<<std::endl;
+            // std::cout<<"Launch_dect"<<std::endl;
             if (linear_acceleration < launch_linear_acceleration_thresh) {
                 pointer_struct->sensorDataPointer->rocketState_data
                     .rocketState = STATE_IDLE;
@@ -96,7 +96,7 @@ void rocketFSM::tickFSM() {
             break;
 
         case STATE_BOOST:
-            std::cout<<"Boost"<<std::endl;
+            // std::cout<<"Boost"<<std::endl;
             rocketTimers.burn_timer =
                 chVTGetSystemTime() - rocketTimers.launch_time;
             // If low acceleration in the Z direction...

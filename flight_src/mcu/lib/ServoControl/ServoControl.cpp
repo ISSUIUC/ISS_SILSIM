@@ -48,7 +48,7 @@ void ServoControl::servoActuation(float length) {
     float angle = (136.050812741891 - 62.3098522547825*asin(0.0553285866373617*(length* 1000) + 0.00390471397714149));
     roundOffAngle(angle);
 
-    std::cout << "Written Angle: " << angle << std::endl;
+    // std::cout << "Written Angle: " << angle << std::endl;
 
     // servo_cs rotates backwards
     servo_->write(angle);
