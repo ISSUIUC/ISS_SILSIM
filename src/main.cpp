@@ -59,16 +59,17 @@ int main() {
     rocket.set_q_ornt(start_ornt);
 
     // Construct some sensors
-    Accelerometer accel1("LSM9_accel", rocket, 100);
+    Accelerometer accel1("LSM9_accel", rocket, 100, silsim_sink);
     accel1.enable_noise_injection();
-    Gyroscope gyro1("LSM9_gyro", rocket, 100);
+    Gyroscope gyro1("LSM9_gyro", rocket, 100, silsim_sink);
 
     // Modeling Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop
     // weight
     // ConstantThrustSolidMotor motor(3.49, 5800.0, 9.021, silsim_sink);
 
     // Cesaroni N5800 Motor
-    ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425, silsim_sink);
+    ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425,
+                                silsim_sink);
 
     RungeKutta engine(rocket, motor);
     // ForwardEuler engine(rocket, motor);
@@ -79,7 +80,7 @@ int main() {
                    "sim_data/data.csv");
 
     sim.add_sensor(&accel1);
-    // sim.add_sensor(&gyro1);
+    sim.add_sensor(&gyro1);
 
     std::cout << "Running Sim!" << std::endl;
 

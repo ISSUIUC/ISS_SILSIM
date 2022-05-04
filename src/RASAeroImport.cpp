@@ -30,10 +30,10 @@
  * @oaram file_path The path where the RASAero .csv data is found
  *
  */
-RASAeroImport::RASAeroImport(
-    spdlog_basic_sink_ptr silsim_sink,
-    std::string file_path) {
-    rasaero_logger_ = std::make_shared<spdlog::logger>("RASAeroImport", silsim_sink);
+RASAeroImport::RASAeroImport(spdlog_basic_sink_ptr silsim_sink,
+                             std::string file_path) {
+    rasaero_logger_ =
+        std::make_shared<spdlog::logger>("RASAeroImport", silsim_sink);
 
 #ifdef RASAERO_DEBUG
     rasaero_logger_->set_level(spdlog::level::debug);

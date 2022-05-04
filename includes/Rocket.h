@@ -28,18 +28,20 @@
 
 #include "RASAeroImport.h"
 
-using Eigen::Vector3d;
 using Eigen::Quaterniond;
+using Eigen::Vector3d;
 
 // Shortening the typename for   a e s t h e t i c s
-typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt> spdlog_basic_sink_ptr;
+typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
+    spdlog_basic_sink_ptr;
 
 class Rocket {
    public:
     Rocket(spdlog_basic_sink_ptr silsim_sink) {
         q_ornt_ = {1, 0, 0, 0};
         cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
-        rocket_logger_ = std::make_shared<spdlog::logger>("Rocket", silsim_sink);
+        rocket_logger_ =
+            std::make_shared<spdlog::logger>("Rocket", silsim_sink);
         rocket_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
     }
 
@@ -48,7 +50,8 @@ class Rocket {
         q_ornt_ = {1, 0, 0, 0};
         cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
         rasaero_import_ = rasaero;
-        rocket_logger_ = std::make_shared<spdlog::logger>("Rocket", silsim_sink);
+        rocket_logger_ =
+            std::make_shared<spdlog::logger>("Rocket", silsim_sink);
         rocket_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
     }
 

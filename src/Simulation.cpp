@@ -175,5 +175,6 @@ void Simulation::add_sensor(Sensor* sensor) { sensors_.push_back(sensor); }
 void Simulation::update_sensors() {
     for (auto sensor : sensors_) {
         sensor->update_data(tStamp_);
+        sensor->log_data(tStamp_);
     }
 }

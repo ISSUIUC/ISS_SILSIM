@@ -46,11 +46,15 @@ double Sensor::get_data() {
 }
 
 Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
-                     double noise_mean, double noise_stddev)
+                     spdlog_basic_sink_ptr silsim_sink, double noise_mean,
+                     double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
     data_ = {0, 0, 0};
     noise_ = {0, 0, 0};
     bias_ = {0, 0, 0};
+    sensor_logger_ =
+        std::make_shared<spdlog::logger>("Gyroscope:" + name, silsim_sink);
+    sensor_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
 }
 
 void Gyroscope::update_data(double tStep) {
@@ -74,13 +78,31 @@ void Gyroscope::get_data(Vector3d& data) {
     new_data_ = false;
 }
 
+void Gyroscope::log_data(double tStamp) {
+    // clang-format off
+    std::stringstream datalog_ss;
+
+    datalog_ss << "[DATA] "
+               << tStamp << ","
+               << data_.x() << ","
+               << data_.y() << ","
+               << data_.z();
+
+    sensor_logger_->info(datalog_ss.str());
+    // clang-format on
+}
+
 Accelerometer::Accelerometer(std::string name, Rocket& rocket,
-                             double refresh_rate, double noise_mean,
-                             double noise_stddev)
+                             double refresh_rate,
+                             spdlog_basic_sink_ptr silsim_sink,
+                             double noise_mean, double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
     data_ = {0, 0, 0};
     noise_ = {0, 0, 0};
     bias_ = {0, 0, 0};
+    sensor_logger_ =
+        std::make_shared<spdlog::logger>("Accelerometer:" + name, silsim_sink);
+    sensor_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
 }
 
 void Accelerometer::update_data(double tStep) {
@@ -110,12 +132,30 @@ void Accelerometer::get_data(Vector3d& data) {
     new_data_ = false;
 }
 
+void Accelerometer::log_data(double tStamp) {
+    // clang-format off
+    std::stringstream datalog_ss;
+
+    datalog_ss << "[DATA] "
+               << tStamp << ","
+               << data_.x() << ","
+               << data_.y() << ","
+               << data_.z();
+
+    sensor_logger_->info(datalog_ss.str());
+    // clang-format on
+}
+
 Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
-                     double noise_mean, double noise_stddev)
+                     spdlog_basic_sink_ptr silsim_sink, double noise_mean,
+                     double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
     data_ = rocket_.get_r_vect().x();
     bias_ = 0;
     noise_ = 0;
+    sensor_logger_ =
+        std::make_shared<spdlog::logger>("Barometer:" + name, silsim_sink);
+    sensor_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
 }
 
 void Barometer::update_data(double tStep) {
@@ -137,6 +177,18 @@ void Barometer::update_data(double tStep) {
 double Barometer::get_data() {
     new_data_ = false;
     return data_;
+}
+
+void Barometer::log_data(double tStamp) {
+    // clang-format off
+    std::stringstream datalog_ss;
+
+    datalog_ss << "[DATA] "
+               << tStamp << ","
+               << data_;
+
+    sensor_logger_->info(datalog_ss.str());
+    // clang-format on
 }
 
 Vector3d randomize_vector(std::default_random_engine& generator,
