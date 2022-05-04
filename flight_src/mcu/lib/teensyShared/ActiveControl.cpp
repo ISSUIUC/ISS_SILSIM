@@ -28,14 +28,21 @@ void Controller::ctrlTickFunction() {
     apogee.close();
 
     float u = kp*(apogee_est - apogee_des);
-    float min = (u - prev_u)/dt;
+
+    float min = abs(u - prev_u)/dt;
 
     if (du_max < min) {
         min = du_max;
     }
 
-    u = u + ((u - prev_u)/dt)/abs((u - prev_u)/dt)*min*dt;
+    float sign = 1;
+
+    if (u - prev_u < 0) {
+        sign = -1;
+    }
+    u = u + sign*min*dt;
     prev_u = u;
+
 
     //Set flap extension limits
     if (u < min_extension) {
@@ -44,35 +51,49 @@ void Controller::ctrlTickFunction() {
         u = max_extension;
     }
 
-    if (ActiveControl_ON()) {
-        activeControlServos.servoActuation(u);
-    } else {
-        activeControlServos.servoActuation(0);
-    }
+    std::cout << "Controller Flap Extension: " << u << std::endl;
 
+
+    // if (ActiveControl_ON()) {
+    activeControlServos.servoActuation(u);
+    // } else {
+        // std::cout << "NO CONTROL" << std::endl;
+        // activeControlServos.servoActuation(0);
+    // }
+
+    
     // return 2*u*flap_width/0.00225806; Protuberance Percentage, assuming 3.5 in^2 max area
 
 }
 
 bool Controller::ActiveControl_ON() {
-    bool active_control_on = false;
+
+    // For some reason, this only sees IDLE through launch.
+
+    bool active_control_on = true;
     switch (*current_state) {
         case STATE_INIT:
+            std::cout << "INIT" << std::endl;
             active_control_on = false;
             break;
         case STATE_IDLE:
+            std::cout << "IDLE" << std::endl;
             active_control_on = false;
             break;
         case STATE_LAUNCH_DETECT:
+            std::cout << "Launch Detect" << std::endl;
             active_control_on = false;
             break;
         case STATE_BOOST:
+            std::cout << "BOOST" << std::endl;
             active_control_on = false;
             break;
         case STATE_COAST:
+            std::cout << "COAST" << std::endl;
             active_control_on = true;
             break;
         case STATE_APOGEE_DETECT:
+            std::cout << "Apogee" << std::endl;
             active_control_on = false;
             break;
         default:

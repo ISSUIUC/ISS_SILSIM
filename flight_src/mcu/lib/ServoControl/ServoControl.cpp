@@ -3,6 +3,7 @@
 
 #include "ServoControl.h"
 #include <cmath>
+#include <iostream>
 
 /**
  * @brief A function to keep the value sent to the servo between 0 and 180
@@ -15,11 +16,13 @@ ServoControl::ServoControl(PWMServo* servo) {
 }
 // TODO check values for max
 void ServoControl::roundOffAngle(float& value) {
-    if (value > 189) {
-        value = 189;
+    //Min Extension Angle Value
+    if (value > 135.8075) {
+        value = 136;
     }
-    if (value < 0) {
-        value = 0;
+    //Max Extension Angle Value
+    if (value < 45.4561) {
+        value = 46;
     }
 }
 
@@ -35,10 +38,13 @@ void ServoControl::roundOffAngle(float& value) {
 void ServoControl::servoActuation(float length) {
     // The angle is found through utilizing a fft and mapping extension/angle values to 
     // a sine function. len (mm), pass in ang (rad)
-    
-    float angle = 136.050812741891 - 62.3098522547825*asin(0.0553285866373617*length + 0.00390471397714149);
 
+    // std::cout << "Length: " << length << std::endl;
+
+    float angle = (136.050812741891 - 62.3098522547825*asin(0.0553285866373617*(length* 1000) + 0.00390471397714149));
     roundOffAngle(angle);
+
+    // std::cout << "Written Angle: " << angle << std::endl;
 
     // servo_cs rotates backwards
     servo_->write(angle);

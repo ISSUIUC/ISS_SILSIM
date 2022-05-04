@@ -73,8 +73,10 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
     Q(2,0) = Q(0,2);
     Q(2,1) = Q(1,2);
 
-    float scale_fact = 13.37;
-    scale_fact = 13;
+    // float scale_fact = 22.19;
+    // float scale_fact = 13.25;
+    // float scale_fact = .00899;
+    float scale_fact = 12.;
     Q = Q * scale_fact;
 
     // set R
@@ -134,12 +136,15 @@ void KalmanFilter::update() {
     P_k = (identity - K*H) * P_priori;
 
     // check overflow on Kalman gain
-    for(int i = 0; i < 3; i++) {
-        for(int j = 0; j < 3; j++) {
-            if(P_k(i,j) > 1e6) 
-                P_k(i, j) = 1e6;
-        }
-    }
+    // for(int i = 0; i < 3; i++) {
+    //     for(int j = 0; j < 3; j++) {
+    //         if(P_k(i,j) < 1e-7 && P_k(i,j) > -1e-7)
+    //             if (P_k(i,j) > 0)
+    //                 P_k(i, j) = 1e-7;
+    //             if (P_k(i,j) < 0)
+    //                 P_k(i, j) = -1e-7;
+    //     }
+    // }
 
     // std::cout << "STATE ESTIMATION: " << std::endl;
     // std::cout << x_k(0,0) << " m" << std::endl;

@@ -56,11 +56,12 @@ int main() {
     // rocket.set_r_vect(Eigen::Vector3d{0, 0, 362.47128485035});
 
     // Construct some sensors
-    Accelerometer accelerometer("LSM9_accel", rocket, 100, 0, 1.645);
+    Accelerometer accelerometer("LSM9_accel", rocket, 100);
     accelerometer.enable_noise_injection();
     Gyroscope gyroscope("LSM9_gyro", rocket, 100);
     Thermometer thermometer("MS5611_thermometer", rocket, 100);
-    Barometer barometer("MS5611_barometer", rocket, 100);
+    Barometer barometer("MS5611_barometer", rocket, 100, 0, 150/1.645);
+    barometer.enable_noise_injection();
     GPSSensor gps("ZOEM8Q_gps", rocket, 10);
     Magnetometer magnetometer("LSM9_magnetometer", rocket, 100);
 

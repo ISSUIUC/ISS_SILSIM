@@ -90,7 +90,10 @@ if draw_plots:
     # plt.plot(timestamps_kf,pk01, label="invertboi01")
     # plt.plot(timestamps_kf,pk10,label="invertboi10")
     # plt.plot(timestamps_kf,pk11, label="invertboi11")
+<<<<<<< HEAD
     plt.plot(timestamps_kf, apogee_df["apogee"], label="RK4 Apogee")
+=======
+>>>>>>> fea03379476a74ed4bc16665df3ab7ce6d842895
     plt.plot(timestamps_kf, kx, label="KF Altitude")
     plt.plot(timestamps_kf, kv, label="KF Velocity")
     plt.plot(timestamps_kf, ka, label="KF Acceleration")

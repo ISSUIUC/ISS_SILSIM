@@ -11,6 +11,7 @@
 #include "SPI.h"
 #include "SparkFunLSM9DS1.h"
 #include "SD.h"
+// #include <iostream>
 
 
 //Define Table for resolutions (for aRes, gRes, mRes)
@@ -112,8 +113,19 @@ float KX134::get_z_accel() {
 PWMServo::PWMServo() {}
 uint8_t PWMServo::attach(int pinArg, int min, int max) { return 0; }
 void PWMServo::write(int angleArg) {
-    double extension = std::clamp(angleArg / 180.0, 0.0, 1.0);
-    global_context->flaps->write_extension(extension);
+    // Max Extension Value 17.88 mm
+    // SILSIM CSV assumes max area is 3.5 in^2
+
+    // std::cout << "Actual Angle (mm): " << angleArg << std::endl; 
+    // Convert angle to extension length (mm)
+    float ext_length = 18.0737*sin(0.9195*(angleArg * 3.1415/180) + 0.9581) - 0.07045;
+    // std::cout << "Actual Extension (mm): " << ext_length << std::endl; 
+
+    // Convert extension length to protuberance percentage
+    double protub_percentage = std::clamp(ext_length/64.332, 0.0, 1.0);
+    // std::cout << "Protuberance: " << protub_percentage << std::endl; 
+
+    global_context->flaps->write_extension(protub_percentage);
 }
 void PWMServo::detach() {}
 uint8_t PWMServo::attached() { return 1; }
