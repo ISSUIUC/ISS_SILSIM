@@ -54,15 +54,11 @@ void Controller::ctrlTickFunction() {
     std::cout << "Controller Flap Extension: " << u << std::endl;
 
 
-    // if (ActiveControl_ON()) {
-    activeControlServos.servoActuation(u);
-    // } else {
-        // std::cout << "NO CONTROL" << std::endl;
-        // activeControlServos.servoActuation(0);
-    // }
-
-    
-    // return 2*u*flap_width/0.00225806; Protuberance Percentage, assuming 3.5 in^2 max area
+    if (ActiveControl_ON()) {
+        activeControlServos.servoActuation(u);
+    } else {
+        activeControlServos.servoActuation(0);
+    }
 
 }
 

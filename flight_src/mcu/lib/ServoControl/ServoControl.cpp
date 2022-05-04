@@ -4,6 +4,8 @@
 #include "ServoControl.h"
 #include <cmath>
 #include <iostream>
+#include <fstream>
+#include <string>
 
 /**
  * @brief A function to keep the value sent to the servo between 0 and 180
@@ -24,6 +26,8 @@ void ServoControl::roundOffAngle(float& value) {
     if (value < 45.4561) {
         value = 46;
     }
+
+    value = std::round(value);
 }
 
 /**
@@ -44,10 +48,16 @@ void ServoControl::servoActuation(float length) {
     float angle = (136.050812741891 - 62.3098522547825*asin(0.0553285866373617*(length* 1000) + 0.00390471397714149));
     roundOffAngle(angle);
 
-    // std::cout << "Written Angle: " << angle << std::endl;
+    std::cout << "Written Angle: " << angle << std::endl;
 
     // servo_cs rotates backwards
     servo_->write(angle);
+
+    std::string str = std::to_string(length) + '\n';
+    std::ofstream extension;
+    extension.open("extension.csv", std::ios::app);
+    extension << str;
+    extension.close(); 
 
 #ifdef SERVO_DEBUG
     Serial.print("\nclockwise: ");

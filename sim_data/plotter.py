@@ -72,7 +72,13 @@ pk01 = kalman_df["invertboi_01"]
 pk10 = kalman_df["invertboi_10"]
 pk11 = kalman_df["invertboi_11"]
 
+# Flap Extension
+extension_df = pd.read_csv("extension.csv")
+extension_vals = extension_df["Flap Extension (m)"]
+
+# Apogee Estimation
 apogee_df = pd.read_csv("apogee.csv")
+est_apogees = apogee_df["Estimated Apogee (m)"]
 
 if draw_plots:
 
@@ -85,22 +91,29 @@ if draw_plots:
     # plt.plot(timestamps, yaw, label="yaw")
     
     # KF Plotting
-    timestamps_kf = np.arange(0.003,(len(kalman_df)) * 0.006, 0.006)
+    timestamps_kf = np.arange(0.006,(len(kalman_df)) * 0.006 + 0.006, 0.006)
     # plt.plot(timestamps_kf,pk00, label="invertboi00")
     # plt.plot(timestamps_kf,pk01, label="invertboi01")
     # plt.plot(timestamps_kf,pk10,label="invertboi10")
     # plt.plot(timestamps_kf,pk11, label="invertboi11")
-<<<<<<< HEAD
-    plt.plot(timestamps_kf, apogee_df["apogee"], label="RK4 Apogee")
-=======
->>>>>>> fea03379476a74ed4bc16665df3ab7ce6d842895
     plt.plot(timestamps_kf, kx, label="KF Altitude")
-    plt.plot(timestamps_kf, kv, label="KF Velocity")
-    plt.plot(timestamps_kf, ka, label="KF Acceleration")
+    plt.plot(timestamps_kf, est_apogees, label="Estimated Apogee")
+
+    
+    # plt.plot(timestamps_kf, kv, label="KF Velocity")
+    # plt.plot(timestamps_kf, ka, label="KF Acceleration")
     # plt.ylim(-100, 12000)
     plt.grid()
     plt.legend()
-
+    
+    # Plot flap extension
+    plt.figure()
+    plt.plot(timestamps_kf, extension_vals)
+    plt.ylabel("Flap Extension (m)")
+    plt.xlabel("Time (seconds)")
+    plt.legend()
+    plt.grid()
+    
     fig = plt.figure()
     fig.subplots_adjust(left=0.000, top=0.980, bottom=0.045, right=0.980, wspace=0.100, hspace=0.100)
 
