@@ -31,10 +31,11 @@
 #include "hybridShared.h"
 #include "pins.h"
 #include "thresholds.h"
+#include <iostream>
 
 fsm_struct rocketTimers;
 
-rocketFSM::rocketFSM(pointers *ptr) { pointer_struct = ptr; }
+rocketFSM::rocketFSM(struct pointers* ptr) { pointer_struct = ptr; }
 
 void rocketFSM::tickFSM() {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -46,7 +47,7 @@ void rocketFSM::tickFSM() {
 
     // get the linear accelration from the lowgimu
     float linear_acceleration =
-        -pointer_struct->sensorDataPointer->lowG_data.ay;
+        pointer_struct->stateData.state_ax;
 
     switch (pointer_struct->sensorDataPointer->rocketState_data.rocketState) {
         case STATE_INIT:
@@ -59,6 +60,8 @@ void rocketFSM::tickFSM() {
         case STATE_IDLE:
 
             // If high acceleration is observed in z direction...
+            std::cout<<"IDLE"<<std::endl;
+            std::cout<<"Accel Meas: "<<linear_acceleration<<"Launch thresh: "<<launch_linear_acceleration_thresh<<std::endl;
             if (linear_acceleration > launch_linear_acceleration_thresh) {
                 rocketTimers.launch_time = chVTGetSystemTime();
                 pointer_struct->sensorDataPointer->rocketState_data
@@ -70,6 +73,7 @@ void rocketFSM::tickFSM() {
         case STATE_LAUNCH_DETECT:
 
             // If the acceleration was too brief, go back to IDLE
+            std::cout<<"Launch_dect"<<std::endl;
             if (linear_acceleration < launch_linear_acceleration_thresh) {
                 pointer_struct->sensorDataPointer->rocketState_data
                     .rocketState = STATE_IDLE;
@@ -90,6 +94,7 @@ void rocketFSM::tickFSM() {
             break;
 
         case STATE_BOOST:
+            std::cout<<"Boost"<<std::endl;
             rocketTimers.burn_timer =
                 chVTGetSystemTime() - rocketTimers.launch_time;
             // If low acceleration in the Z direction...

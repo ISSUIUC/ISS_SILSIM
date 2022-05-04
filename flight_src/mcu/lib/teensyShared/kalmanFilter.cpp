@@ -69,7 +69,7 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
 
     // set Q
     Q(0,0) = pow(s_dt,5) / 20;
-    Q(0,1) = pow(s_dt,4) / 8;
+    Q(0,1) = (pow(s_dt,4) / 8);
     Q(0,2) = pow(s_dt,3) / 6;
     Q(1,1) = pow(s_dt,3) / 8;
     Q(1,2) = pow(s_dt,2) / 2;
@@ -105,15 +105,6 @@ void KalmanFilter::Initialize(float pos_f, float vel_f) {
 
     // set H
     H(0,0) = 1;
-
-    // set P_k
-    P_k(0,0) = 0.0357;
-    P_k(0,1) = 0.0178;
-    P_k(1,1) = 0.01774;
-    P_k(1,0) = 0.00017095;
-
-    // set Q
-    
 
     // set R
     R(0,0) = 12;
@@ -176,7 +167,7 @@ void KalmanFilter::update() {
     chMtxUnlock(dataMutex_state_);
 
     std::string str = std::to_string(x_k(0,0)) + "," + std::to_string(x_k(1,0)) + "," + std::to_string(x_k(2,0)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(0,0)) + 
-    "," + std::to_string(((H * P_priori * H.transpose()) + R)(0,1)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(1,0)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(1,1)) +'\n';
+    "," + std::to_string(((H * P_priori * H.transpose()) + R)(0,1)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(1,0)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(1,1)) + '\n';
 
     std::ofstream Kalman;
     Kalman.open("Kalman.csv", std::ios::app);

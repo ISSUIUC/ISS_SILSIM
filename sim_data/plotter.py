@@ -54,7 +54,6 @@ with open("sim_data/data.csv") as csvfile:
         for i, val in enumerate(row):
             data_lists[i].append(float(val))
 
-
 # Print some stats:
 apogee = np.max(rz) 
 print(f"Apogee Altitude = {apogee} m\n\t\t= {apogee * 3.28} ft")
@@ -77,6 +76,7 @@ pk11 = kalman_df["invertboi_11"]
 extension_df = pd.read_csv("extension.csv")
 extension_vals = extension_df["Flap Extension (m)"]
 
+apogee_df = pd.read_csv("apogee.csv")
 
 if draw_plots:
 
@@ -94,6 +94,7 @@ if draw_plots:
     # plt.plot(timestamps_kf,pk01, label="invertboi01")
     # plt.plot(timestamps_kf,pk10,label="invertboi10")
     # plt.plot(timestamps_kf,pk11, label="invertboi11")
+    plt.plot(timestamps_kf, apogee_df["apogee"], label="RK4 Apogee")
     plt.plot(timestamps_kf, kx, label="KF Altitude")
     # plt.plot(timestamps_kf, kv, label="KF Velocity")
     # plt.plot(timestamps_kf, ka, label="KF Acceleration")

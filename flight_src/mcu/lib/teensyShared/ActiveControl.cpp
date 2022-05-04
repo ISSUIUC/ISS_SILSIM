@@ -1,5 +1,7 @@
 #include "ActiveControl.h"
-#include "Rocket.h"
+#include <iostream>
+#include <string>
+#include <fstream>
 
 Controller::Controller(struct pointers* pointer_struct, PWMServo* twisty_boi): activeControlServos(twisty_boi) {
     twisty_boi_ = twisty_boi;
@@ -14,7 +16,17 @@ void Controller::ctrlTickFunction() {
     array<float, 2> init = {stateData_->state_x, stateData_->state_vx};
     // chMtxUnlock(dataMutex_state_);
     float apogee_est = rk4_.sim_apogee(init, 0.1)[0];
-    std::cout<<init[0]<<", "<<apogee_est<<std::endl;
+    if(init[0] > 9500) {
+        std::cout<<init[0]<<", "<<init[1]<<", "<<apogee_est<<std::endl;
+    }
+
+    std::string str = std::to_string(apogee_est) + "\n";
+
+    std::ofstream apogee;
+    apogee.open("apogee.csv", std::ios::app);
+    apogee << str;
+    apogee.close();
+
     float u = kp*(apogee_est - apogee_des);
 
     float min = abs(u - prev_u)/dt;
