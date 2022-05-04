@@ -29,6 +29,11 @@ KalmanFilter::KalmanFilter(struct pointers* pointer_struct) {
     extension.open("extension.csv");
     extension << "Flap Extension (m)\n";
     extension.close(); 
+
+    std::ofstream apogee;
+    apogee.open("apogee.csv");
+    apogee << "Estimated Apogee (m)\n";
+    apogee.close(); 
 }
 
 void KalmanFilter::kfTickFunction() {
