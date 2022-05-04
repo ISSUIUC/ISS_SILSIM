@@ -16,7 +16,7 @@ def ingest_log(filepath):
     filehandle = open(filepath, 'r')
     for line in filehandle:
         
-        line_split = line.split(" ")
+        line_split = line.strip('\n').split(" ")
         date_string = line_split[0].strip('[').strip(']')
         time_string = line_split[1].strip('[').strip(']')
         component = line_split[2].strip('[').strip(']')

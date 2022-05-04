@@ -62,6 +62,7 @@ void Simulation::run(int steps) {
 
     motor_.ignite(tStamp_);
 
+    update_sensors();
     rocket_.log_rocket_state(tStamp_);
     motor_.log_motor_state(tStamp_);
 
@@ -123,8 +124,6 @@ void Simulation::run(int steps) {
 
         engine_->march_step(tStamp_, tStep_);
 
-        update_sensors();
-
         cpu_.tick(tStamp_);
 
         Vector3d rocket_axis(0, 0, 1);
@@ -149,6 +148,8 @@ void Simulation::run(int steps) {
         dataFile << "\n";
 
         tStamp_ += tStep_;
+
+        update_sensors();
 
         rocket_.log_rocket_state(tStamp_);
         motor_.log_motor_state(tStamp_);
