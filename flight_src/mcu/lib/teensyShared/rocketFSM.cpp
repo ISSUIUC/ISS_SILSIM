@@ -48,6 +48,7 @@ void rocketFSM::tickFSM() {
     // get the linear accelration from the lowgimu
     float linear_acceleration =
         pointer_struct->sensorDataPointer->highG_data.hg_az;
+        
         // std::cout<<"X: "<<pointer_struct->sensorDataPointer->highG_data.hg_ax<<" Y: "<<pointer_struct->sensorDataPointer->lowG_data.gy<<" Z: "<<pointer_struct->sensorDataPointer->lowG_data.gz<<std::endl;
 
     switch (pointer_struct->sensorDataPointer->rocketState_data.rocketState) {
