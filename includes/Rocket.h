@@ -166,8 +166,8 @@ class Rocket {
 
     //---------- Intertial Parameters ----------
     std::array<double, 9> I_{};       // Rocket moment of inertia tensor
-    double structural_mass_ = 25.91;  // structural mass of rocket in Kg
-    double total_mass_ = 25.91;       // total mass including propellant in Kg
+    double structural_mass_ = 19.0586;  // structural mass of rocket in Kg
+    double total_mass_ = 23.782;       // total mass including propellant in Kg
     double nose_to_cg_ = 1.683;       // nosecone tip to CG distance in m
 
     //----------- Aerodynamic Parameters ----------

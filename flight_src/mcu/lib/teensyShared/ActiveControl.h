@@ -20,7 +20,7 @@ class Controller {
     struct StateData* stateData_;
     rk4 rk4_;
     float kp = 0.0008;
-    float apogee_des = 9000;
+    float apogee_des = 4267.2;
     float min_extension = 0;
     float max_extension = 17.88 / 1000;
     float dt = .006;

@@ -70,7 +70,7 @@ int main() {
     // ConstantThrustSolidMotor motor(3.49, 5800.0, 9.021);
 
     // Cesaroni N5800 Motor
-    ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425);
+    ThrustCurveSolidMotor motor("thrust_curves/AeroTech_M2500T.csv", 4.711);
 
     RungeKutta engine(rocket, motor);
     CpuState cpu(&accelerometer, &thermometer, &barometer, &gyroscope, &gps,
