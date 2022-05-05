@@ -62,8 +62,7 @@ void rocketFSM::tickFSM() {
         case STATE_IDLE:
 
             // If high acceleration is observed in z direction...
-            std::cout<<"IDLE"<<std::endl;
-            std::cout<<"Accel Meas: "<<linear_acceleration<<"Launch thresh: "<<launch_linear_acceleration_thresh<<std::endl;
+            // std::cout<<"IDLE"<<std::endl;
             if (linear_acceleration > launch_linear_acceleration_thresh) {
                 rocketTimers.launch_time = chVTGetSystemTime();
                 pointer_struct->sensorDataPointer->rocketState_data

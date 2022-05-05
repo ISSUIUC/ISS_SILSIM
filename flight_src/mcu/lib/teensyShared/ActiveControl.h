@@ -19,13 +19,13 @@ class Controller {
     mutex_t* dataMutex_state_;
     struct StateData* stateData_;
     rk4 rk4_;
-    float kp = 0.0008;
-    float apogee_des = 4267.2;
+    float kp = 0.000024075;
+    float apogee_des = 4572;
     float min_extension = 0;
     float max_extension = 17.88 / 1000;
     float dt = .006;
     float prev_u = 0;
-    float du_max = 0.001;
+    float du_max = 0.01;
     float flap_width = 35.1 / 1000; // m
     FSM_State* current_state;
     ServoControl activeControlServos;
