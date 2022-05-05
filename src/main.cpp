@@ -15,8 +15,8 @@ constexpr double kLbsToKg = 0.453592;
 constexpr double kInchToMeters = 0.0254;
 
 /***************** Intrepid MK6 Parameters *****************/
-constexpr double kIntrepidDryMass = 46.52 * kLbsToKg;
-constexpr double kIntrepidWetMass = 67.30 * kLbsToKg;
+constexpr double kIntrepidDryMass = 42.017 * kLbsToKg;
+constexpr double kIntrepidWetMass = 52.430 * kLbsToKg;
 constexpr double kIntrepidWetCGLocation = 82.79 * kInchToMeters;
 constexpr double kIntrepidDryCGLocation = 73.06 * kInchToMeters;
 constexpr double kIntrepidTotalLength = 130.0 * kInchToMeters;
