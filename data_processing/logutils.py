@@ -44,8 +44,9 @@ def ingest_log(filepath):
     return master_dict
 
 
-wow = ingest_log("../logs/hmmm.log")
+if __name__ == "__main__":
 
+    data = ingest_log("../logs/hmmm.log")
 
 
 

@@ -3,74 +3,58 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import csv
 
+import logutils
+
 # Config flags
 draw_plots = True
 
 plt.style.use('dark_background')
 
-timestamps = []
+data = logutils.ingest_log("../logs/hmmm.log")
 
-rx = []
-ry = []
-rz = []
+timestamps = data['Simulation']['timestamp'] 
 
-vx = []
-vy = []
-vz = []
+rx = data['Rocket']['pos_x_enu'] 
+ry = data['Rocket']['pos_y_enu'] 
+rz = data['Rocket']['pos_z_enu']
 
-aX = []
-ay = []
-az = []
+vx = data['Rocket']['vel_x_enu']
+vy = data['Rocket']['vel_y_enu']
+vz = data['Rocket']['vel_z_enu']
 
-fx = []
-fy = []
-fz = []
+aX = data['Rocket']['accel_x_enu']
+ay = data['Rocket']['accel_y_enu']
+az = data['Rocket']['accel_z_enu']
 
-q0 = []
-q1 = []
-q2 = []
-q3 = []
+roll = data['Simulation']['roll']
+pitch = data['Simulation']['pitch']
+yaw = data['Simulation']['yaw']
 
-roll = []
-pitch = []
-yaw = []
+rocketX = data['Simulation']['rocket_axis_x']
+rocketY = data['Simulation']['rocket_axis_y']
+rocketZ = data['Simulation']['rocket_axis_z']
 
-rocketX = []
-rocketY = []
-rocketZ = []
-
-sensorX = []
-sensorY = []
-sensorZ = []
-
-data_lists = [timestamps, rx, ry, rz, vx, vy, vz, aX, ay, az, fx, fy, fz,
-              q0, q1, q2, q3, roll, pitch, yaw, rocketX, rocketY, rocketZ,
-              sensorX, sensorY, sensorZ]
-
-with open("sim_data/data.csv") as csvfile:
-    csvreader = csv.reader(csvfile, delimiter=",")
-
-    for row in csvreader:
-        for i, val in enumerate(row):
-            data_lists[i].append(float(val))
+sensorX = data['Accelerometer:LSM9_accel']['accel_x_rf']
+sensorY = data['Accelerometer:LSM9_accel']['accel_y_rf']
+sensorZ = data['Accelerometer:LSM9_accel']['accel_z_rf']
 
 
 # print some stats:
-apogee = np.max(rz) 
+apogee = np.max(data['Rocket']['pos_z_enu']) 
 print(f"apogee altitude = {apogee} m\n\t\t= {apogee * 3.28} ft")
-max_vel = np.max(vz)
+max_vel = np.max(data['Rocket']['vel_z_enu'])
 print(f"max vertical velocity\t= {max_vel} m/s\n\t\t\t= {max_vel * 3.28} ft/s\n\t\t\t= {max_vel / 343} mach")
 
 
 if draw_plots:
 
     plt.figure()
-    plt.plot(timestamps, rz, label="altitude")
-    plt.plot(timestamps, vz, label="vertical velocity")
-    plt.plot(timestamps, az, label="vertical acceleration")
-    plt.plot(timestamps, roll, label="roll")
-    plt.plot(timestamps, pitch, label="pitch")
-    plt.plot(timestamps, yaw, label="yaw")
+    plt.plot(timestamps, data['Rocket']['pos_z_enu'], label="altitude")
+    plt.plot(timestamps, data['Rocket']['vel_z_enu'], label="vertical velocity")
+    plt.plot(timestamps, data['Rocket']['accel_z_enu'], label="vertical acceleration")
+    plt.plot(timestamps, data['Simulation']['roll'], label="roll")
+    plt.plot(timestamps, data['Simulation']['pitch'], label="pitch")
+    plt.plot(timestamps, data['Simulation']['yaw'], label="yaw")
     plt.grid()
     plt.legend()
 
@@ -90,9 +74,9 @@ if draw_plots:
     ax.title.set_text("rocket trajectory")
 
     ax = fig.add_subplot(132, projection='3d')
-    ax.plot(rocketx, rockety, rocketz, 'r', zdir='z', linewidth=1.0)
-    ax.scatter(rocketx[0], rockety[0], rocketz[0],color='g', marker='^')
-    ax.scatter(rocketx[-1], rockety[-1], rocketz[-1], color='r', marker='x')
+    ax.plot(rocketX, rocketY, rocketZ, 'r', zdir='z', linewidth=1.0)
+    ax.scatter(rocketX[0], rocketY[0], rocketZ[0],color='g', marker='^')
+    ax.scatter(rocketX[-1], rocketY[-1], rocketZ[-1], color='r', marker='x')
     ax.axes.set_xlim3d(left=-1.5, right=1.5)
     ax.axes.set_ylim3d(bottom=-1.5, top=1.5)
     ax.axes.set_zlim3d(bottom=-1.5, top=1.5)
