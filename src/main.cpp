@@ -76,8 +76,7 @@ int main() {
 
     CpuState cpu;
 
-    Simulation sim(silsim_sink, 0.01, &engine, rocket, motor, cpu,
-                   "sim_data/data.csv");
+    Simulation sim(silsim_sink, 0.01, &engine, rocket, motor, cpu);
 
     sim.add_sensor(&accel1);
     sim.add_sensor(&gyro1);

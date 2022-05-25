@@ -323,7 +323,6 @@ Vector3d Rocket::gravity_vector_rf() {
 /*                            LOGGING FUNCTIONS                              */
 /*****************************************************************************/
 
-// clang-format off
 void Rocket::log_rocket_state(double tStamp) {
     std::stringstream datalog_ss;
 
@@ -331,6 +330,7 @@ void Rocket::log_rocket_state(double tStamp) {
 
     datalog_ss << tStamp << ",";
 
+    // clang-format off
     datalog_ss << r_vect_.x() << ","
                << r_vect_.y() << ","
                << r_vect_.z() << ",";
@@ -374,5 +374,5 @@ void Rocket::log_rocket_state(double tStamp) {
                << alpha_;
 
     rocket_logger_->info(datalog_ss.str());
+    // clang-format on
 }
-// clang-format on

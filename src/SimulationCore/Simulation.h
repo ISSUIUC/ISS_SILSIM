@@ -33,11 +33,9 @@
 
 class Simulation {
    public:
-    Simulation(std::shared_ptr<spdlog::sinks::basic_file_sink_mt> sink,
+    Simulation(std::shared_ptr<spdlog::sinks::basic_file_sink_mt> silsim_sink,
                double tStep, PhysicsEngine* engine, Rocket& rocket,
-               RocketMotor& motor, CpuState& cpu, std::string filename
-               // std::vector<Sensor&>& sensors
-    );
+               RocketMotor& motor, CpuState& cpu);
 
     void run(int steps);
 
@@ -61,10 +59,15 @@ class Simulation {
     // Sensors
     std::vector<Sensor*> sensors_;  // array of sensors on the rocket
 
-    std::string filename_;
-
-    // logger
-    std::shared_ptr<spdlog::logger> sim_log;
+    //----------- Data Logging ----------
+    std::shared_ptr<spdlog::logger> sim_logger_;
+    std::shared_ptr<spdlog::logger> sim_debug_logger_;
+    void log_simulation_state();
+    void log_simulation_debug();
+    const std::string datalog_format_string =
+        "timestamp,"
+        "roll,pitch,yaw,"
+        "rocket_axis_x,rocket_axis_y,rocket_axis_z";
 };
 
 #endif
