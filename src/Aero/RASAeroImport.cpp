@@ -32,14 +32,17 @@
  */
 RASAeroImport::RASAeroImport(spdlog_basic_sink_ptr silsim_sink,
                              std::string file_path) {
-    rasaero_logger_ =
-        std::make_shared<spdlog::logger>("RASAeroImport", silsim_sink);
+
+    if (silsim_sink) {
+        rasaero_logger_ =
+            std::make_shared<spdlog::logger>("RASAeroImport", silsim_sink);
 
 #ifdef RASAERO_DEBUG
-    rasaero_logger_->set_level(spdlog::level::debug);
+        rasaero_logger_->set_level(spdlog::level::debug);
 #else
-    rasaero_logger_->set_level(spdlog::level::info);
+        rasaero_logger_->set_level(spdlog::level::info);
 #endif
+    }
 
     rapidcsv::Document csv(file_path);
 
@@ -73,17 +76,17 @@ RASAeroImport::RASAeroImport(spdlog_basic_sink_ptr silsim_sink,
     set_alpha_params();
     set_protuberance_params();
 
-    rasaero_logger_->info("hmmmmmm rasaero");
-
-    rasaero_logger_->debug("[RASAeroImport ctor parsing metadata]:");
-    rasaero_logger_->debug("mach_instances = {}", mach_number_instances_);
-    rasaero_logger_->debug("mach_fidelity = {}", mach_number_fidelity_);
-    rasaero_logger_->debug("alpha_instances = {}", alpha_instances_);
-    rasaero_logger_->debug("alpha_fidelity = {}", alpha_fidelity_);
-    rasaero_logger_->debug("protuberance_instances = {}",
-                           protuberance_instances_);
-    rasaero_logger_->debug("protuberance_fidelity = {}",
-                           protuberance_fidelity_);
+    if (rasaero_logger_) {
+        rasaero_logger_->debug("[RASAeroImport ctor parsing metadata]:");
+        rasaero_logger_->debug("mach_instances = {}", mach_number_instances_);
+        rasaero_logger_->debug("mach_fidelity = {}", mach_number_fidelity_);
+        rasaero_logger_->debug("alpha_instances = {}", alpha_instances_);
+        rasaero_logger_->debug("alpha_fidelity = {}", alpha_fidelity_);
+        rasaero_logger_->debug("protuberance_instances = {}",
+                               protuberance_instances_);
+        rasaero_logger_->debug("protuberance_fidelity = {}",
+                               protuberance_fidelity_);
+    }
 }
 
 /**
@@ -247,31 +250,33 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
     RASAeroCoefficients result{row_z(3), row_z(4), row_z(5),
                                row_z(6), row_z(7), row_z(8)};
 
-    rasaero_logger_->debug(
-        "[RASAeroImport get_aero_coefficients() debug above/below finding]:");
-    rasaero_logger_->debug("mach_below = {}", mach_below);
-    rasaero_logger_->debug("closest_mach = {}", closest_mach);
-    rasaero_logger_->debug("alpha_below = {}", alpha_below);
-    rasaero_logger_->debug("alpha_above = {}", alpha_above);
-    rasaero_logger_->debug("prot_below = {}", prot_below);
-    rasaero_logger_->debug("prot_above = {}", prot_above);
+    if (rasaero_logger_) {
+        rasaero_logger_->debug(
+            "[RASAeroImport get_aero_coefficients() debug above/below finding]:");
+        rasaero_logger_->debug("mach_below = {}", mach_below);
+        rasaero_logger_->debug("closest_mach = {}", closest_mach);
+        rasaero_logger_->debug("alpha_below = {}", alpha_below);
+        rasaero_logger_->debug("alpha_above = {}", alpha_above);
+        rasaero_logger_->debug("prot_below = {}", prot_below);
+        rasaero_logger_->debug("prot_above = {}", prot_above);
 
-    rasaero_logger_->debug(
-        "[RASAeroImport get_aero_coefficients() debug index finding]:");
-    rasaero_logger_->debug("mach_start_index = {}", mach_start_index);
-    rasaero_logger_->debug("row_a_offset = {}", row_a_offset);
-    rasaero_logger_->debug("row_b_offset = {}", row_b_offset);
-    rasaero_logger_->debug("row_c_offset = {}", row_c_offset);
-    rasaero_logger_->debug("row_d_offset = {}", row_d_offset);
+        rasaero_logger_->debug(
+            "[RASAeroImport get_aero_coefficients() debug index finding]:");
+        rasaero_logger_->debug("mach_start_index = {}", mach_start_index);
+        rasaero_logger_->debug("row_a_offset = {}", row_a_offset);
+        rasaero_logger_->debug("row_b_offset = {}", row_b_offset);
+        rasaero_logger_->debug("row_c_offset = {}", row_c_offset);
+        rasaero_logger_->debug("row_d_offset = {}", row_d_offset);
 
-    rasaero_logger_->debug(
-        "[RASAeroImport get_aero_coefficients() debug result]:");
-    rasaero_logger_->debug("cd_poweroff = {}", result.cd_poweroff);
-    rasaero_logger_->debug("cd_poweron = {}", result.cd_poweron);
-    rasaero_logger_->debug("ca_poweroff = {}", result.ca_poweroff);
-    rasaero_logger_->debug("ca_poweron = {}", result.ca_poweron);
-    rasaero_logger_->debug("cn_total = {}", result.cn_total);
-    rasaero_logger_->debug("cp_total = {}", result.cp_total);
+        rasaero_logger_->debug(
+            "[RASAeroImport get_aero_coefficients() debug result]:");
+        rasaero_logger_->debug("cd_poweroff = {}", result.cd_poweroff);
+        rasaero_logger_->debug("cd_poweron = {}", result.cd_poweron);
+        rasaero_logger_->debug("ca_poweroff = {}", result.ca_poweroff);
+        rasaero_logger_->debug("ca_poweron = {}", result.ca_poweron);
+        rasaero_logger_->debug("cn_total = {}", result.cn_total);
+        rasaero_logger_->debug("cp_total = {}", result.cp_total);
+    }
 
     return result;
 }

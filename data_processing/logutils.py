@@ -24,17 +24,21 @@ def ingest_log(filepath):
         line_type = line_split[4].strip('[').strip(']')
         data = line_split[-1].split(',')
         
-        if line_type == "DATALOG_FORMAT":
-            master_dict[component] = {}
+        if log_level == "info":
+            if line_type == "DATALOG_FORMAT":
+                master_dict[component] = {}
 
-            print("Adding " + component + " to master_dict components")
+                print("Adding " + component + " to master_dict components")
 
-            for data_type in data:
-                master_dict[component][data_type] = []
+                for data_type in data:
+                    master_dict[component][data_type] = []
 
-        elif line_type == "DATA":
-            for idx, data_type in enumerate(master_dict[component].keys()):
-                master_dict[component][data_type].append(float(data[idx]))
+            elif line_type == "DATA":
+                for idx, data_type in enumerate(master_dict[component].keys()):
+                    master_dict[component][data_type].append(float(data[idx]))
+
+        elif log_level == "debug":
+            pass
 
         
     for component in master_dict.keys():

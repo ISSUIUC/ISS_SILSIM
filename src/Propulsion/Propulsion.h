@@ -52,10 +52,7 @@ class RocketMotor {
     virtual double current_thrust(double tStamp) const = 0;
     virtual Vector3d get_thrust_vector(double tStamp) const = 0;
 
-    void log_motor_state(double tStamp);
-    const std::string datalog_format_string =
-        "timestamp,is_burning,propellant_mass,thrust_magnitude,"
-        "thrust_vector_rf_x,thrust_vector_rf_y,thrust_vector_rf_z";
+    virtual void log_motor_state(double tStamp);
 
    protected:
     bool ignition_ = false;
@@ -64,6 +61,9 @@ class RocketMotor {
     double initial_propellant_mass_{0.0};
 
     std::shared_ptr<spdlog::logger> motor_logger_;
+    const std::string datalog_format_string =
+        "timestamp,is_burning,propellant_mass,thrust_magnitude,"
+        "thrust_vector_rf_x,thrust_vector_rf_y,thrust_vector_rf_z";
 };
 
 /** ConstantThrustSolidMotor Derived Class
@@ -77,15 +77,7 @@ class ConstantThrustSolidMotor : public RocketMotor {
    public:
     ConstantThrustSolidMotor(double max_burn_duration, double thrust_value,
                              double initial_propellant_mass,
-                             spdlog_basic_sink_ptr silsim_sink)
-        : thrust_value_(thrust_value) {
-        max_burn_duration_ = max_burn_duration;
-        initial_propellant_mass_ = initial_propellant_mass;
-
-        motor_logger_ = std::make_shared<spdlog::logger>(
-            "ConstantThrustSolidMotor", silsim_sink);
-        motor_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
-    };
+                             spdlog_basic_sink_ptr silsim_sink);
 
     double current_thrust(double tStamp) const override;
     Vector3d get_thrust_vector(double tStamp) const override;

@@ -34,21 +34,22 @@
 
 using Eigen::Vector3d;
 
-Simulation::Simulation(
-    std::shared_ptr<spdlog::sinks::basic_file_sink_mt> silsim_sink,
-    double tStep, PhysicsEngine* engine, Rocket& rocket, RocketMotor& motor,
-    CpuState& cpu)
+Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
+                       RocketMotor& motor, CpuState& cpu,
+                       spdlog_basic_sink_ptr silsim_sink)
     : tStamp_(0),
       tStep_(tStep),
       engine_(engine),
       rocket_(rocket),
       motor_(motor),
       cpu_(cpu) {
-    sim_debug_logger_ = spdlog::basic_logger_mt("Simulation_Debug",
-                                                "logs/simulation_debug.log");
-    sim_logger_ = std::make_shared<spdlog::logger>("Simulation", silsim_sink);
 
-    sim_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
+    if (silsim_sink) {
+        sim_logger_ =
+            std::make_shared<spdlog::logger>("Simulation", silsim_sink);
+        sim_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
+        sim_logger_->set_level(spdlog::level::debug);
+    }
 }
 
 void Simulation::run(int steps) {
@@ -131,81 +132,87 @@ void Simulation::update_sensors() {
 /*****************************************************************************/
 
 void Simulation::log_simulation_state() {
-    Vector3d r_dot_rf = rocket_.enu2r(rocket_.get_r_dot());
-    Quaterniond q = rocket_.get_q_ornt();
+    if (sim_logger_) {
+        Vector3d r_dot_rf = rocket_.enu2r(rocket_.get_r_dot());
+        Quaterniond q = rocket_.get_q_ornt();
 
-    // eqns from
-    // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-    double yaw = atan2(2.0 * (q.w() * q.x() + q.z() * q.y()),
-                       1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y())) *
-                 RAD2DEG;
-    double pitch = asin(2.0 * (q.w() * q.y() - q.z() * q.x())) * RAD2DEG;
-    double roll = atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
-                        -1.0 + 2.0 * (q.w() * q.w() + q.x() * q.x())) *
-                  RAD2DEG;
+        // eqns from
+        // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+        double yaw = atan2(2.0 * (q.w() * q.x() + q.z() * q.y()),
+                           1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y())) *
+                     RAD2DEG;
+        double pitch = asin(2.0 * (q.w() * q.y() - q.z() * q.x())) * RAD2DEG;
+        double roll = atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
+                            -1.0 + 2.0 * (q.w() * q.w() + q.x() * q.x())) *
+                      RAD2DEG;
 
-    double alpha = acos(r_dot_rf.z() / r_dot_rf.norm());
+        double alpha = acos(r_dot_rf.z() / r_dot_rf.norm());
 
-    Vector3d rocket_axis(0, 0, 1);
-    rocket_axis = rocket_.r2enu(rocket_axis);
+        Vector3d rocket_axis(0, 0, 1);
+        rocket_axis = rocket_.r2enu(rocket_axis);
 
-    std::stringstream datalog_ss;
+        std::stringstream datalog_ss;
 
-    // clang-format off
-    datalog_ss << "[DATA] ";
+        // clang-format off
+        datalog_ss << "[DATA] ";
 
-    datalog_ss << tStamp_ << ",";
+        datalog_ss << tStamp_ << ",";
 
-    datalog_ss << roll << ","
-               << pitch << ","
-               << yaw << ",";
+        datalog_ss << roll << ","
+                   << pitch << ","
+                   << yaw << ",";
 
-    datalog_ss << rocket_axis.x() << ","
-               << rocket_axis.y() << ","
-               << rocket_axis.z() << ",";
-    // clang-format on
+        datalog_ss << rocket_axis.x() << ","
+                   << rocket_axis.y() << ","
+                   << rocket_axis.z() << ",";
+        // clang-format on
 
-    sim_logger_->info(datalog_ss.str());
+        sim_logger_->info(datalog_ss.str());
+    }
 }
 
+void Simulation::log_simulation_event(std::string message) {}
+
 void Simulation::log_simulation_debug() {
-    // Get ENU frame rocket state
-    Vector3d r_vect_enu = rocket_.get_r_vect();
-    Vector3d r_dot_enu = rocket_.get_r_dot();
-    Quaterniond q = rocket_.get_q_ornt();
+    if (sim_logger_) {
+        // Get ENU frame rocket state
+        Vector3d r_vect_enu = rocket_.get_r_vect();
+        Vector3d r_dot_enu = rocket_.get_r_dot();
+        Quaterniond q = rocket_.get_q_ornt();
 
-    // Get rocket frame state
-    Vector3d r_dot_rf = rocket_.enu2r(rocket_.get_r_dot());
-    Vector3d r_ddot_rf = rocket_.enu2r(rocket_.get_r_ddot());
-    Vector3d f_net_rf = rocket_.enu2r(rocket_.get_f_net());
-    Vector3d w_net_rf = rocket_.enu2r(rocket_.get_w_vect());
-    Vector3d m_net_rf = rocket_.enu2r(rocket_.get_m_net());
+        // Get rocket frame state
+        Vector3d r_dot_rf = rocket_.enu2r(rocket_.get_r_dot());
+        Vector3d r_ddot_rf = rocket_.enu2r(rocket_.get_r_ddot());
+        Vector3d f_net_rf = rocket_.enu2r(rocket_.get_f_net());
+        Vector3d w_net_rf = rocket_.enu2r(rocket_.get_w_vect());
+        Vector3d m_net_rf = rocket_.enu2r(rocket_.get_m_net());
 
-    // eqns from
-    // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-    double yaw = atan2(2.0 * (q.w() * q.x() + q.z() * q.y()),
-                       1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y())) *
-                 RAD2DEG;
-    double pitch = asin(2.0 * (q.w() * q.y() - q.z() * q.x())) * RAD2DEG;
-    double roll = atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
-                        -1.0 + 2.0 * (q.w() * q.w() + q.x() * q.x())) *
-                  RAD2DEG;
+        // eqns from
+        // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+        double yaw = atan2(2.0 * (q.w() * q.x() + q.z() * q.y()),
+                           1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y())) *
+                     RAD2DEG;
+        double pitch = asin(2.0 * (q.w() * q.y() - q.z() * q.x())) * RAD2DEG;
+        double roll = atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
+                            -1.0 + 2.0 * (q.w() * q.w() + q.x() * q.x())) *
+                      RAD2DEG;
 
-    double alpha = acos(r_dot_rf.z() / r_dot_rf.norm());
-    sim_debug_logger_->debug("Timestamp: {}", tStamp_);
-    sim_debug_logger_->debug("ENU Frame R-Vector: <{}, {}, {}>", r_vect_enu.x(),
-                             r_vect_enu.y(), r_vect_enu.z());
-    sim_debug_logger_->debug("Rocket Frame Velocity: <{}, {}, {}>",
-                             r_dot_rf.x(), r_dot_rf.y(), r_dot_rf.z());
-    sim_debug_logger_->debug("Rocket Frame Accel: <{}, {}, {}>", r_ddot_rf.x(),
-                             r_ddot_rf.y(), r_ddot_rf.z());
-    sim_debug_logger_->debug("Rocket Frame F-Net: <{}, {}, {}>", f_net_rf.x(),
-                             f_net_rf.y(), f_net_rf.z());
-    sim_debug_logger_->debug("Rocket Frame W-Net: <{}, {}, {}>", w_net_rf.x(),
-                             w_net_rf.y(), w_net_rf.z());
-    sim_debug_logger_->debug("Rocket Frame T-Net: <{}, {}, {}>", m_net_rf.x(),
-                             m_net_rf.y(), m_net_rf.z());
-    sim_debug_logger_->debug("ROLL: {} PITCH: {} YAW: {}  [deg]", roll, pitch,
-                             yaw);
-    sim_debug_logger_->debug("alphaSIM: {}  [deg]", alpha * RAD2DEG);
+        double alpha = acos(r_dot_rf.z() / r_dot_rf.norm());
+        sim_logger_->debug("Timestamp: {}", tStamp_);
+        sim_logger_->debug("ENU Frame R-Vector: <{}, {}, {}>", r_vect_enu.x(),
+                                 r_vect_enu.y(), r_vect_enu.z());
+        sim_logger_->debug("Rocket Frame Velocity: <{}, {}, {}>",
+                                 r_dot_rf.x(), r_dot_rf.y(), r_dot_rf.z());
+        sim_logger_->debug("Rocket Frame Accel: <{}, {}, {}>", r_ddot_rf.x(),
+                                 r_ddot_rf.y(), r_ddot_rf.z());
+        sim_logger_->debug("Rocket Frame F-Net: <{}, {}, {}>", f_net_rf.x(),
+                                 f_net_rf.y(), f_net_rf.z());
+        sim_logger_->debug("Rocket Frame W-Net: <{}, {}, {}>", w_net_rf.x(),
+                                 w_net_rf.y(), w_net_rf.z());
+        sim_logger_->debug("Rocket Frame T-Net: <{}, {}, {}>", m_net_rf.x(),
+                                 m_net_rf.y(), m_net_rf.z());
+        sim_logger_->debug("ROLL: {} PITCH: {} YAW: {}  [deg]", roll, pitch,
+                                 yaw);
+        sim_logger_->debug("alphaSIM: {}  [deg]", alpha * RAD2DEG);
+    }
 }

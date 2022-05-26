@@ -9,8 +9,12 @@
 #include "Sensor.h"
 #include "Simulation.h"
 
-constexpr double deg2rad = 3.14159265 / 180.0;
+// Shortening the typename for   a e s t h e t i c s
+typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
+    spdlog_basic_sink_ptr;
 
+/****************** Conversion Constants  ******************/
+constexpr double deg2rad = 3.14159265 / 180.0;
 constexpr double kLbsToKg = 0.453592;
 constexpr double kInchToMeters = 0.0254;
 
@@ -24,20 +28,20 @@ constexpr double kIntrepidDiameter = 4.02 * kInchToMeters;
 constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
 int main() {
-    std::shared_ptr<spdlog::sinks::basic_file_sink_mt> silsim_sink =
+    spdlog_basic_sink_ptr silsim_datalog_sink =
         std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/hmmm.log");
 
-    silsim_sink->set_level(spdlog::level::debug);
+    silsim_datalog_sink->set_level(spdlog::level::debug);
 
     // comment below is used if we want to change the format of the logging
     // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
 
     std::shared_ptr<RASAeroImport> rasaero_import =
         std::make_shared<RASAeroImport>(
-            silsim_sink,
+            silsim_datalog_sink,
             "utils/RASAero_fetch/output/RASAero_Intrepid_5800_mk6.csv");
 
-    Rocket rocket(silsim_sink, rasaero_import);
+    Rocket rocket(silsim_datalog_sink, rasaero_import);
 
     rocket.set_structural_mass(kIntrepidDryMass);
 
@@ -59,9 +63,9 @@ int main() {
     rocket.set_q_ornt(start_ornt);
 
     // Construct some sensors
-    Accelerometer accel1("LSM9_accel", rocket, 100, silsim_sink);
+    Accelerometer accel1("LSM9_accel", rocket, 100, silsim_datalog_sink);
     accel1.enable_noise_injection();
-    Gyroscope gyro1("LSM9_gyro", rocket, 100, silsim_sink);
+    Gyroscope gyro1("LSM9_gyro", rocket, 100, silsim_datalog_sink);
 
     // Modeling Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop
     // weight
@@ -69,14 +73,14 @@ int main() {
 
     // Cesaroni N5800 Motor
     ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425,
-                                silsim_sink);
+                                silsim_datalog_sink);
 
     RungeKutta engine(rocket, motor);
     // ForwardEuler engine(rocket, motor);
 
     CpuState cpu;
 
-    Simulation sim(silsim_sink, 0.01, &engine, rocket, motor, cpu);
+    Simulation sim(0.01, &engine, rocket, motor, cpu, silsim_datalog_sink);
 
     sim.add_sensor(&accel1);
     sim.add_sensor(&gyro1);

@@ -69,12 +69,12 @@ class RASAeroImport {
 
     std::shared_ptr<spdlog::logger> rasaero_logger_;
 
-    /************************** Set Parameters ********************************/
+    /*************************** Set Parameters *******************************/
     void set_mach_number_params();
     void set_alpha_params();
     void set_protuberance_params();
 
-    // Some metadata useful for interpolation
+    /********************* Metadata for Interpolation *************************/
     int mach_number_instances_;    // Number of mach numbers in the table
     double mach_number_fidelity_;  // Distance between mach numbers in table
 
