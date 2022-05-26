@@ -352,6 +352,26 @@ void Rocket::log_rocket_state(double tStamp) {
                    << w_dot_.y() << "," 
                    << w_dot_.z() << ",";
 
+        Vector3d r_dot_rf = enu2r(r_dot_);
+        datalog_ss << r_dot_rf.x() << ","
+                   << r_dot_rf.y() << ","
+                   << r_dot_rf.z() << ",";
+
+        Vector3d r_ddot_rf = enu2r(r_ddot_);
+        datalog_ss << r_ddot_rf.x() << ","
+                   << r_ddot_rf.y() << "," 
+                   << r_ddot_rf.z() << ",";
+
+        Vector3d w_vect_rf = enu2r(w_vect_);
+        datalog_ss << w_vect_rf.x() << "," 
+                   << w_vect_rf.y() << "," 
+                   << w_vect_rf.z() << ",";
+
+        Vector3d w_dot_rf = enu2r(w_dot_);
+        datalog_ss << w_dot_rf.x() << ","
+                   << w_dot_rf.y() << "," 
+                   << w_dot_rf.z() << ",";
+
         datalog_ss << f_net_.x() << "," 
                    << f_net_.y() << "," 
                    << f_net_.z() << ",";

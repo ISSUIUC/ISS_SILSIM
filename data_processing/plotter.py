@@ -18,13 +18,13 @@ rx = data['Rocket']['pos_x_enu']
 ry = data['Rocket']['pos_y_enu'] 
 rz = data['Rocket']['pos_z_enu']
 
-vx = data['Rocket']['vel_x_enu']
-vy = data['Rocket']['vel_y_enu']
-vz = data['Rocket']['vel_z_enu']
+vx = data['Rocket']['vel_x_rf']
+vy = data['Rocket']['vel_y_rf']
+vz = data['Rocket']['vel_z_rf']
 
-aX = data['Rocket']['accel_x_enu']
-ay = data['Rocket']['accel_y_enu']
-az = data['Rocket']['accel_z_enu']
+aX = data['Rocket']['accel_x_rf']
+ay = data['Rocket']['accel_y_rf']
+az = data['Rocket']['accel_z_rf']
 
 roll = data['Simulation']['roll']
 pitch = data['Simulation']['pitch']
@@ -49,9 +49,9 @@ print(f"max vertical velocity\t= {max_vel} m/s\n\t\t\t= {max_vel * 3.28} ft/s\n\
 if draw_plots:
 
     plt.figure()
-    plt.plot(timestamps, data['Rocket']['pos_z_enu'], label="altitude")
-    plt.plot(timestamps, data['Rocket']['vel_z_enu'], label="vertical velocity")
-    plt.plot(timestamps, data['Rocket']['accel_z_enu'], label="vertical acceleration")
+    plt.plot(timestamps, data['Rocket']['pos_z_enu'], label="altitude (ENU Frame)")
+    plt.plot(timestamps, data['Rocket']['vel_z_enu'], label="vertical velocity (ENU Frame)")
+    plt.plot(timestamps, data['Rocket']['accel_z_enu'], label="vertical acceleration (ENU Frame)")
     plt.plot(timestamps, data['Simulation']['roll'], label="roll")
     plt.plot(timestamps, data['Simulation']['pitch'], label="pitch")
     plt.plot(timestamps, data['Simulation']['yaw'], label="yaw")
