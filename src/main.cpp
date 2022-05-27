@@ -31,7 +31,7 @@ int main() {
     spdlog_basic_sink_ptr silsim_datalog_sink =
         std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/hmmm.log");
 
-    silsim_datalog_sink->set_level(spdlog::level::debug);
+    silsim_datalog_sink->set_level(spdlog::level::info);
 
     // comment below is used if we want to change the format of the logging
     // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
@@ -75,8 +75,8 @@ int main() {
     ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425,
                                 silsim_datalog_sink);
 
-    RungeKutta engine(rocket, motor);
-    // ForwardEuler engine(rocket, motor);
+    // RungeKutta engine(rocket, motor, silsim_datalog_sink);
+    ForwardEuler engine(rocket, motor, silsim_datalog_sink);
 
     CpuState cpu;
 
