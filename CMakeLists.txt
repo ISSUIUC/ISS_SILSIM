@@ -12,8 +12,9 @@ if(NOT EXISTS ${LIB}/spdlog/CMakeLists.txt
     message(FATAL_ERROR "Missing submodule dependencies try\ngit submodule update --init --recursive\nto download dependencies")
 endif()
 
-# Add SILSIM source code directories
+# Add SILSIM source code "modules"
 add_subdirectory(${SRC}/SimulationCore)
+add_subdirectory(${SRC}/Rocket)
 add_subdirectory(${SRC}/Physics)
 add_subdirectory(${SRC}/Propulsion)
 add_subdirectory(${SRC}/Atmosphere)
@@ -32,6 +33,7 @@ add_executable(ISS_SILSIM src/main.cpp)
 # Link SILSIM source code to main executable
 target_link_libraries(ISS_SILSIM PUBLIC 
                       SimulationCore
+                      Rocket
                       Physics
                       Propulsion
                       Atmosphere
@@ -47,6 +49,7 @@ target_link_libraries(ISS_SILSIM PRIVATE
 
 target_include_directories(ISS_SILSIM PUBLIC 
                            ${SRC}/SimulationCore
+                           ${SRC}/Rocket
                            ${SRC}/Physics
                            ${SRC}/Propulsion
                            ${SRC}/Atmosphere
