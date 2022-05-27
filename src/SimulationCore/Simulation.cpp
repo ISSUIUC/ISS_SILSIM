@@ -24,6 +24,7 @@
 #include <iostream>
 #include <string>
 
+#include "Atmosphere.h"
 #include "CpuState.h"
 #include "PhysicsEngine.h"
 #include "Propulsion.h"
@@ -150,12 +151,26 @@ void Simulation::log_simulation_state() {
         Vector3d rocket_axis(0, 0, 1);
         rocket_axis = rocket_.r2enu(rocket_axis);
 
+        // Get Atmosphere state
+        Vector3d pos_ecef = rocket_.position_enu2ecef(rocket_.get_r_vect());
+        Vector3d geod = rocket_.ecef2geod(pos_ecef);
+        double altitude = geod.z();
+        double temperature = Atmosphere::get_temperature(altitude);
+        double pressure = Atmosphere::get_pressure(altitude);
+        double density = Atmosphere::get_density(altitude);
+        double speed_of_sound = Atmosphere::get_speed_of_sound(altitude);
+
         std::stringstream datalog_ss;
 
         // clang-format off
         datalog_ss << "[DATA] ";
 
         datalog_ss << tStamp_ << ",";
+
+        datalog_ss << temperature << ","
+                   << pressure << ","
+                   << density << ","
+                   << speed_of_sound << ",";
 
         datalog_ss << roll << ","
                    << pitch << ","
