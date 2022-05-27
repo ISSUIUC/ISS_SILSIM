@@ -84,7 +84,9 @@ void Simulation::run(int steps) {
         double yaw =
             atan2(2.0 * (s * x + z * y), 1.0 - 2.0 * (x * x + y * y)) * RAD2DEG;
         double pitch = asin(2.0 * (s * y - z * x)) * RAD2DEG;
-        double roll = atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) * RAD2DEG;
+        double roll =
+            atan2(2.0 * (s * z + x * y), -1.0 + 2.0 * (s * s + x * x)) *
+            RAD2DEG;
 
         double alpha = acos(r_dot.z() / r_dot.norm());
         sim_log->debug("Timestamp: {}", tStamp_);
