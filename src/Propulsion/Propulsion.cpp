@@ -152,10 +152,9 @@ Vector3d ConstantThrustSolidMotor::get_thrust_vector(double tStamp) const {
 ThrustCurveSolidMotor::ThrustCurveSolidMotor(
     std::string filename, double initial_propellant_mass,
     spdlog_basic_sink_ptr silsim_sink) {
-
     if (silsim_sink) {
-        motor_logger_ =
-            std::make_shared<spdlog::logger>("ThrustCurveSolidMotor", silsim_sink);
+        motor_logger_ = std::make_shared<spdlog::logger>(
+            "ThrustCurveSolidMotor", silsim_sink);
         motor_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
     }
 

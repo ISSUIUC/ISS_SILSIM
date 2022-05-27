@@ -32,7 +32,6 @@
  */
 RASAeroImport::RASAeroImport(spdlog_basic_sink_ptr silsim_sink,
                              std::string file_path) {
-
     if (silsim_sink) {
         rasaero_logger_ =
             std::make_shared<spdlog::logger>("RASAeroImport", silsim_sink);
@@ -252,7 +251,8 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
 
     if (rasaero_logger_) {
         rasaero_logger_->debug(
-            "[RASAeroImport get_aero_coefficients() debug above/below finding]:");
+            "[RASAeroImport get_aero_coefficients() debug above/below "
+            "finding]:");
         rasaero_logger_->debug("mach_below = {}", mach_below);
         rasaero_logger_->debug("closest_mach = {}", closest_mach);
         rasaero_logger_->debug("alpha_below = {}", alpha_below);

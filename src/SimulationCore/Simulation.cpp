@@ -43,7 +43,6 @@ Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
       rocket_(rocket),
       motor_(motor),
       cpu_(cpu) {
-
     if (silsim_sink) {
         sim_logger_ =
             std::make_shared<spdlog::logger>("Simulation", silsim_sink);
@@ -200,19 +199,19 @@ void Simulation::log_simulation_debug() {
         double alpha = acos(r_dot_rf.z() / r_dot_rf.norm());
         sim_logger_->debug("Timestamp: {}", tStamp_);
         sim_logger_->debug("ENU Frame R-Vector: <{}, {}, {}>", r_vect_enu.x(),
-                                 r_vect_enu.y(), r_vect_enu.z());
-        sim_logger_->debug("Rocket Frame Velocity: <{}, {}, {}>",
-                                 r_dot_rf.x(), r_dot_rf.y(), r_dot_rf.z());
+                           r_vect_enu.y(), r_vect_enu.z());
+        sim_logger_->debug("Rocket Frame Velocity: <{}, {}, {}>", r_dot_rf.x(),
+                           r_dot_rf.y(), r_dot_rf.z());
         sim_logger_->debug("Rocket Frame Accel: <{}, {}, {}>", r_ddot_rf.x(),
-                                 r_ddot_rf.y(), r_ddot_rf.z());
+                           r_ddot_rf.y(), r_ddot_rf.z());
         sim_logger_->debug("Rocket Frame F-Net: <{}, {}, {}>", f_net_rf.x(),
-                                 f_net_rf.y(), f_net_rf.z());
+                           f_net_rf.y(), f_net_rf.z());
         sim_logger_->debug("Rocket Frame W-Net: <{}, {}, {}>", w_net_rf.x(),
-                                 w_net_rf.y(), w_net_rf.z());
+                           w_net_rf.y(), w_net_rf.z());
         sim_logger_->debug("Rocket Frame T-Net: <{}, {}, {}>", m_net_rf.x(),
-                                 m_net_rf.y(), m_net_rf.z());
+                           m_net_rf.y(), m_net_rf.z());
         sim_logger_->debug("ROLL: {} PITCH: {} YAW: {}  [deg]", roll, pitch,
-                                 yaw);
+                           yaw);
         sim_logger_->debug("alphaSIM: {}  [deg]", alpha * RAD2DEG);
     }
 }

@@ -76,15 +76,17 @@ class PhysicsEngine {
  */
 class ForwardEuler : public PhysicsEngine {
    public:
-    ForwardEuler(Rocket& rocket, RocketMotor& motor, spdlog_basic_sink_ptr silsim_sink) : PhysicsEngine(rocket, motor) {
+    ForwardEuler(Rocket& rocket, RocketMotor& motor,
+                 spdlog_basic_sink_ptr silsim_sink)
+        : PhysicsEngine(rocket, motor) {
         if (silsim_sink) {
-            engine_logger_ = std::make_shared<spdlog::logger>("ForwardEuler", silsim_sink);
+            engine_logger_ =
+                std::make_shared<spdlog::logger>("ForwardEuler", silsim_sink);
             engine_logger_->set_level(spdlog::level::debug);
-        }    
+        }
     };
 
     void march_step(double tStamp, double tStep) override;
-
 };
 
 /** ForwardEuler Derived Class
@@ -101,12 +103,14 @@ class ForwardEuler : public PhysicsEngine {
  */
 class RungeKutta : public PhysicsEngine {
    public:
-    RungeKutta(Rocket& rocket, RocketMotor& motor, spdlog_basic_sink_ptr silsim_sink)
-        : PhysicsEngine(rocket, motor){
+    RungeKutta(Rocket& rocket, RocketMotor& motor,
+               spdlog_basic_sink_ptr silsim_sink)
+        : PhysicsEngine(rocket, motor) {
         if (silsim_sink) {
-            engine_logger_ = std::make_shared<spdlog::logger>("RungeKutta", silsim_sink);
+            engine_logger_ =
+                std::make_shared<spdlog::logger>("RungeKutta", silsim_sink);
             engine_logger_->set_level(spdlog::level::debug);
-        }    
+        }
     };
 
     void march_step(double tStamp, double tStep) override;

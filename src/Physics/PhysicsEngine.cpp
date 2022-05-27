@@ -115,15 +115,15 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
     if (engine_logger_) {
         engine_logger_->debug("timestamp = {}s", tStamp);
         engine_logger_->debug("thrust_rf = <{}, {}, {}>", thrust_rf.x(),
-                            thrust_rf.y(), thrust_rf.z());
+                              thrust_rf.y(), thrust_rf.z());
         engine_logger_->debug("grav_rf = <{}, {}, {}>", grav_rf.x(),
-                            grav_rf.y(), grav_rf.z());
+                              grav_rf.y(), grav_rf.z());
         engine_logger_->debug("aero_force_rf = <{}, {}, {}>", aero_force_rf.x(),
-                            aero_force_rf.y(), aero_force_rf.z());
-        engine_logger_->debug("aero_moment_rf = <{}, {}, {}>", aero_moment_rf.x(),
-                            aero_moment_rf.y(), aero_moment_rf.z());
+                              aero_force_rf.y(), aero_force_rf.z());
+        engine_logger_->debug("aero_moment_rf = <{}, {}, {}>",
+                              aero_moment_rf.x(), aero_moment_rf.y(),
+                              aero_moment_rf.z());
     }
-
 
     return {net_force_rf, net_moment_rf};
 }
