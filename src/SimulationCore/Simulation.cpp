@@ -104,6 +104,7 @@ void Simulation::run(int steps) {
 
         // End simulation if apogee is reached
         if (r_dot_enu.z() < -3.0) {
+            log_simulation_event("Apogee Reached. Halting Simulation.");
             break;
         }
     }
@@ -185,7 +186,15 @@ void Simulation::log_simulation_state() {
     }
 }
 
-void Simulation::log_simulation_event(std::string message) {}
+void Simulation::log_simulation_event(std::string message) {
+    if (sim_logger_) {
+        std::stringstream datalog_ss;
+
+        datalog_ss << "[EVENT] " << tStamp_ << " " << message;
+
+        sim_logger_->info(datalog_ss.str());
+    }
+}
 
 void Simulation::log_simulation_debug() {
     if (sim_logger_) {
