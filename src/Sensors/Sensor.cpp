@@ -85,7 +85,7 @@ void Gyroscope::get_data(Vector3d& data) {
     new_data_ = false;
 }
 
-void Gyroscope::log_data(double tStamp) {
+void Gyroscope::log_sensor_state(double tStamp) {
     if (sensor_logger_) {
         // clang-format off
         std::stringstream datalog_ss;
@@ -148,7 +148,7 @@ void Accelerometer::get_data(Vector3d& data) {
     new_data_ = false;
 }
 
-void Accelerometer::log_data(double tStamp) {
+void Accelerometer::log_sensor_state(double tStamp) {
     if (sensor_logger_) {
         // clang-format off
         std::stringstream datalog_ss;
@@ -204,7 +204,7 @@ double Barometer::get_data() {
     return data_;
 }
 
-void Barometer::log_data(double tStamp) {
+void Barometer::log_sensor_state(double tStamp) {
     if (sensor_logger_) {
         // clang-format off
         std::stringstream datalog_ss;

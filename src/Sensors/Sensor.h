@@ -47,7 +47,7 @@ class Sensor {
     virtual void update_data(double tStep);
     virtual void get_data(Vector3d& data);
     virtual double get_data();
-    virtual void log_data(double tStamp) = 0;
+    virtual void log_sensor_state(double tStamp) = 0;
 
     // Noise/bias injection control
     void enable_noise_injection() { inject_noise_ = true; };
@@ -82,7 +82,7 @@ class Gyroscope : public Sensor {
               double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     void get_data(Vector3d& data) override;
-    void log_data(double tStamp) override;
+    void log_sensor_state(double tStamp) override;
 
     void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
@@ -104,7 +104,7 @@ class Accelerometer : public Sensor {
                   double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     void get_data(Vector3d& data) override;
-    void log_data(double tStamp) override;
+    void log_sensor_state(double tStamp) override;
 
     void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
@@ -128,7 +128,7 @@ class Barometer : public Sensor {
               double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     double get_data() override;
-    void log_data(double tStamp) override;
+    void log_sensor_state(double tStamp) override;
 
     void set_constant_bias(double bias) { bias_ = bias; };
 
