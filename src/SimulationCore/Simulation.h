@@ -68,6 +68,7 @@ class Simulation {
     void log_simulation_state();
     void log_simulation_debug();
     void log_simulation_event(std::string message);
+    void log_sensors();
     const std::string datalog_format_string =
         "timestamp,"
         "temperature,pressure,desnity,speed_of_sound,"

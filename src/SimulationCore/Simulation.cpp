@@ -66,6 +66,7 @@ void Simulation::run(int steps) {
     // An initial data log at timestamp 0.0
     log_simulation_state();
     log_simulation_debug();
+    log_sensors();
     rocket_.log_rocket_state(tStamp_);
     motor_.log_motor_state(tStamp_);
 
@@ -99,6 +100,7 @@ void Simulation::run(int steps) {
         // Do all the data logging!
         log_simulation_state();
         log_simulation_debug();
+        log_sensors();
         rocket_.log_rocket_state(tStamp_);
         motor_.log_motor_state(tStamp_);
 
@@ -122,8 +124,17 @@ void Simulation::add_sensor(Sensor* sensor) { sensors_.push_back(sensor); }
  *
  */
 void Simulation::update_sensors() {
-    for (auto sensor : sensors_) {
+    for (Sensor* sensor : sensors_) {
         sensor->update_data(tStamp_);
+    }
+}
+
+/**
+ * @brief Calls the data logging functions of all sensors
+ *
+ */
+void Simulation::log_sensors() {
+    for (Sensor* sensor : sensors_) {
         sensor->log_sensor_state(tStamp_);
     }
 }
