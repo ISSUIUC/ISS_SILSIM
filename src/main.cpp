@@ -29,7 +29,7 @@ constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
 int main() {
     spdlog_basic_sink_ptr silsim_datalog_sink =
-        std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/hmmm.log");
+        std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/silsim_datalog.log");
 
     silsim_datalog_sink->set_level(spdlog::level::info);
 
