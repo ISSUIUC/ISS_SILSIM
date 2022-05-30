@@ -327,7 +327,7 @@ void Rocket::log_rocket_state(double tStamp) {
     if (rocket_logger_) {
         std::stringstream datalog_ss;
 
-        datalog_ss << "[DATA] ";
+        datalog_ss << "DATA,";
 
         datalog_ss << tStamp << ",";
 

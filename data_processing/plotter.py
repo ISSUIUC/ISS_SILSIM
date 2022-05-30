@@ -10,7 +10,7 @@ draw_plots = True
 
 plt.style.use('dark_background')
 
-data = logutils.ingest_log("../logs/hmmm.log")
+data, events = logutils.ingest_log("../logs/hmmm.log")
 
 timestamps = data['Simulation']['timestamp'] 
 

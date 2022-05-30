@@ -8,49 +8,57 @@
 ###############################################################################
 
 import numpy as np
+import re
 
 def ingest_log(filepath):
 
-    master_dict = {}
+    data_dict = {}
+    event_list = []
 
     filehandle = open(filepath, 'r')
     for line in filehandle:
         
-        line_split = line.strip('\n').split(" ")
-        date_string = line_split[0].strip('[').strip(']')
-        time_string = line_split[1].strip('[').strip(']')
-        component = line_split[2].strip('[').strip(']')
-        log_level = line_split[3].strip('[').strip(']')
-        line_type = line_split[4].strip('[').strip(']')
-        data = line_split[-1].split(',')
+        # Some regex magic extracts string within [] brackets
+        line_split = re.findall(r'\[([^]]*)\]', line)
+
+        datetime_string = line_split[0]
+        thread_id = line_split[1]
+        log_level = line_split[2]
+        component = line_split[3]
+
+        log_message = line_split[-1].split(',')
+        log_type = log_message[0]
+        data = log_message[1:]
         
         if log_level == "info":
-            if line_type == "DATALOG_FORMAT":
-                master_dict[component] = {}
-
-                print("Adding " + component + " to master_dict components")
+            if log_type == "DATALOG_FORMAT":
+                data_dict[component] = {}
 
                 for data_type in data:
-                    master_dict[component][data_type] = []
+                    data_dict[component][data_type] = []
 
-            elif line_type == "DATA":
-                for idx, data_type in enumerate(master_dict[component].keys()):
-                    master_dict[component][data_type].append(float(data[idx]))
+            elif log_type == "DATA":
+                for idx, data_type in enumerate(data_dict[component].keys()):
+                    data_dict[component][data_type].append(float(data[idx]))
+
+            elif log_type == "EVENT":
+                event_list.append({"timestamp" : float(data[0]),
+                                   "message" : data[1]})
 
         elif log_level == "debug":
             pass
 
         
-    for component in master_dict.keys():
-        for data_type in master_dict[component].keys():
-            master_dict[component][data_type] = np.array(master_dict[component][data_type])
+    for component in data_dict.keys():
+        for data_type in data_dict[component].keys():
+            data_dict[component][data_type] = np.array(data_dict[component][data_type])
     
-    return master_dict
+    return data_dict, event_list
 
 
 if __name__ == "__main__":
 
-    data = ingest_log("../logs/hmmm.log")
+    data, events = ingest_log("../logs/hmmm.log")
 
 
 

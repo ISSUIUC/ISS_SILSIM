@@ -47,7 +47,7 @@ Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
     if (silsim_sink) {
         sim_logger_ =
             std::make_shared<spdlog::logger>("Simulation", silsim_sink);
-        sim_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
+        sim_logger_->info("DATALOG_FORMAT," + datalog_format_string);
         sim_logger_->set_level(spdlog::level::debug);
     }
 }
@@ -164,7 +164,7 @@ void Simulation::log_simulation_state() {
         std::stringstream datalog_ss;
 
         // clang-format off
-        datalog_ss << "[DATA] ";
+        datalog_ss << "DATA,";
 
         datalog_ss << tStamp_ << ",";
 
@@ -179,7 +179,7 @@ void Simulation::log_simulation_state() {
 
         datalog_ss << rocket_axis.x() << ","
                    << rocket_axis.y() << ","
-                   << rocket_axis.z() << ",";
+                   << rocket_axis.z();
         // clang-format on
 
         sim_logger_->info(datalog_ss.str());
@@ -190,7 +190,7 @@ void Simulation::log_simulation_event(std::string message) {
     if (sim_logger_) {
         std::stringstream datalog_ss;
 
-        datalog_ss << "[EVENT] " << tStamp_ << " " << message;
+        datalog_ss << "EVENT," << tStamp_ << "," << message;
 
         sim_logger_->info(datalog_ss.str());
     }

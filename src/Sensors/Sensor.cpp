@@ -60,7 +60,7 @@ Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
     if (silsim_sink) {
         sensor_logger_ =
             std::make_shared<spdlog::logger>("Gyroscope:" + name, silsim_sink);
-        sensor_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
+        sensor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
     }
 }
 
@@ -90,7 +90,7 @@ void Gyroscope::log_sensor_state(double tStamp) {
         // clang-format off
         std::stringstream datalog_ss;
 
-        datalog_ss << "[DATA] "
+        datalog_ss << "DATA,"
                    << tStamp << ","
                    << data_.x() << ","
                    << data_.y() << ","
@@ -117,7 +117,7 @@ Accelerometer::Accelerometer(std::string name, Rocket& rocket,
     if (silsim_sink) {
         sensor_logger_ = std::make_shared<spdlog::logger>(
             "Accelerometer:" + name, silsim_sink);
-        sensor_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
+        sensor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
     }
 }
 
@@ -153,7 +153,7 @@ void Accelerometer::log_sensor_state(double tStamp) {
         // clang-format off
         std::stringstream datalog_ss;
 
-        datalog_ss << "[DATA] "
+        datalog_ss << "DATA,"
                    << tStamp << ","
                    << data_.x() << ","
                    << data_.y() << ","
@@ -179,7 +179,7 @@ Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
     if (silsim_sink) {
         sensor_logger_ =
             std::make_shared<spdlog::logger>("Barometer:" + name, silsim_sink);
-        sensor_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
+        sensor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
     }
 }
 
@@ -209,7 +209,7 @@ void Barometer::log_sensor_state(double tStamp) {
         // clang-format off
         std::stringstream datalog_ss;
 
-        datalog_ss << "[DATA] "
+        datalog_ss << "DATA,"
                    << tStamp << ","
                    << data_;
 

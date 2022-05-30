@@ -34,7 +34,7 @@ int main() {
     silsim_datalog_sink->set_level(spdlog::level::info);
 
     // comment below is used if we want to change the format of the logging
-    // spdlog::set_pattern("*** [%H:%M:%S %z] [thread %t] %v ***");
+    silsim_datalog_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%t] [%l] [%n] [%v]");
 
     std::shared_ptr<RASAeroImport> rasaero_import =
         std::make_shared<RASAeroImport>(

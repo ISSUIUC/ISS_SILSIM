@@ -44,7 +44,7 @@ class Rocket {
         if (silsim_sink) {
             rocket_logger_ =
                 std::make_shared<spdlog::logger>("Rocket", silsim_sink);
-            rocket_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
+            rocket_logger_->info("DATALOG_FORMAT," + datalog_format_string);
         }
     }
 
@@ -57,7 +57,7 @@ class Rocket {
         if (silsim_sink) {
             rocket_logger_ =
                 std::make_shared<spdlog::logger>("Rocket", silsim_sink);
-            rocket_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
+            rocket_logger_->info("DATALOG_FORMAT," + datalog_format_string);
         }
     }
 

@@ -69,7 +69,7 @@ void RocketMotor::log_motor_state(double tStamp) {
 
         Vector3d thrust_vector_rf = get_thrust_vector(tStamp);
 
-        datalog_ss << "[DATA] " 
+        datalog_ss << "DATA," 
                    << tStamp << ","
                    << is_burning(tStamp) << ","
                    << get_propellant_mass(tStamp) << ","
@@ -107,7 +107,7 @@ ConstantThrustSolidMotor::ConstantThrustSolidMotor(
     if (silsim_sink) {
         motor_logger_ = std::make_shared<spdlog::logger>(
             "ConstantThrustSolidMotor", silsim_sink);
-        motor_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
+        motor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
     }
 }
 
@@ -155,7 +155,7 @@ ThrustCurveSolidMotor::ThrustCurveSolidMotor(
     if (silsim_sink) {
         motor_logger_ = std::make_shared<spdlog::logger>(
             "ThrustCurveSolidMotor", silsim_sink);
-        motor_logger_->info("[DATALOG_FORMAT] " + datalog_format_string);
+        motor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
     }
 
     rapidcsv::Document csv(filename);
