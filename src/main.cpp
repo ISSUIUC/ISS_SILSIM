@@ -29,12 +29,14 @@ constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
 int main() {
     spdlog_basic_sink_ptr silsim_datalog_sink =
-        std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/silsim_datalog.log");
+        std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+            "logs/silsim_datalog.log");
 
     silsim_datalog_sink->set_level(spdlog::level::info);
 
     // comment below is used if we want to change the format of the logging
-    silsim_datalog_sink->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%t] [%l] [%n] [%v]");
+    silsim_datalog_sink->set_pattern(
+        "[%Y-%m-%d %H:%M:%S.%e] [%t] [%l] [%n] [%v]");
 
     std::shared_ptr<RASAeroImport> rasaero_import =
         std::make_shared<RASAeroImport>(
