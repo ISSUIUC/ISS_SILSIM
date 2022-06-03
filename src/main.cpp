@@ -3,12 +3,12 @@
 
 #include <iostream>
 
+#include "Atmosphere.h"
 #include "CpuState.h"
 #include "RASAeroImport.h"
 #include "Rocket.h"
 #include "Sensor.h"
 #include "Simulation.h"
-#include "Atmosphere.h"
 
 // Shortening the typename for   a e s t h e t i c s
 typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
@@ -71,7 +71,7 @@ int main() {
     Gyroscope gyro1("LSM9_gyro", rocket, 100, silsim_datalog_sink);
 
     Atmosphere atmosphere(silsim_datalog_sink);
-    atmosphere.set_nominal_wind_magnitude(3.0);
+    atmosphere.set_nominal_wind_magnitude(5.0);  // ~11.18 mph
     atmosphere.toggle_wind_direction_variance(true);
     atmosphere.toggle_wind_magnitude_variance(true);
 
@@ -88,7 +88,8 @@ int main() {
 
     CpuState cpu;
 
-    Simulation sim(0.01, &engine, atmosphere, rocket, motor, cpu, silsim_datalog_sink);
+    Simulation sim(0.01, &engine, atmosphere, rocket, motor, cpu,
+                   silsim_datalog_sink);
 
     sim.add_sensor(&accel1);
     sim.add_sensor(&gyro1);

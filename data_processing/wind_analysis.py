@@ -5,7 +5,7 @@ import logutils
 
 plt.style.use('dark_background')
 
-data, events = logutils.ingest_log("../logs/silsim_datalog.log")
+data, events = logutils.ingest_log("logs/silsim_datalog.log")
 
 timestamps = data['Simulation']['timestamp'] 
 

@@ -34,16 +34,17 @@ class Atmosphere {
                double wind_direction_variance_mean = 0.0f,
                double wind_direction_variance_stddev = 0.1f,
                double wind_magnitude_variance_mean = 0.0f,
-               double wind_magnitude_variance_stddev = 0.1f)
+               double wind_magnitude_variance_stddev = 0.5f)
         : direction_normal_dist_(wind_direction_variance_mean,
                                  wind_direction_variance_stddev),
           magnitude_normal_dist_(wind_magnitude_variance_mean,
                                  wind_magnitude_variance_stddev) {
-              if (silsim_sink) {
-                  atmosphere_logger_ = std::make_shared<spdlog::logger>("Atmosphere", silsim_sink);
-                  atmosphere_logger_->info("DATALOG_FORMAT," + datalog_format_string);
-              }
-          };
+        if (silsim_sink) {
+            atmosphere_logger_ =
+                std::make_shared<spdlog::logger>("Atmosphere", silsim_sink);
+            atmosphere_logger_->info("DATALOG_FORMAT," + datalog_format_string);
+        }
+    };
 
     // -------------------------- Get Parameters ---------------------------- //
     Vector3d get_nominal_wind_direction() { return nominal_wind_direction_; };
@@ -89,15 +90,17 @@ class Atmosphere {
     double magnitude_variance_val_{0.0};
 
     // ----------------------- Wind Variance Generation --------------------- //
-    bool enable_direction_variance_;
-    bool enable_magnitude_variance_;
+    bool enable_direction_variance_{false};
+    bool enable_magnitude_variance_{false};
     std::default_random_engine generator_;
     std::normal_distribution<double> direction_normal_dist_;
     std::normal_distribution<double> magnitude_normal_dist_;
 
-    // Variance update management. Prevents wind from changing too often
-    double last_variance_update_{0.0};
-    const double variance_update_rate_{3.0};
+    // Variance update rate management. Prevents wind from changing too often
+    double last_direction_variance_update_{-100.0};
+    const double direction_variance_update_rate_{1.0};
+    double last_magnitude_variance_update_{-100.0};
+    const double magnitude_variance_update_rate_{1.0};
 
     // The generated random wind variance before smoothing
     Vector3d generated_direction_variance_{0.0, 0.0, 0.0};
@@ -106,7 +109,8 @@ class Atmosphere {
     // ----------------------------- Data Logging  -------------------------- //
     std::shared_ptr<spdlog::logger> atmosphere_logger_;
     const std::string datalog_format_string =
-        "timestamp,current_wind_x,current_wind_y,current_wind_z,current_wind_magnitude";
+        "timestamp,current_wind_x,current_wind_y,current_wind_z,current_wind_"
+        "magnitude";
 };
 
 #endif

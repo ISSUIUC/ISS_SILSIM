@@ -35,7 +35,8 @@
 
 using Eigen::Vector3d;
 
-Simulation::Simulation(double tStep, PhysicsEngine* engine, Atmosphere& atmosphere, Rocket& rocket,
+Simulation::Simulation(double tStep, PhysicsEngine* engine,
+                       Atmosphere& atmosphere, Rocket& rocket,
                        RocketMotor& motor, CpuState& cpu,
                        spdlog_basic_sink_ptr silsim_sink)
     : tStamp_(0),

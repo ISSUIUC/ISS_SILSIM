@@ -309,8 +309,8 @@ double Atmosphere::get_geometric_to_geopotential(double altitude) {
 }
 
 /**
- * @brief Generates a wind vector in the ENU frame with a direction and magnitude determined by
- * the wind model used.
+ * @brief Generates a wind vector in the ENU frame with a direction and
+ * magnitude determined by the wind model used.
  *
  * Wind model generates a random variance in both wind direction and magnitude
  * at a determined rate. It then applies a low-pass filter to the variance so
@@ -324,10 +324,12 @@ double Atmosphere::get_geometric_to_geopotential(double altitude) {
  * @return Vector3d Instantaneous wind vector
  */
 Vector3d Atmosphere::get_wind_vector(double tStamp) {
-    constexpr double alpha = 0.99;
+    constexpr double dir_alpha = 0.9992;
+    constexpr double mag_alpha = 0.99;
 
     if (enable_direction_variance_) {
-        if ((tStamp - last_variance_update_) >= variance_update_rate_) {
+        if ((tStamp - last_direction_variance_update_) >=
+            direction_variance_update_rate_) {
             // Create a new random variance vector of unit magnitude
             generated_direction_variance_.x() =
                 direction_normal_dist_(generator_);
@@ -336,12 +338,13 @@ Vector3d Atmosphere::get_wind_vector(double tStamp) {
             generated_direction_variance_.z() =
                 direction_normal_dist_(generator_);
             generated_direction_variance_.normalize();
+            last_direction_variance_update_ = tStamp;
         }
 
         // Apply low-pass filter to smooth wind direction change
         direction_variance_vect_ =
-            alpha * direction_variance_vect_ +
-            (1.0 - alpha) * generated_direction_variance_;
+            dir_alpha * direction_variance_vect_ +
+            (1.0 - dir_alpha) * generated_direction_variance_;
 
         current_wind_direction_ =
             nominal_wind_direction_ + direction_variance_vect_;
@@ -350,15 +353,20 @@ Vector3d Atmosphere::get_wind_vector(double tStamp) {
         current_wind_direction_ = nominal_wind_direction_;
     }
 
+    current_wind_direction_.normalize();
+
     if (enable_magnitude_variance_) {
-        if ((tStamp - last_variance_update_) >= variance_update_rate_) {
+        if ((tStamp - last_magnitude_variance_update_) >=
+            magnitude_variance_update_rate_) {
             // Create a new random mangitude variance value
             generated_magnitude_variance_ = magnitude_normal_dist_(generator_);
+            last_magnitude_variance_update_ = tStamp;
         }
 
         // Apply low-pass filter to smooth wind magnitude change
-        magnitude_variance_val_ = alpha * magnitude_variance_val_ +
-                                  (1.0 - alpha) * generated_magnitude_variance_;
+        magnitude_variance_val_ =
+            mag_alpha * magnitude_variance_val_ +
+            (1.0 - mag_alpha) * generated_magnitude_variance_;
 
         current_wind_magnitude_ =
             nominal_wind_magnitude_ + magnitude_variance_val_;

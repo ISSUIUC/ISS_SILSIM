@@ -1,4 +1,4 @@
 cd build
-make -j
+make -j$(nproc)
 cd ../
 ./build/ISS_SILSIM

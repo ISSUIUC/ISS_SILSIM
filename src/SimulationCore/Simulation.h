@@ -38,8 +38,8 @@ typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
 
 class Simulation {
    public:
-    Simulation(double tStep, PhysicsEngine* engine, Atmosphere& atmosphere, Rocket& rocket,
-               RocketMotor& motor, CpuState& cpu,
+    Simulation(double tStep, PhysicsEngine* engine, Atmosphere& atmosphere,
+               Rocket& rocket, RocketMotor& motor, CpuState& cpu,
                spdlog_basic_sink_ptr silsim_sink);
 
     void run(int steps);
