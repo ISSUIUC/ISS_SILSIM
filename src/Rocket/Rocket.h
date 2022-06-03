@@ -17,6 +17,9 @@
 #define _ROCKET_H_
 #define _USE_MATH_DEFINES
 
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
+
 #include <Eigen/Dense>
 #include <array>
 #include <memory>
@@ -25,21 +28,37 @@
 
 #include "RASAeroImport.h"
 
+using Eigen::Quaterniond;
 using Eigen::Vector3d;
 
-using Eigen::Quaterniond;
+// Shortening the typename for   a e s t h e t i c s
+typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
+    spdlog_basic_sink_ptr;
 
 class Rocket {
    public:
-    Rocket() {
+    Rocket(spdlog_basic_sink_ptr silsim_sink) {
         q_ornt_ = {1, 0, 0, 0};
         cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
+
+        if (silsim_sink) {
+            rocket_logger_ =
+                std::make_shared<spdlog::logger>("Rocket", silsim_sink);
+            rocket_logger_->info("DATALOG_FORMAT," + datalog_format_string);
+        }
     }
 
-    Rocket(std::shared_ptr<RASAeroImport> rasaero) {
+    Rocket(spdlog_basic_sink_ptr silsim_sink,
+           std::shared_ptr<RASAeroImport> rasaero) {
         q_ornt_ = {1, 0, 0, 0};
         cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
         rasaero_import_ = rasaero;
+
+        if (silsim_sink) {
+            rocket_logger_ =
+                std::make_shared<spdlog::logger>("Rocket", silsim_sink);
+            rocket_logger_->info("DATALOG_FORMAT," + datalog_format_string);
+        }
     }
 
     /*************************** Get parameters *****************************#*/
@@ -137,6 +156,9 @@ class Rocket {
     Vector3d gravity_vector_enu();
     Vector3d gravity_vector_rf();
 
+    /*************************** Logging Functions ****************************/
+    void log_rocket_state(double tStamp);
+
    private:
     // The following are in ENU frame
     Vector3d r_vect_{0, 0, 0};  // r vector
@@ -174,6 +196,26 @@ class Rocket {
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
     double mach_ = 0.0;         // Freestream air mach number
     double alpha_ = 0.0;        // Rocket total angle-of-attack to air
+
+    //----------- Data Logging ----------
+    std::shared_ptr<spdlog::logger> rocket_logger_;
+    const std::string datalog_format_string =
+        "timestamp,"
+        "pos_x_enu,pos_y_enu,pos_z_enu,"
+        "vel_x_enu,vel_y_enu,vel_z_enu,"
+        "accel_x_enu,accel_y_enu,accel_z_enu,"
+        "ang_vel_x_enu,ang_vel_y_enu,ang_vel_z_enu,"
+        "ang_accel_x_enu,ang_accel_y_enu,ang_accel_z_enu,"
+        "vel_x_rf,vel_y_rf,vel_z_rf,"
+        "accel_x_rf,accel_y_rf,accel_z_rf,"
+        "ang_vel_x_rf,ang_vel_y_rf,ang_vel_z_rf,"
+        "ang_accel_x_rf,ang_accel_y_rf,ang_accel_z_rf,"
+        "f_net_x_rf,f_net_y_rf,f_net_z_rf,"
+        "m_net_x_rf,m_net_y_rf,m_net_z_rf,"
+        "q_ornt_w,q_ornt_xq_ornt_y,q_ornt_z,"
+        "structural_mass,total_mass,nose_to_cg,nose_to_cp"
+        "total_normal_force_coeff,total_axial_force_coeff,"
+        "mach,alpha";
 };
 
 #endif

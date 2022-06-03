@@ -318,3 +318,83 @@ Vector3d Rocket::gravity_vector_rf() {
     Vector3d grav_enu = gravity_vector_enu();
     return enu2r(grav_enu);
 }
+
+/*****************************************************************************/
+/*                            LOGGING FUNCTIONS                              */
+/*****************************************************************************/
+
+void Rocket::log_rocket_state(double tStamp) {
+    if (rocket_logger_) {
+        std::stringstream datalog_ss;
+
+        datalog_ss << "DATA,";
+
+        datalog_ss << tStamp << ",";
+
+        // clang-format off
+        datalog_ss << r_vect_.x() << ","
+                   << r_vect_.y() << ","
+                   << r_vect_.z() << ",";
+
+        datalog_ss << r_dot_.x() << ","
+                   << r_dot_.y() << ","
+                   << r_dot_.z() << ",";
+
+        datalog_ss << r_ddot_.x() << ","
+                   << r_ddot_.y() << "," 
+                   << r_ddot_.z() << ",";
+
+        datalog_ss << w_vect_.x() << "," 
+                   << w_vect_.y() << "," 
+                   << w_vect_.z() << ",";
+
+        datalog_ss << w_dot_.x() << ","
+                   << w_dot_.y() << "," 
+                   << w_dot_.z() << ",";
+
+        Vector3d r_dot_rf = enu2r(r_dot_);
+        datalog_ss << r_dot_rf.x() << ","
+                   << r_dot_rf.y() << ","
+                   << r_dot_rf.z() << ",";
+
+        Vector3d r_ddot_rf = enu2r(r_ddot_);
+        datalog_ss << r_ddot_rf.x() << ","
+                   << r_ddot_rf.y() << "," 
+                   << r_ddot_rf.z() << ",";
+
+        Vector3d w_vect_rf = enu2r(w_vect_);
+        datalog_ss << w_vect_rf.x() << "," 
+                   << w_vect_rf.y() << "," 
+                   << w_vect_rf.z() << ",";
+
+        Vector3d w_dot_rf = enu2r(w_dot_);
+        datalog_ss << w_dot_rf.x() << ","
+                   << w_dot_rf.y() << "," 
+                   << w_dot_rf.z() << ",";
+
+        datalog_ss << f_net_.x() << "," 
+                   << f_net_.y() << "," 
+                   << f_net_.z() << ",";
+
+        datalog_ss << m_net_.x() << "," 
+                   << m_net_.y() << "," 
+                   << m_net_.z() << ",";
+
+        datalog_ss << q_ornt_.w() << "," 
+                   << q_ornt_.x() << "," 
+                   << q_ornt_.y() << ","
+                   << q_ornt_.z() << ",";
+
+        datalog_ss << structural_mass_ << ","
+                   << total_mass_ << ","
+                   << nose_to_cg_ << ","
+                   << nose_to_cp_ << ","
+                   << total_normal_force_coeff_ << ","
+                   << total_axial_force_coeff_ << ","
+                   << mach_ << "," 
+                   << alpha_;
+
+        rocket_logger_->info(datalog_ss.str());
+        // clang-format on
+    }
+}

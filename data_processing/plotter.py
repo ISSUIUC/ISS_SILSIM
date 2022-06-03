@@ -3,74 +3,58 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import csv
 
+import logutils
+
 # Config flags
 draw_plots = True
 
 plt.style.use('dark_background')
 
-timestamps = []
+data, events = logutils.ingest_log("../logs/hmmm.log")
 
-rx = []
-ry = []
-rz = []
+timestamps = data['Simulation']['timestamp'] 
 
-vx = []
-vy = []
-vz = []
+rx = data['Rocket']['pos_x_enu'] 
+ry = data['Rocket']['pos_y_enu'] 
+rz = data['Rocket']['pos_z_enu']
 
-aX = []
-ay = []
-az = []
+vx = data['Rocket']['vel_x_rf']
+vy = data['Rocket']['vel_y_rf']
+vz = data['Rocket']['vel_z_rf']
 
-fx = []
-fy = []
-fz = []
+aX = data['Rocket']['accel_x_rf']
+ay = data['Rocket']['accel_y_rf']
+az = data['Rocket']['accel_z_rf']
 
-q0 = []
-q1 = []
-q2 = []
-q3 = []
+roll = data['Simulation']['roll']
+pitch = data['Simulation']['pitch']
+yaw = data['Simulation']['yaw']
 
-roll = []
-pitch = []
-yaw = []
+rocketX = data['Simulation']['rocket_axis_x']
+rocketY = data['Simulation']['rocket_axis_y']
+rocketZ = data['Simulation']['rocket_axis_z']
 
-rocketX = []
-rocketY = []
-rocketZ = []
-
-sensorX = []
-sensorY = []
-sensorZ = []
-
-data_lists = [timestamps, rx, ry, rz, vx, vy, vz, aX, ay, az, fx, fy, fz,
-              q0, q1, q2, q3, roll, pitch, yaw, rocketX, rocketY, rocketZ,
-              sensorX, sensorY, sensorZ]
-
-with open("sim_data/data.csv") as csvfile:
-    csvreader = csv.reader(csvfile, delimiter=",")
-
-    for row in csvreader:
-        for i, val in enumerate(row):
-            data_lists[i].append(float(val))
+sensorX = data['Accelerometer:LSM9_accel']['accel_x_rf']
+sensorY = data['Accelerometer:LSM9_accel']['accel_y_rf']
+sensorZ = data['Accelerometer:LSM9_accel']['accel_z_rf']
 
 
-# Print some stats:
-apogee = np.max(rz) 
-print(f"Apogee Altitude = {apogee} m\n\t\t= {apogee * 3.28} ft")
-max_vel = np.max(vz)
-print(f"Max Vertical Velocity\t= {max_vel} m/s\n\t\t\t= {max_vel * 3.28} ft/s\n\t\t\t= {max_vel / 343} mach")
+# print some stats:
+apogee = np.max(data['Rocket']['pos_z_enu']) 
+print(f"apogee altitude = {apogee} m\n\t\t= {apogee * 3.28} ft")
+max_vel = np.max(data['Rocket']['vel_z_enu'])
+print(f"max vertical velocity\t= {max_vel} m/s\n\t\t\t= {max_vel * 3.28} ft/s\n\t\t\t= {max_vel / 343} mach")
 
 
 if draw_plots:
 
     plt.figure()
-    plt.plot(timestamps, rz, label="Altitude")
-    plt.plot(timestamps, vz, label="Vertical Velocity")
-    plt.plot(timestamps, az, label="Vertical Acceleration")
-    plt.plot(timestamps, roll, label="Roll")
-    plt.plot(timestamps, pitch, label="Pitch")
-    plt.plot(timestamps, yaw, label="yaw")
+    plt.plot(timestamps, data['Rocket']['pos_z_enu'], label="altitude (ENU Frame)")
+    plt.plot(timestamps, data['Rocket']['vel_z_enu'], label="vertical velocity (ENU Frame)")
+    plt.plot(timestamps, data['Rocket']['accel_z_enu'], label="vertical acceleration (ENU Frame)")
+    plt.plot(timestamps, data['Simulation']['roll'], label="roll")
+    plt.plot(timestamps, data['Simulation']['pitch'], label="pitch")
+    plt.plot(timestamps, data['Simulation']['yaw'], label="yaw")
     plt.grid()
     plt.legend()
 
@@ -84,10 +68,10 @@ if draw_plots:
     ax.axes.set_xlim3d(left=-3000, right=3000)
     ax.axes.set_ylim3d(bottom=-3000, top=3000)
     ax.axes.set_zlim3d(bottom=0.00001, top=15000)
-    ax.set_xlabel("X [m]")
-    ax.set_ylabel("Y [m]")
-    ax.set_zlabel("Z [m]")
-    ax.title.set_text("Rocket Trajectory")
+    ax.set_xlabel("x [m]")
+    ax.set_ylabel("y [m]")
+    ax.set_zlabel("z [m]")
+    ax.title.set_text("rocket trajectory")
 
     ax = fig.add_subplot(132, projection='3d')
     ax.plot(rocketX, rocketY, rocketZ, 'r', zdir='z', linewidth=1.0)
@@ -96,18 +80,18 @@ if draw_plots:
     ax.axes.set_xlim3d(left=-1.5, right=1.5)
     ax.axes.set_ylim3d(bottom=-1.5, top=1.5)
     ax.axes.set_zlim3d(bottom=-1.5, top=1.5)
-    ax.title.set_text("Rocket Axis Evolution")
+    ax.title.set_text("rocket axis evolution")
 
     ax = fig.add_subplot(333)
-    ax.plot(timestamps, roll, 'r', label="Roll")
+    ax.plot(timestamps, roll, 'r', label="roll")
     ax.grid()
     ax.legend()
     ax = fig.add_subplot(336)
-    ax.plot(timestamps, pitch, 'g', label="Pitch")
+    ax.plot(timestamps, pitch, 'g', label="pitch")
     ax.grid()
     ax.legend()
     ax = fig.add_subplot(339)
-    ax.plot(timestamps, yaw, 'b', label="Yaw")
+    ax.plot(timestamps, yaw, 'b', label="yaw")
     ax.grid()
     ax.legend()
 

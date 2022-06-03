@@ -32,11 +32,15 @@
 #include "Rocket.h"
 #include "Sensor.h"
 
+// Shortening the typename for   a e s t h e t i c s
+typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
+    spdlog_basic_sink_ptr;
+
 class Simulation {
    public:
-    Simulation(double tStep, PhysicsEngine* engine, Atmosphere& atmosphere,
-               Rocket& rocket, RocketMotor& motor, CpuState& cpu,
-               std::string filename);
+    Simulation(double tStep, PhysicsEngine* engine, Atmosphere& atmosphere, Rocket& rocket,
+               RocketMotor& motor, CpuState& cpu,
+               spdlog_basic_sink_ptr silsim_sink);
 
     void run(int steps);
 
@@ -63,10 +67,17 @@ class Simulation {
     // Sensors
     std::vector<Sensor*> sensors_;  // array of sensors on the rocket
 
-    std::string filename_;
-
-    // logger
-    std::shared_ptr<spdlog::logger> sim_log;
+    //----------- Data Logging ----------
+    std::shared_ptr<spdlog::logger> sim_logger_;
+    void log_simulation_state();
+    void log_simulation_debug();
+    void log_simulation_event(std::string message);
+    void log_sensors();
+    const std::string datalog_format_string =
+        "timestamp,"
+        "temperature,pressure,desnity,speed_of_sound,"
+        "roll,pitch,yaw,"
+        "rocket_axis_x,rocket_axis_y,rocket_axis_z";
 };
 
 #endif

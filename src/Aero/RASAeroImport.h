@@ -21,6 +21,10 @@
 #include <string>
 #include <vector>
 
+// Shortening the typename for   a e s t h e t i c s
+typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
+    spdlog_basic_sink_ptr;
+
 struct RASAeroCoefficients {
     double cd_poweroff;
     double cd_poweron;
@@ -32,7 +36,7 @@ struct RASAeroCoefficients {
 
 class RASAeroImport {
    public:
-    RASAeroImport(std::string file_path);
+    RASAeroImport(spdlog_basic_sink_ptr silsim_sink, std::string file_path);
 
     /**************** Retrieve Aero Parameters of Rocket **********************/
     RASAeroCoefficients get_aero_coefficients(double mach, double alpha,
@@ -65,12 +69,12 @@ class RASAeroImport {
 
     std::shared_ptr<spdlog::logger> rasaero_logger_;
 
-    /************************** Set Parameters ********************************/
+    /*************************** Set Parameters *******************************/
     void set_mach_number_params();
     void set_alpha_params();
     void set_protuberance_params();
 
-    // Some metadata useful for interpolation
+    /********************* Metadata for Interpolation *************************/
     int mach_number_instances_;    // Number of mach numbers in the table
     double mach_number_fidelity_;  // Distance between mach numbers in table
 
