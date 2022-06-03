@@ -21,7 +21,6 @@
 using Eigen::Vector3d;
 
 class Atmosphere {
-
    public:
     /********************** Get Atmospheric Values ****************************/
     static double get_temperature(double altitude);
@@ -33,15 +32,14 @@ class Atmosphere {
     Vector3d get_wind_vector();
 
     /************************** Get Parameters ********************************/
-    Vector3d get_wind_direction() {return wind_direction_;};
-    double get_wind_magnitude() {return wind_magnitude_;};
+    Vector3d get_wind_direction() { return wind_direction_; };
+    double get_wind_magnitude() { return wind_magnitude_; };
 
     /************************** Set Parameters ********************************/
-    void set_wind_direction(Vector3d vec) {wind_direction_ = vec;};
-    void set_wind_magnitude(double mag) {wind_magnitude_ = mag;};
+    void set_wind_direction(Vector3d vec) { wind_direction_ = vec; };
+    void set_wind_magnitude(double mag) { wind_magnitude_ = mag; };
 
    private:
-
     Vector3d wind_direction_{-1.0, 0.0, 0.0};
     double wind_magnitude_{0.0};
 };

@@ -309,12 +309,11 @@ double Atmosphere::get_geometric_to_geopotential(double altitude) {
 }
 
 /**
- * @brief Generates a wind vector with a direction and magnitude determined by the wind model used.
+ * @brief Generates a wind vector with a direction and magnitude determined by
+ * the wind model used.
  *
  * @return Vector3d Instantaneous wind vector.
  */
 Vector3d Atmosphere::get_wind_vector() {
-
     return wind_direction_ * wind_magnitude_;
-
 }

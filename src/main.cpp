@@ -57,6 +57,8 @@ int main() {
     accel1.enable_noise_injection();
     Gyroscope gyro1("LSM9_gyro", rocket, 100);
 
+    Atmosphere atmosphere;
+
     // Modeling Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop
     // weight
     // ConstantThrustSolidMotor motor(3.49, 5800.0, 9.021);
@@ -64,12 +66,12 @@ int main() {
     // Cesaroni N5800 Motor
     ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425);
 
-    RungeKutta engine(rocket, motor);
+    RungeKutta engine(rocket, motor, atmosphere);
     // ForwardEuler engine(rocket, motor);
 
     CpuState cpu;
 
-    Simulation sim(0.01, &engine, rocket, motor, cpu, "sim_data/data.csv");
+    Simulation sim(0.01, &engine, atmosphere, rocket, motor, cpu, "sim_data/data.csv");
 
     sim.add_sensor(&accel1);
     // sim.add_sensor(&gyro1);

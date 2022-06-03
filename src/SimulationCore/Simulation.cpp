@@ -34,13 +34,13 @@
 
 using Eigen::Vector3d;
 
-Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
-                       RocketMotor& motor, CpuState& cpu, std::string filename
-                       // std::vector<Sensor&>& sensors
-                       )
+Simulation::Simulation(double tStep, PhysicsEngine* engine,
+                       Atmosphere& atmosphere, Rocket& rocket,
+                       RocketMotor& motor, CpuState& cpu, std::string filename)
     : tStamp_(0),
       tStep_(tStep),
       engine_(engine),
+      atmoshpere_(atmosphere),
       rocket_(rocket),
       motor_(motor),
       cpu_(cpu),

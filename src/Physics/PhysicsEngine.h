@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+#include "Atmosphere.h"
 #include "Propulsion.h"
 #include "Rocket.h"
 
@@ -44,8 +45,8 @@
  */
 class PhysicsEngine {
    public:
-    PhysicsEngine(Rocket& rocket, RocketMotor& motor)
-        : rocket_(rocket), motor_(motor){};
+    PhysicsEngine(Rocket& rocket, RocketMotor& motor, Atmosphere& atmosphere)
+        : rocket_(rocket), motor_(motor), atmosphere_(atmosphere){};
 
     virtual void march_step(double tStamp, double tStep) = 0;
 
@@ -58,6 +59,7 @@ class PhysicsEngine {
                                   double tStep) const;
     Rocket& rocket_;
     RocketMotor& motor_;
+    Atmosphere& atmosphere_;
 };
 
 /** ForwardEuler Derived Class
@@ -70,7 +72,7 @@ class PhysicsEngine {
  */
 class ForwardEuler : public PhysicsEngine {
    public:
-    ForwardEuler(Rocket& rocket, RocketMotor& motor);
+    ForwardEuler(Rocket& rocket, RocketMotor& motor, Atmosphere& atmosphere);
 
     void march_step(double tStamp, double tStep) override;
 
@@ -92,8 +94,8 @@ class ForwardEuler : public PhysicsEngine {
  */
 class RungeKutta : public PhysicsEngine {
    public:
-    RungeKutta(Rocket& rocket, RocketMotor& motor)
-        : PhysicsEngine(rocket, motor){};
+    RungeKutta(Rocket& rocket, RocketMotor& motor, Atmosphere& atmosphere)
+        : PhysicsEngine(rocket, motor, atmosphere){};
 
     void march_step(double tStamp, double tStep) override;
 

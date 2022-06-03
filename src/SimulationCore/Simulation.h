@@ -25,6 +25,7 @@
 #include <memory>
 #include <string>
 
+#include "Atmosphere.h"
 #include "CpuState.h"
 #include "PhysicsEngine.h"
 #include "Propulsion.h"
@@ -33,10 +34,9 @@
 
 class Simulation {
    public:
-    Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
-               RocketMotor& motor, CpuState& cpu, std::string filename
-               // std::vector<Sensor&>& sensors
-    );
+    Simulation(double tStep, PhysicsEngine* engine, Atmosphere& atmosphere,
+               Rocket& rocket, RocketMotor& motor, CpuState& cpu,
+               std::string filename);
 
     void run(int steps);
 
@@ -52,7 +52,10 @@ class Simulation {
 
     PhysicsEngine* engine_;
 
+    Atmosphere& atmoshpere_;
+
     Rocket& rocket_;
+
     RocketMotor& motor_;
 
     CpuState& cpu_;

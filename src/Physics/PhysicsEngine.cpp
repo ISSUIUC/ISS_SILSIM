@@ -25,8 +25,9 @@ using Eigen::Vector3d;
 
 constexpr double kFeetToMeters = 0.3048;
 
-ForwardEuler::ForwardEuler(Rocket& rocket, RocketMotor& motor)
-    : PhysicsEngine(rocket, motor) {
+ForwardEuler::ForwardEuler(Rocket& rocket, RocketMotor& motor,
+                           Atmosphere& atmosphere)
+    : PhysicsEngine(rocket, motor, atmosphere) {
     euler_logger =
         spdlog::basic_logger_mt("Euler_Logger", "logs/forward_euler.log");
 }
