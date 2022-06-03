@@ -70,6 +70,7 @@ void Simulation::run(int steps) {
     log_sensors();
     rocket_.log_rocket_state(tStamp_);
     motor_.log_motor_state(tStamp_);
+    atmoshpere_.log_atmosphere_state(tStamp_);
 
     // send it
     motor_.ignite(tStamp_);
@@ -104,6 +105,7 @@ void Simulation::run(int steps) {
         log_sensors();
         rocket_.log_rocket_state(tStamp_);
         motor_.log_motor_state(tStamp_);
+        atmoshpere_.log_atmosphere_state(tStamp_);
 
         // End simulation if apogee is reached
         if (r_dot_enu.z() < -3.0) {

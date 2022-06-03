@@ -309,7 +309,7 @@ double Atmosphere::get_geometric_to_geopotential(double altitude) {
 }
 
 /**
- * @brief Generates a wind vector with a direction and magnitude determined by
+ * @brief Generates a wind vector in the ENU frame with a direction and magnitude determined by
  * the wind model used.
  *
  * Wind model generates a random variance in both wind direction and magnitude
@@ -324,7 +324,7 @@ double Atmosphere::get_geometric_to_geopotential(double altitude) {
  * @return Vector3d Instantaneous wind vector
  */
 Vector3d Atmosphere::get_wind_vector(double tStamp) {
-    constexpr double alpha = 0.95;
+    constexpr double alpha = 0.99;
 
     if (enable_direction_variance_) {
         if ((tStamp - last_variance_update_) >= variance_update_rate_) {
@@ -368,4 +368,28 @@ Vector3d Atmosphere::get_wind_vector(double tStamp) {
     }
 
     return current_wind_direction_ * current_wind_magnitude_;
+}
+
+/**
+ * @brief Logs the internal state of the Atmosphere class
+ *
+ * @param tStamp Current simulation timestamp
+ */
+void Atmosphere::log_atmosphere_state(double tStamp) {
+    if (atmosphere_logger_) {
+        // clang-format off
+        std::stringstream datalog_ss;
+
+        Vector3d wind = get_wind_vector(tStamp);
+
+        datalog_ss << "DATA," 
+                   << tStamp << ","
+                   << wind.x() << ","
+                   << wind.y() << ","
+                   << wind.z() << ","
+                   << wind.norm();
+
+        atmosphere_logger_->info(datalog_ss.str());
+        // clang-format on
+    }
 }

@@ -8,6 +8,7 @@
 #include "Rocket.h"
 #include "Sensor.h"
 #include "Simulation.h"
+#include "Atmosphere.h"
 
 // Shortening the typename for   a e s t h e t i c s
 typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
@@ -69,7 +70,10 @@ int main() {
     accel1.enable_noise_injection();
     Gyroscope gyro1("LSM9_gyro", rocket, 100, silsim_datalog_sink);
 
-    Atmosphere atmosphere;
+    Atmosphere atmosphere(silsim_datalog_sink);
+    atmosphere.set_nominal_wind_magnitude(3.0);
+    atmosphere.toggle_wind_direction_variance(true);
+    atmosphere.toggle_wind_magnitude_variance(true);
 
     // Modeling Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop
     // weight
