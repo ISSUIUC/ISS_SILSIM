@@ -21,8 +21,8 @@
 
 using Eigen::Vector3d;
 
-void Sensor::update_data(double tStep) {
-    (void)tStep;
+void Sensor::update_data(double tStamp) {
+    (void)tStamp;
     std::cout
         << "Function 'update_data' called on Sensor base class! "
         << "This function should never be called on the base Sensor class."
@@ -45,6 +45,25 @@ double Sensor::get_data() {
     return 0;
 }
 
+/*****************************************************************************/
+/*                        GYROSCOPE MEMBER FUNCTIONS                         */
+/*****************************************************************************/
+
+/**
+ * @brief Constructor for the Gryoscope class
+ *
+ * Class represents a MEMS Gyroscope sensor that measures instantaneous angular
+ * velocity in the sensor's local frame
+ *
+ * @param name The name of the particular sensor being modeled
+ * @param Rocket The Rocket object that this Sensor is associated with
+ * @param refresh_rate The rate at which the sensor should take measurements
+ * during the simulation in Hz
+ * @param noise_mean The mean of the random noise generator (if noise injection
+ * enabled)
+ * @param noise_stddev The standard deviation of the random noise generator (if
+ * noise injection enabled)
+ */
 Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
                      double noise_mean, double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
@@ -53,8 +72,18 @@ Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
     bias_ = {0, 0, 0};
 }
 
-void Gyroscope::update_data(double tStep) {
-    if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
+/**
+ * @brief Updates the internal state of the Sensor. Takes a measurement if
+ * needed.
+ *
+ * Evaluates whether or not a measurement should be taken depending on the
+ * sensor's refresh rate and the time since the previous update was performed.
+ * Also injects random noise into the sensor output if enabled.
+ *
+ * @param tStamp Current simulation timestamp
+ */
+void Gyroscope::update_data(double tStamp) {
+    if ((tStamp - last_update_tStamp_) >= (1 / refresh_rate_)) {
         data_ = rocket_.enu2r(rocket_.get_w_vect());
         new_data_ = true;
 
@@ -69,10 +98,19 @@ void Gyroscope::update_data(double tStep) {
     }
 }
 
+/**
+ * @brief Obtain data from the Sensor
+ *
+ * @param Data object to overwrite with Sensor's data
+ */
 void Gyroscope::get_data(Vector3d& data) {
     data = data_;
     new_data_ = false;
 }
+
+/*****************************************************************************/
+/*                      ACCELEROMETER MEMBER FUNCTIONS                       */
+/*****************************************************************************/
 
 Accelerometer::Accelerometer(std::string name, Rocket& rocket,
                              double refresh_rate, double noise_mean,
@@ -83,8 +121,8 @@ Accelerometer::Accelerometer(std::string name, Rocket& rocket,
     bias_ = {0, 0, 0};
 }
 
-void Accelerometer::update_data(double tStep) {
-    if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
+void Accelerometer::update_data(double tStamp) {
+    if ((tStamp - last_update_tStamp_) >= (1 / refresh_rate_)) {
         // Subtract the gravity vector from the rocket's total acceleration to
         // yield specific force
         Vector3d total_accel = rocket_.enu2r(rocket_.get_r_ddot());
@@ -110,6 +148,10 @@ void Accelerometer::get_data(Vector3d& data) {
     new_data_ = false;
 }
 
+/*****************************************************************************/
+/*                        BAROMETER MEMBER FUNCTIONS                         */
+/*****************************************************************************/
+
 Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
                      double noise_mean, double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
@@ -118,8 +160,8 @@ Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
     noise_ = 0;
 }
 
-void Barometer::update_data(double tStep) {
-    if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
+void Barometer::update_data(double tStamp) {
+    if ((tStamp - last_update_tStamp_) >= (1 / refresh_rate_)) {
         data_ = rocket_.get_r_vect().x();
         new_data_ = true;
 
