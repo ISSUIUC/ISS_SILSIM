@@ -324,7 +324,7 @@ double Atmosphere::get_geometric_to_geopotential(double altitude) {
  * @return Vector3d Instantaneous wind vector
  */
 Vector3d Atmosphere::get_wind_vector(double tStamp) {
-    constexpr double dir_alpha = 0.9992;
+    constexpr double dir_alpha = 0.9997;
     constexpr double mag_alpha = 0.99;
 
     if (enable_direction_variance_) {

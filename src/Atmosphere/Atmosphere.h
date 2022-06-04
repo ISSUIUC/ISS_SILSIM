@@ -32,7 +32,7 @@ class Atmosphere {
    public:
     Atmosphere(spdlog_basic_sink_ptr silsim_sink,
                double wind_direction_variance_mean = 0.0f,
-               double wind_direction_variance_stddev = 0.1f,
+               double wind_direction_variance_stddev = 0.01f,
                double wind_magnitude_variance_mean = 0.0f,
                double wind_magnitude_variance_stddev = 0.5f)
         : direction_normal_dist_(wind_direction_variance_mean,

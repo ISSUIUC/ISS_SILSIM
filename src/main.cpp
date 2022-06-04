@@ -71,9 +71,9 @@ int main() {
     Gyroscope gyro1("LSM9_gyro", rocket, 100, silsim_datalog_sink);
 
     Atmosphere atmosphere(silsim_datalog_sink);
-    atmosphere.set_nominal_wind_magnitude(5.0);  // ~11.18 mph
-    atmosphere.toggle_wind_direction_variance(true);
-    atmosphere.toggle_wind_magnitude_variance(true);
+    // atmosphere.set_nominal_wind_magnitude(5.0);  // ~11.18 mph
+    // atmosphere.toggle_wind_direction_variance(true);
+    // atmosphere.toggle_wind_magnitude_variance(true);
 
     // Modeling Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop
     // weight
