@@ -61,7 +61,7 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
 
     Vector3d geod = rocket_.ecef2geod(rocket_.position_enu2ecef(pos_enu));
 
-    double altitude = Atmosphere::get_density(geod.z());
+    double density = Atmosphere::get_density(geod.z());
 
     /************************* Calculate Net Force ****************************/
     Vector3d aero_force_rf;
@@ -70,14 +70,14 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
         Vector3d normal_force_rf;
 
         double normal_force_mag =
-            0.5 * CN * velocity_magnitude * area * altitude;
+            0.5 * CN * velocity_magnitude * area * density;
         normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
 
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
         double axial_force_mag =
-            0.5 * CA * velocity_magnitude * area * altitude;
+            0.5 * CA * velocity_magnitude * area * density;
         Vector3d axial_force_rf{0, 0,
                                 std::copysign(axial_force_mag, -vel_rf.z())};
 
@@ -94,13 +94,13 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
 
     if (vel_enu.norm() > 0.01) {
         double normal_force_mag =
-            0.5 * CN * velocity_magnitude * area * altitude;
+            0.5 * CN * velocity_magnitude * area * density;
         Vector3d normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
         double axial_force_mag =
-            0.5 * CA * velocity_magnitude * area * altitude;
+            0.5 * CA * velocity_magnitude * area * density;
         Vector3d axial_force_rf{0, 0,
                                 std::copysign(axial_force_mag, -vel_rf.z())};
         Vector3d aero_force_rf = normal_force_rf + axial_force_rf;
