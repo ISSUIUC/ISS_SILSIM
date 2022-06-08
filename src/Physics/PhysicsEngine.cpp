@@ -75,15 +75,16 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
 
         double normal_force_mag =
             0.5 * CN * wind_relative_vel_mag_sqrd * area * density;
-        normal_force_rf = {(-wind_relative_vel_rf.x()), (-wind_relative_vel_rf.y()), 0};
+        normal_force_rf = {(-wind_relative_vel_rf.x()),
+                           (-wind_relative_vel_rf.y()), 0};
 
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
         double axial_force_mag =
             0.5 * CA * wind_relative_vel_mag_sqrd * area * density;
-        Vector3d axial_force_rf{0, 0,
-                                std::copysign(axial_force_mag, -wind_relative_vel_rf.z())};
+        Vector3d axial_force_rf{
+            0, 0, std::copysign(axial_force_mag, -wind_relative_vel_rf.z())};
 
         aero_force_rf = normal_force_rf + axial_force_rf;
     }
@@ -97,17 +98,17 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
     if (wind_relative_vel_rf.norm() > 0.01) {
         double normal_force_mag =
             0.5 * CN * wind_relative_vel_mag_sqrd * area * density;
-        Vector3d normal_force_rf = {(-wind_relative_vel_rf.x()), (-wind_relative_vel_rf.y()), 0};
+        Vector3d normal_force_rf = {(-wind_relative_vel_rf.x()),
+                                    (-wind_relative_vel_rf.y()), 0};
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
         double axial_force_mag =
             0.5 * CA * wind_relative_vel_mag_sqrd * area * density;
-        Vector3d axial_force_rf{0, 0,
-                                std::copysign(axial_force_mag, -wind_relative_vel_rf.z())};
+        Vector3d axial_force_rf{
+            0, 0, std::copysign(axial_force_mag, -wind_relative_vel_rf.z())};
         Vector3d aero_force_rf = normal_force_rf + axial_force_rf;
         aero_moment_rf = cp_vect_rf.cross(aero_force_rf);
-
     }
 
     Vector3d net_moment_rf = aero_moment_rf;
@@ -123,9 +124,8 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
         engine_logger_->debug("aero_moment_rf = <{}, {}, {}>",
                               aero_moment_rf.x(), aero_moment_rf.y(),
                               aero_moment_rf.z());
-        engine_logger_->debug("wind_rf = <{}, {}, {}>",
-                              wind_rf.x(), wind_rf.y(),
-                              wind_rf.z());
+        engine_logger_->debug("wind_rf = <{}, {}, {}>", wind_rf.x(),
+                              wind_rf.y(), wind_rf.z());
     }
 
     return {net_force_rf, net_moment_rf};
@@ -241,10 +241,12 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         ang_vel_enu = {0, 0, 0};
     }
 
-    // Do not calculate angle-of-attack early in the flight when the rocket is still going slow 
+    // Do not calculate angle-of-attack early in the flight when the rocket is
+    // still going slow
     if (tStamp >= 0.2) {
         alpha = acos(wind_relative_vel_rf.z() / wind_relative_vel_rf.norm());
-        mach = wind_relative_vel_rf.norm() / Atmosphere::get_speed_of_sound(geod.z());
+        mach = wind_relative_vel_rf.norm() /
+               Atmosphere::get_speed_of_sound(geod.z());
     } else {
         alpha = 0.0;
     }
@@ -364,10 +366,12 @@ void RungeKutta::march_step(double tStamp, double tStep) {
         ang_vel_enu = {0, 0, 0};
     }
 
-    // Do not calculate angle-of-attack early in the flight when the rocket is still going slow 
+    // Do not calculate angle-of-attack early in the flight when the rocket is
+    // still going slow
     if (tStamp >= 0.2) {
         alpha = acos(wind_relative_vel_rf.z() / wind_relative_vel_rf.norm());
-        mach = wind_relative_vel_rf.norm() / Atmosphere::get_speed_of_sound(geod.z());
+        mach = wind_relative_vel_rf.norm() /
+               Atmosphere::get_speed_of_sound(geod.z());
     } else {
         alpha = 0.0;
     }
