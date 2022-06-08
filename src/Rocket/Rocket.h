@@ -212,8 +212,8 @@ class Rocket {
         "ang_accel_x_rf,ang_accel_y_rf,ang_accel_z_rf,"
         "f_net_x_rf,f_net_y_rf,f_net_z_rf,"
         "m_net_x_rf,m_net_y_rf,m_net_z_rf,"
-        "q_ornt_w,q_ornt_xq_ornt_y,q_ornt_z,"
-        "structural_mass,total_mass,nose_to_cg,nose_to_cp"
+        "q_ornt_w,q_ornt_x,q_ornt_y,q_ornt_z,"
+        "structural_mass,total_mass,nose_to_cg,nose_to_cp,"
         "total_normal_force_coeff,total_axial_force_coeff,"
         "mach,alpha";
 };

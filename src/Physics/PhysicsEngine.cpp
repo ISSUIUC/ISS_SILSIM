@@ -241,11 +241,12 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         ang_vel_enu = {0, 0, 0};
     }
 
-    // Do not calculate rocket's angle-of-attack and mach number if velocity is
-    // small to avoid NaN values
-    if (wind_relative_vel_rf.norm() > 0.01) {
+    // Do not calculate angle-of-attack early in the flight when the rocket is still going slow 
+    if (tStamp >= 0.2) {
         alpha = acos(wind_relative_vel_rf.z() / wind_relative_vel_rf.norm());
         mach = wind_relative_vel_rf.norm() / Atmosphere::get_speed_of_sound(geod.z());
+    } else {
+        alpha = 0.0;
     }
 
     rocket_.set_alpha(alpha);
@@ -363,11 +364,12 @@ void RungeKutta::march_step(double tStamp, double tStep) {
         ang_vel_enu = {0, 0, 0};
     }
 
-    // Do not calculate rocket's angle-of-attack and mach number if velocity is
-    // small to avoid NaN values
-    if (wind_relative_vel_rf.norm() > 0.01) {
+    // Do not calculate angle-of-attack early in the flight when the rocket is still going slow 
+    if (tStamp >= 0.2) {
         alpha = acos(wind_relative_vel_rf.z() / wind_relative_vel_rf.norm());
         mach = wind_relative_vel_rf.norm() / Atmosphere::get_speed_of_sound(geod.z());
+    } else {
+        alpha = 0.0;
     }
 
     //---- Set Values ----
