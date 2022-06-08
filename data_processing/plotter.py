@@ -10,7 +10,7 @@ draw_plots = True
 
 plt.style.use('dark_background')
 
-data, events = logutils.ingest_log("logs/silsim_datalog.log")
+data, events = logutils.ingest_log("../logs/hmmm.log")
 
 timestamps = data['Simulation']['timestamp'] 
 
@@ -25,8 +25,6 @@ vz = data['Rocket']['vel_z_rf']
 aX = data['Rocket']['accel_x_rf']
 ay = data['Rocket']['accel_y_rf']
 az = data['Rocket']['accel_z_rf']
-
-alpha = np.degrees(data['Rocket']['alpha'])
 
 roll = data['Simulation']['roll']
 pitch = data['Simulation']['pitch']
@@ -111,14 +109,6 @@ if draw_plots:
     ax = fig.add_subplot(313)
     plt.plot(timestamps, az, color='r', linewidth=2.0, label="z accel truth")
     plt.plot(timestamps, sensorZ, color='g', label="z accel sensor output")
-    plt.grid()
-    plt.legend()
-
-    plt.figure()
-    plt.plot(timestamps, alpha, label="Alpha [deg]")
-    plt.plot(timestamps, roll, 'r', label="roll")
-    plt.plot(timestamps, pitch, 'g', label="pitch")
-    plt.plot(timestamps, yaw, 'b', label="yaw")
     plt.grid()
     plt.legend()
 
