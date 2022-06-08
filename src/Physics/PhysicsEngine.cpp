@@ -25,12 +25,6 @@ using Eigen::Vector3d;
 
 constexpr double kFeetToMeters = 0.3048;
 
-ForwardEuler::ForwardEuler(Rocket& rocket, RocketMotor& motor)
-    : PhysicsEngine(rocket, motor) {
-    euler_logger =
-        spdlog::basic_logger_mt("Euler_Logger", "logs/forward_euler.log");
-}
-
 /*****************************************************************************/
 /*                         PHYSICS ENGINE FUNCTIONS                          */
 /*****************************************************************************/
@@ -117,6 +111,19 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
     }
 
     Vector3d net_moment_rf = aero_moment_rf;
+
+    if (engine_logger_) {
+        engine_logger_->debug("timestamp = {}s", tStamp);
+        engine_logger_->debug("thrust_rf = <{}, {}, {}>", thrust_rf.x(),
+                              thrust_rf.y(), thrust_rf.z());
+        engine_logger_->debug("grav_rf = <{}, {}, {}>", grav_rf.x(),
+                              grav_rf.y(), grav_rf.z());
+        engine_logger_->debug("aero_force_rf = <{}, {}, {}>", aero_force_rf.x(),
+                              aero_force_rf.y(), aero_force_rf.z());
+        engine_logger_->debug("aero_moment_rf = <{}, {}, {}>",
+                              aero_moment_rf.x(), aero_moment_rf.y(),
+                              aero_moment_rf.z());
+    }
 
     return {net_force_rf, net_moment_rf};
 }
@@ -230,24 +237,6 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         alpha = acos(v_rf.z() / v_rf.norm());
         mach = vel_enu.norm() / Atmosphere::get_speed_of_sound(pos_enu.z());
     }
-
-    /*
-    euler_logger->debug("Timestamp {}", tStamp);
-    euler_logger->debug("thrust_rf = <{}, {}, {}>", thrust_rf.x(),
-                        thrust_rf.y(), thrust_rf.z());
-    euler_logger->debug("f_aero_rf = <{}, {}, {}>", f_aero_rf.x(),
-                        f_aero_rf.y(), f_aero_rf.z());
-    euler_logger->debug("t_aero_rf = <{}, {}, {}>", t_aero_rf.x(),
-                        t_aero_rf.y(), t_aero_rf.z());
-    euler_logger->debug("m_net_rf = <{}, {}, {}>", m_net_rf.x(), m_net_rf.y(),
-                        m_net_rf.z());
-    euler_logger->debug("f_net_enu = <{}, {}, {}>", f_net_enu.x(),
-                        f_net_enu.y(), f_net_enu.z());
-    euler_logger->debug("r_dot_enu = <{}, {}, {}>", r_dot_enu.x(),
-                        r_dot_enu.y(), r_dot_enu.z());
-    euler_logger->debug("r_ddot_enu = <{}, {}, {}>", r_ddot_enu.x(),
-                        r_ddot_enu.y(), r_ddot_enu.z());
-    */
 
     rocket_.set_alpha(alpha);
     rocket_.set_mach(mach);

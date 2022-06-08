@@ -27,6 +27,10 @@
 
 using Eigen::Vector3d;
 
+// Shortening the typename for   a e s t h e t i c s
+typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
+    spdlog_basic_sink_ptr;
+
 class Sensor {
    public:
     Sensor(std::string name, Rocket& rocket, double refresh_rate,
@@ -43,6 +47,7 @@ class Sensor {
     virtual void update_data(double tStep);
     virtual void get_data(Vector3d& data);
     virtual double get_data();
+    virtual void log_sensor_state(double tStamp) = 0;
 
     // Noise/bias injection control
     void enable_noise_injection() { inject_noise_ = true; };
@@ -66,14 +71,18 @@ class Sensor {
     // Whether to inject constant bias or gaussian noise to measurement
     bool inject_bias_ = false;
     bool inject_noise_ = false;
+
+    std::shared_ptr<spdlog::logger> sensor_logger_;
 };
 
 class Gyroscope : public Sensor {
    public:
     Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
-              double noise_mean = 0.0f, double noise_stddev = 0.1f);
+              spdlog_basic_sink_ptr silsim_sink, double noise_mean = 0.0f,
+              double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     void get_data(Vector3d& data) override;
+    void log_sensor_state(double tStamp) override;
 
     void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
@@ -83,14 +92,19 @@ class Gyroscope : public Sensor {
     Vector3d noise_;  // Noise vector to be added to measurement
 
     Vector3d bias_;  // Constant bias vector to be added to measurement
+
+    std::string datalog_format_string =
+        "timestamp,gyro_x_rf,gyro_y_rf,gyro_z_rf";
 };
 
 class Accelerometer : public Sensor {
    public:
     Accelerometer(std::string name, Rocket& rocket, double refresh_rate,
-                  double noise_mean = 0.0f, double noise_stddev = 0.1f);
+                  spdlog_basic_sink_ptr silsim_sink, double noise_mean = 0.0f,
+                  double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     void get_data(Vector3d& data) override;
+    void log_sensor_state(double tStamp) override;
 
     void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
@@ -100,6 +114,9 @@ class Accelerometer : public Sensor {
     Vector3d noise_;  // Noise vector to be added to measurement
 
     Vector3d bias_;  // Constant bias vector to be added to measurement
+
+    std::string datalog_format_string =
+        "timestamp,accel_x_rf,accel_y_rf,accel_z_rf";
 };
 
 // TODO: Implement functions for both altitude and pressure measurements (and
@@ -107,9 +124,11 @@ class Accelerometer : public Sensor {
 class Barometer : public Sensor {
    public:
     Barometer(std::string name, Rocket& rocket, double refresh_rate,
-              double noise_mean = 0.0f, double noise_stddev = 0.1f);
+              spdlog_basic_sink_ptr silsim_sink, double noise_mean = 0.0f,
+              double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     double get_data() override;
+    void log_sensor_state(double tStamp) override;
 
     void set_constant_bias(double bias) { bias_ = bias; };
 
@@ -119,6 +138,8 @@ class Barometer : public Sensor {
     double noise_;  // Noise value to be added to measurement
 
     double bias_;  // Constant bias value to be added to measurement
+
+    std::string datalog_format_string = "timestamp,baro_altitude";
 };
 
 Vector3d randomize_vector(std::default_random_engine& generator,

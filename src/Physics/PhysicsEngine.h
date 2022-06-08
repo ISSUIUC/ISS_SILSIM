@@ -26,6 +26,10 @@
 #include "Propulsion.h"
 #include "Rocket.h"
 
+// Shortening the typename for   a e s t h e t i c s
+typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
+    spdlog_basic_sink_ptr;
+
 /*****************************************************************************/
 /* PhysicsEngine Base Class and Derivatives */
 /*****************************************************************************/
@@ -58,6 +62,8 @@ class PhysicsEngine {
                                   double tStep) const;
     Rocket& rocket_;
     RocketMotor& motor_;
+
+    std::shared_ptr<spdlog::logger> engine_logger_;
 };
 
 /** ForwardEuler Derived Class
@@ -70,12 +76,17 @@ class PhysicsEngine {
  */
 class ForwardEuler : public PhysicsEngine {
    public:
-    ForwardEuler(Rocket& rocket, RocketMotor& motor);
+    ForwardEuler(Rocket& rocket, RocketMotor& motor,
+                 spdlog_basic_sink_ptr silsim_sink)
+        : PhysicsEngine(rocket, motor) {
+        if (silsim_sink) {
+            engine_logger_ =
+                std::make_shared<spdlog::logger>("ForwardEuler", silsim_sink);
+            engine_logger_->set_level(spdlog::level::debug);
+        }
+    };
 
     void march_step(double tStamp, double tStep) override;
-
-   private:
-    std::shared_ptr<spdlog::logger> euler_logger;
 };
 
 /** ForwardEuler Derived Class
@@ -92,8 +103,15 @@ class ForwardEuler : public PhysicsEngine {
  */
 class RungeKutta : public PhysicsEngine {
    public:
-    RungeKutta(Rocket& rocket, RocketMotor& motor)
-        : PhysicsEngine(rocket, motor){};
+    RungeKutta(Rocket& rocket, RocketMotor& motor,
+               spdlog_basic_sink_ptr silsim_sink)
+        : PhysicsEngine(rocket, motor) {
+        if (silsim_sink) {
+            engine_logger_ =
+                std::make_shared<spdlog::logger>("RungeKutta", silsim_sink);
+            engine_logger_->set_level(spdlog::level::debug);
+        }
+    };
 
     void march_step(double tStamp, double tStep) override;
 

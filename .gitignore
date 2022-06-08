@@ -60,6 +60,8 @@ out/
 .vs/
 **/.vs/
 
+**/__pycache__/
+
 main
 ISS_SILSIM
 sim_data/*.csv

@@ -62,9 +62,54 @@ double RocketMotor::get_propellant_mass(double tStamp) const {
            (1.0 - ((tStamp - ignition_tStamp_) / max_burn_duration_));
 }
 
+void RocketMotor::log_motor_state(double tStamp) {
+    if (motor_logger_) {
+        // clang-format off
+        std::stringstream datalog_ss;
+
+        Vector3d thrust_vector_rf = get_thrust_vector(tStamp);
+
+        datalog_ss << "DATA," 
+                   << tStamp << ","
+                   << is_burning(tStamp) << ","
+                   << get_propellant_mass(tStamp) << ","
+                   << current_thrust(tStamp) << ","
+                   << thrust_vector_rf.x() << ","
+                   << thrust_vector_rf.y() << ","
+                   << thrust_vector_rf.z();
+
+        motor_logger_->info(datalog_ss.str());
+        // clang-format on
+    }
+}
+
 /*****************************************************************************/
 /* ConstantThrustSolidMotor Member Functions                                 */
 /*****************************************************************************/
+
+/**
+ * @brief Constructor for the ConstantThrustSolidMotor class
+ *
+ * Class represents a solid rocket motor that produces thrust that doesn't
+ * change for the duration of the burni. i.e. it follows a flat thrust curve
+ *
+ * @param max_burn_duration Motor burn duration in seconds
+ * @param thrust_value Thrust force the motor produces in Newtons
+ * @param silsim_sink A pointer to SILSIM's data datlog sink. Can be nullptr!
+ */
+ConstantThrustSolidMotor::ConstantThrustSolidMotor(
+    double max_burn_duration, double thrust_value,
+    double initial_propellant_mass, spdlog_basic_sink_ptr silsim_sink)
+    : thrust_value_(thrust_value) {
+    max_burn_duration_ = max_burn_duration;
+    initial_propellant_mass_ = initial_propellant_mass;
+
+    if (silsim_sink) {
+        motor_logger_ = std::make_shared<spdlog::logger>(
+            "ConstantThrustSolidMotor", silsim_sink);
+        motor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
+    }
+}
 
 /**
  * @brief Get the magnitude of the thrust force the motor is generating
@@ -100,11 +145,19 @@ Vector3d ConstantThrustSolidMotor::get_thrust_vector(double tStamp) const {
  * thrust curve file. The class interpolates between data points provided in the
  * curve.
  *
- * @param tStamp Current simulation timestamp
- * @return Vector3d The motor's current thrust vector
+ * @param filename Relative filepath string to thrust curve .csv file
+ * @param initial_propellant_mass The total mass of propellant before ignition
+ * @param silsim_sink A pointer to SILSIM's data datlog sink. Can be nullptr!
  */
-ThrustCurveSolidMotor::ThrustCurveSolidMotor(std::string filename,
-                                             double initial_propellant_mass) {
+ThrustCurveSolidMotor::ThrustCurveSolidMotor(
+    std::string filename, double initial_propellant_mass,
+    spdlog_basic_sink_ptr silsim_sink) {
+    if (silsim_sink) {
+        motor_logger_ = std::make_shared<spdlog::logger>(
+            "ThrustCurveSolidMotor", silsim_sink);
+        motor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
+    }
+
     rapidcsv::Document csv(filename);
     std::vector<double> time_vals = csv.GetColumn<double>("Time");
     std::vector<double> thrust_vals = csv.GetColumn<double>("Thrust");
