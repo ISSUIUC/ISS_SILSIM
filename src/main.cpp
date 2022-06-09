@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+#include "Atmosphere.h"
 #include "CpuState.h"
 #include "RASAeroImport.h"
 #include "Rocket.h"
@@ -69,6 +70,11 @@ int main() {
     accel1.enable_noise_injection();
     Gyroscope gyro1("LSM9_gyro", rocket, 100, silsim_datalog_sink);
 
+    Atmosphere atmosphere(silsim_datalog_sink);
+    atmosphere.set_nominal_wind_magnitude(5.0);  // ~11.18 mph
+    atmosphere.toggle_wind_direction_variance(true);
+    atmosphere.toggle_wind_magnitude_variance(true);
+
     // Modeling Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop
     // weight
     // ConstantThrustSolidMotor motor(3.49, 5800.0, 9.021, silsim_sink);
@@ -77,12 +83,13 @@ int main() {
     ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425,
                                 silsim_datalog_sink);
 
-    // RungeKutta engine(rocket, motor, silsim_datalog_sink);
-    ForwardEuler engine(rocket, motor, silsim_datalog_sink);
+    RungeKutta engine(rocket, motor, atmosphere, silsim_datalog_sink);
+    // ForwardEuler engine(rocket, motor, atmosphere, silsim_datalog_sink);
 
     CpuState cpu;
 
-    Simulation sim(0.01, &engine, rocket, motor, cpu, silsim_datalog_sink);
+    Simulation sim(0.01, &engine, atmosphere, rocket, motor, cpu,
+                   silsim_datalog_sink);
 
     sim.add_sensor(&accel1);
     sim.add_sensor(&gyro1);

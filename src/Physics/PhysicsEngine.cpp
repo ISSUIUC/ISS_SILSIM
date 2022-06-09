@@ -57,57 +57,58 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
     // enu2r pulls a quaternion from the rocket, be sure to set orientation
     // beforehand
     Vector3d vel_rf = rocket_.enu2r(vel_enu);
-    double velocity_magnitude = vel_rf.squaredNorm();
 
     Vector3d geod = rocket_.ecef2geod(rocket_.position_enu2ecef(pos_enu));
+    double density = Atmosphere::get_density(geod.z());
 
-    double altitude = Atmosphere::get_density(geod.z());
+    // Calcualte wind-relative velocity of the rocket
+    Vector3d wind_enu = atmosphere_.get_wind_vector(tStamp);
+    Vector3d wind_rf = rocket_.enu2r(wind_enu);
+    Vector3d wind_relative_vel_rf = vel_rf - wind_rf;
+    double wind_relative_vel_mag_sqrd = wind_relative_vel_rf.squaredNorm();
 
     /************************* Calculate Net Force ****************************/
-    Vector3d aero_force_rf;
+    Vector3d aero_force_rf{0.0, 0.0, 0.0};
 
-    if (vel_enu.norm() > 0.01) {
+    if (wind_relative_vel_rf.norm() > 0.01) {
         Vector3d normal_force_rf;
 
         double normal_force_mag =
-            0.5 * CN * velocity_magnitude * area * altitude;
-        normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
+            0.5 * CN * wind_relative_vel_mag_sqrd * area * density;
+        normal_force_rf = {(-wind_relative_vel_rf.x()),
+                           (-wind_relative_vel_rf.y()), 0};
 
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
         double axial_force_mag =
-            0.5 * CA * velocity_magnitude * area * altitude;
-        Vector3d axial_force_rf{0, 0,
-                                std::copysign(axial_force_mag, -vel_rf.z())};
+            0.5 * CA * wind_relative_vel_mag_sqrd * area * density;
+        Vector3d axial_force_rf{
+            0, 0, std::copysign(axial_force_mag, -wind_relative_vel_rf.z())};
 
         aero_force_rf = normal_force_rf + axial_force_rf;
-    } else {
-        aero_force_rf = {0, 0, 0};
     }
 
     Vector3d grav_rf = rocket_.gravity_vector_rf() * 9.81 * total_mass;
     Vector3d net_force_rf = aero_force_rf + thrust_rf + grav_rf;
 
     /************************ Calculate Net Torque ***************************/
-    Vector3d aero_moment_rf;
+    Vector3d aero_moment_rf{0.0, 0.0, 0.0};
 
-    if (vel_enu.norm() > 0.01) {
+    if (wind_relative_vel_rf.norm() > 0.01) {
         double normal_force_mag =
-            0.5 * CN * velocity_magnitude * area * altitude;
-        Vector3d normal_force_rf = {(-vel_rf.x()), (-vel_rf.y()), 0};
+            0.5 * CN * wind_relative_vel_mag_sqrd * area * density;
+        Vector3d normal_force_rf = {(-wind_relative_vel_rf.x()),
+                                    (-wind_relative_vel_rf.y()), 0};
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
         double axial_force_mag =
-            0.5 * CA * velocity_magnitude * area * altitude;
-        Vector3d axial_force_rf{0, 0,
-                                std::copysign(axial_force_mag, -vel_rf.z())};
+            0.5 * CA * wind_relative_vel_mag_sqrd * area * density;
+        Vector3d axial_force_rf{
+            0, 0, std::copysign(axial_force_mag, -wind_relative_vel_rf.z())};
         Vector3d aero_force_rf = normal_force_rf + axial_force_rf;
         aero_moment_rf = cp_vect_rf.cross(aero_force_rf);
-
-    } else {
-        aero_moment_rf = {0, 0, 0};
     }
 
     Vector3d net_moment_rf = aero_moment_rf;
@@ -123,6 +124,8 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
         engine_logger_->debug("aero_moment_rf = <{}, {}, {}>",
                               aero_moment_rf.x(), aero_moment_rf.y(),
                               aero_moment_rf.z());
+        engine_logger_->debug("wind_rf = <{}, {}, {}>", wind_rf.x(),
+                              wind_rf.y(), wind_rf.z());
     }
 
     return {net_force_rf, net_moment_rf};
@@ -208,6 +211,14 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
     Vector3d net_force_enu = rocket_.r2enu(net_force_rf);
     Vector3d net_moment_enu = rocket_.r2enu(net_moment_rf);
 
+    // Calculate wind-relative velocity of the rocket
+    Vector3d wind_enu = atmosphere_.get_wind_vector(tStamp);
+    Vector3d wind_rf = rocket_.enu2r(wind_enu);
+    Vector3d vel_rf = rocket_.enu2r(vel_enu);
+    Vector3d wind_relative_vel_rf = vel_rf - wind_rf;
+
+    Vector3d geod = rocket_.ecef2geod(rocket_.position_enu2ecef(pos_enu));
+
     /************************** Perform euler step ****************************/
 
     pos_enu += vel_enu * tStep;
@@ -230,12 +241,14 @@ void ForwardEuler::march_step(double tStamp, double tStep) {
         ang_vel_enu = {0, 0, 0};
     }
 
-    // Do not calculate rocket's angle-of-attack and mach number if velocity is
-    // small to avoid NaN values
-    if (vel_enu.norm() > 0.01) {
-        Vector3d v_rf = rocket_.enu2r(vel_enu);
-        alpha = acos(v_rf.z() / v_rf.norm());
-        mach = vel_enu.norm() / Atmosphere::get_speed_of_sound(pos_enu.z());
+    // Do not calculate angle-of-attack early in the flight when the rocket is
+    // still going slow
+    if (tStamp >= 0.2) {
+        alpha = acos(wind_relative_vel_rf.z() / wind_relative_vel_rf.norm());
+        mach = wind_relative_vel_rf.norm() /
+               Atmosphere::get_speed_of_sound(geod.z());
+    } else {
+        alpha = 0.0;
     }
 
     rocket_.set_alpha(alpha);
@@ -291,6 +304,14 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     double alpha = rocket_.get_alpha();
     double mach = rocket_.get_mach();
 
+    // Calculate wind-relative velocity of the rocket
+    Vector3d wind_enu = atmosphere_.get_wind_vector(tStamp);
+    Vector3d wind_rf = rocket_.enu2r(wind_enu);
+    Vector3d vel_rf = rocket_.enu2r(vel_enu);
+    Vector3d wind_relative_vel_rf = vel_rf - wind_rf;
+
+    Vector3d geod = rocket_.ecef2geod(rocket_.position_enu2ecef(pos_enu));
+
     /******************** Calculate Intermediate States **********************/
     // Each state is used to calculate the next state
 
@@ -340,21 +361,19 @@ void RungeKutta::march_step(double tStamp, double tStep) {
 
     //---- Launch Rail ----
     // very basic implementation
-    if (pos_enu.norm() < 4.50) {
-        ang_vel_enu.x() = 0;
-        ang_vel_enu.y() = 0;
-        ang_vel_enu.z() = 0;
-        ang_accel_enu.x() = 0;
-        ang_accel_enu.y() = 0;
-        ang_accel_enu.z() = 0;
+    if (pos_enu.norm() < (17 * kFeetToMeters)) {
+        ang_accel_enu = {0, 0, 0};
+        ang_vel_enu = {0, 0, 0};
     }
 
-    // Do not calculate rocket's angle-of-attack and mach number if velocity is
-    // small to avoid NaN values
-    if (vel_enu.norm() > 0.01) {
-        Vector3d vel_rf = rocket_.enu2r(vel_enu);
-        alpha = acos(vel_rf.z() / vel_rf.norm());
-        mach = vel_enu.norm() / Atmosphere::get_speed_of_sound(pos_enu.z());
+    // Do not calculate angle-of-attack early in the flight when the rocket is
+    // still going slow
+    if (tStamp >= 0.2) {
+        alpha = acos(wind_relative_vel_rf.z() / wind_relative_vel_rf.norm());
+        mach = wind_relative_vel_rf.norm() /
+               Atmosphere::get_speed_of_sound(geod.z());
+    } else {
+        alpha = 0.0;
     }
 
     //---- Set Values ----

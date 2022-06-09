@@ -282,7 +282,7 @@ double Atmosphere::get_density(double altitude) {
     }
 
     else {
-        throw std::runtime_error("exceeding caculatable altitude");
+        throw std::runtime_error("exceeding calculatable altitude");
     }
 
     return density;
@@ -306,4 +306,98 @@ double Atmosphere::get_geometric_to_geopotential(double altitude) {
     double geopotential = (r * altitude) / (r + altitude);
 
     return geopotential;
+}
+
+/**
+ * @brief Generates a wind vector in the ENU frame with a direction and
+ * magnitude determined by the wind model used.
+ *
+ * Wind model generates a random variance in both wind direction and magnitude
+ * at a determined rate. It then applies a low-pass filter to the variance so
+ * that the wind vector doesn't change abrupty and rather ebbs-and-flows much
+ * like real wind.
+ *
+ * If wind variance is not enabled, the the return wind vector is simply the
+ * nominal wind
+ *
+ * @param tStamp Current simulation timestamp
+ * @return Vector3d Instantaneous wind vector
+ */
+Vector3d Atmosphere::get_wind_vector(double tStamp) {
+    constexpr double dir_alpha = 0.9997;
+    constexpr double mag_alpha = 0.99;
+
+    if (enable_direction_variance_) {
+        if ((tStamp - last_direction_variance_update_) >=
+            direction_variance_update_rate_) {
+            // Create a new random variance vector of unit magnitude
+            generated_direction_variance_.x() =
+                direction_normal_dist_(generator_);
+            generated_direction_variance_.y() =
+                direction_normal_dist_(generator_);
+            generated_direction_variance_.z() =
+                direction_normal_dist_(generator_);
+            generated_direction_variance_.normalize();
+            last_direction_variance_update_ = tStamp;
+        }
+
+        // Apply low-pass filter to smooth wind direction change
+        direction_variance_vect_ =
+            dir_alpha * direction_variance_vect_ +
+            (1.0 - dir_alpha) * generated_direction_variance_;
+
+        current_wind_direction_ =
+            nominal_wind_direction_ + direction_variance_vect_;
+
+    } else {
+        current_wind_direction_ = nominal_wind_direction_;
+    }
+
+    current_wind_direction_.normalize();
+
+    if (enable_magnitude_variance_) {
+        if ((tStamp - last_magnitude_variance_update_) >=
+            magnitude_variance_update_rate_) {
+            // Create a new random mangitude variance value
+            generated_magnitude_variance_ = magnitude_normal_dist_(generator_);
+            last_magnitude_variance_update_ = tStamp;
+        }
+
+        // Apply low-pass filter to smooth wind magnitude change
+        magnitude_variance_val_ =
+            mag_alpha * magnitude_variance_val_ +
+            (1.0 - mag_alpha) * generated_magnitude_variance_;
+
+        current_wind_magnitude_ =
+            nominal_wind_magnitude_ + magnitude_variance_val_;
+
+    } else {
+        current_wind_magnitude_ = nominal_wind_magnitude_;
+    }
+
+    return current_wind_direction_ * current_wind_magnitude_;
+}
+
+/**
+ * @brief Logs the internal state of the Atmosphere class
+ *
+ * @param tStamp Current simulation timestamp
+ */
+void Atmosphere::log_atmosphere_state(double tStamp) {
+    if (atmosphere_logger_) {
+        // clang-format off
+        std::stringstream datalog_ss;
+
+        Vector3d wind = get_wind_vector(tStamp);
+
+        datalog_ss << "DATA," 
+                   << tStamp << ","
+                   << wind.x() << ","
+                   << wind.y() << ","
+                   << wind.z() << ","
+                   << wind.norm();
+
+        atmosphere_logger_->info(datalog_ss.str());
+        // clang-format on
+    }
 }

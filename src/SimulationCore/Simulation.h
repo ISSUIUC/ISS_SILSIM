@@ -25,6 +25,7 @@
 #include <memory>
 #include <string>
 
+#include "Atmosphere.h"
 #include "CpuState.h"
 #include "PhysicsEngine.h"
 #include "Propulsion.h"
@@ -37,8 +38,8 @@ typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
 
 class Simulation {
    public:
-    Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
-               RocketMotor& motor, CpuState& cpu,
+    Simulation(double tStep, PhysicsEngine* engine, Atmosphere& atmosphere,
+               Rocket& rocket, RocketMotor& motor, CpuState& cpu,
                spdlog_basic_sink_ptr silsim_sink);
 
     void run(int steps);
@@ -55,7 +56,10 @@ class Simulation {
 
     PhysicsEngine* engine_;
 
+    Atmosphere& atmoshpere_;
+
     Rocket& rocket_;
+
     RocketMotor& motor_;
 
     CpuState& cpu_;

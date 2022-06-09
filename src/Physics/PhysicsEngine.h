@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 
+#include "Atmosphere.h"
 #include "Propulsion.h"
 #include "Rocket.h"
 
@@ -48,8 +49,8 @@ typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
  */
 class PhysicsEngine {
    public:
-    PhysicsEngine(Rocket& rocket, RocketMotor& motor)
-        : rocket_(rocket), motor_(motor){};
+    PhysicsEngine(Rocket& rocket, RocketMotor& motor, Atmosphere& atmosphere)
+        : rocket_(rocket), motor_(motor), atmosphere_(atmosphere){};
 
     virtual void march_step(double tStamp, double tStep) = 0;
 
@@ -62,6 +63,7 @@ class PhysicsEngine {
                                   double tStep) const;
     Rocket& rocket_;
     RocketMotor& motor_;
+    Atmosphere& atmosphere_;
 
     std::shared_ptr<spdlog::logger> engine_logger_;
 };
@@ -76,9 +78,9 @@ class PhysicsEngine {
  */
 class ForwardEuler : public PhysicsEngine {
    public:
-    ForwardEuler(Rocket& rocket, RocketMotor& motor,
+    ForwardEuler(Rocket& rocket, RocketMotor& motor, Atmosphere& atmosphere,
                  spdlog_basic_sink_ptr silsim_sink)
-        : PhysicsEngine(rocket, motor) {
+        : PhysicsEngine(rocket, motor, atmosphere) {
         if (silsim_sink) {
             engine_logger_ =
                 std::make_shared<spdlog::logger>("ForwardEuler", silsim_sink);
@@ -103,9 +105,9 @@ class ForwardEuler : public PhysicsEngine {
  */
 class RungeKutta : public PhysicsEngine {
    public:
-    RungeKutta(Rocket& rocket, RocketMotor& motor,
+    RungeKutta(Rocket& rocket, RocketMotor& motor, Atmosphere& atmosphere,
                spdlog_basic_sink_ptr silsim_sink)
-        : PhysicsEngine(rocket, motor) {
+        : PhysicsEngine(rocket, motor, atmosphere) {
         if (silsim_sink) {
             engine_logger_ =
                 std::make_shared<spdlog::logger>("RungeKutta", silsim_sink);

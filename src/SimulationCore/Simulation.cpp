@@ -35,12 +35,14 @@
 
 using Eigen::Vector3d;
 
-Simulation::Simulation(double tStep, PhysicsEngine* engine, Rocket& rocket,
+Simulation::Simulation(double tStep, PhysicsEngine* engine,
+                       Atmosphere& atmosphere, Rocket& rocket,
                        RocketMotor& motor, CpuState& cpu,
                        spdlog_basic_sink_ptr silsim_sink)
     : tStamp_(0),
       tStep_(tStep),
       engine_(engine),
+      atmoshpere_(atmosphere),
       rocket_(rocket),
       motor_(motor),
       cpu_(cpu) {
@@ -69,6 +71,7 @@ void Simulation::run(int steps) {
     log_sensors();
     rocket_.log_rocket_state(tStamp_);
     motor_.log_motor_state(tStamp_);
+    atmoshpere_.log_atmosphere_state(tStamp_);
 
     // send it
     motor_.ignite(tStamp_);
