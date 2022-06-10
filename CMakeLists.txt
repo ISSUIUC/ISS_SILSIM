@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(SRC ${CMAKE_SOURCE_DIR}/src)
 set(LIB ${CMAKE_SOURCE_DIR}/lib)
+set(FLIGHT_SRC ${CMAKE_SOURCE_DIR}/flight_src/mcu)
 
 if(NOT EXISTS ${LIB}/spdlog/CMakeLists.txt
    OR NOT EXISTS ${LIB}/eigen/CMakeLists.txt)
@@ -21,11 +22,14 @@ add_subdirectory(${SRC}/Atmosphere)
 add_subdirectory(${SRC}/Aero)
 add_subdirectory(${SRC}/Sensors)
 add_subdirectory(${SRC}/CpuEmulation)
+add_subdirectory(${SRC}/ControlSurfaces)
 
 # Add external libraries
 add_subdirectory(${LIB}/spdlog)
 add_subdirectory(${LIB}/eigen)
 add_subdirectory(${LIB}/rapidcsv)
+
+add_subdirectory(flight_src/mcu)
 
 
 add_executable(ISS_SILSIM src/main.cpp)
@@ -39,7 +43,9 @@ target_link_libraries(ISS_SILSIM PUBLIC
                       Atmosphere
                       Aero
                       Sensors
-                      CpuEmulation)
+                      CpuEmulation
+                      ControlSurfaces
+                      flight_emu)
 
 # Link external libraries to main executable
 target_link_libraries(ISS_SILSIM PRIVATE 
@@ -55,7 +61,9 @@ target_include_directories(ISS_SILSIM PUBLIC
                            ${SRC}/Atmosphere
                            ${SRC}/Aero
                            ${SRC}/Sensors
-                           ${SRC}/CpuEmulation)
+                           ${SRC}/CpuEmulation
+                           ${SRC}/ControlSurfaces
+                           )
 
 #set highest warning levels
 if(MSVC)

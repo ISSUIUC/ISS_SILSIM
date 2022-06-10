@@ -29,6 +29,7 @@ constexpr double kIntrepidDiameter = 4.02 * kInchToMeters;
 constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
 int main() {
+    // SILSIM Logging Setup ----------------------------------------------------
     spdlog_basic_sink_ptr silsim_datalog_sink =
         std::make_shared<spdlog::sinks::basic_file_sink_mt>(
             "logs/silsim_datalog.log");
@@ -39,11 +40,13 @@ int main() {
     silsim_datalog_sink->set_pattern(
         "[%Y-%m-%d %H:%M:%S.%e] [%t] [%l] [%n] [%v]");
 
+    // RASAero Setup ----------------------------------------------------------
     std::shared_ptr<RASAeroImport> rasaero_import =
         std::make_shared<RASAeroImport>(
             silsim_datalog_sink,
             "utils/RASAero_fetch/output/RASAero_Intrepid_5800_mk6.csv");
 
+    // Rocket Setup -----------------------------------------------------------
     Rocket rocket(silsim_datalog_sink, rasaero_import);
 
     rocket.set_structural_mass(kIntrepidDryMass);
@@ -65,35 +68,48 @@ int main() {
                            sin(angle / 2.0) * 0.707, 0};
     rocket.set_q_ornt(start_ornt);
 
-    // Construct some sensors
+    // Contruct Sensors -------------------------------------------------------
     Accelerometer accel1("LSM9_accel", rocket, 100, silsim_datalog_sink);
     accel1.enable_noise_injection();
     Gyroscope gyro1("LSM9_gyro", rocket, 100, silsim_datalog_sink);
+    Thermometer thermo1("MS5611_thermometer", rocket, 100);
+    Barometer baro1("MS5611_barometer", rocket, 100, 0, 150 / 1.645);
+    baro1.enable_noise_injection();
+    GPSSensor gps1("ZOEM8Q_gps", rocket, 10);
+    Magnetometer mag1("LSM9_magnetometer", rocket, 100);
 
+    // Atmosphere & Wind Setup -------------------------------------------------
     Atmosphere atmosphere(silsim_datalog_sink);
     atmosphere.set_nominal_wind_magnitude(5.0);  // ~11.18 mph
     atmosphere.toggle_wind_direction_variance(true);
     atmosphere.toggle_wind_magnitude_variance(true);
 
-    // Modeling Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop
-    // weight
+    // Motor Setup -------------------------------------------------------------
+    // Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop weight
     // ConstantThrustSolidMotor motor(3.49, 5800.0, 9.021, silsim_sink);
-
-    // Cesaroni N5800 Motor
     ThrustCurveSolidMotor motor("thrust_curves/cesaroni_n5800.csv", 9.425,
                                 silsim_datalog_sink);
 
+    // Physics Engine Setup ----------------------------------------------------
     RungeKutta engine(rocket, motor, atmosphere, silsim_datalog_sink);
     // ForwardEuler engine(rocket, motor, atmosphere, silsim_datalog_sink);
 
-    CpuState cpu;
+    // CPU Emulation Setup -----------------------------------------------------
+    CpuState cpu(&accel1, &thermo1, &baro1, &gyro1, &gps1, &mag1,
+                 &rocket.get_flaps());
 
+    // Simulation Setup --------------------------------------------------------
     Simulation sim(0.01, &engine, atmosphere, rocket, motor, cpu,
                    silsim_datalog_sink);
 
     sim.add_sensor(&accel1);
     sim.add_sensor(&gyro1);
+    sim.add_sensor(&thermo1);
+    sim.add_sensor(&baro1);
+    sim.add_sensor(&gps1);
+    sim.add_sensor(&mag1);
 
+    // Run Simulation ----------------------------------------------------------
     std::cout << "Running Sim!" << std::endl;
 
     // run 10000 steps

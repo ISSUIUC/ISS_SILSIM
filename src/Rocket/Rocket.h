@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 
+#include "Flaps.h"
 #include "RASAeroImport.h"
 
 using Eigen::Quaterniond;
@@ -95,6 +96,8 @@ class Rocket {
     Vector3d get_launch_geod() const { return launch_geod_; };
 
     std::array<double, 9> get_I() const { return I_; };
+
+    Flaps& get_flaps() { return flaps_; }
 
     /**************************** Set parameters ******************************/
     void set_r_vect(Vector3d vector) { r_vect_ = vector; };
@@ -196,6 +199,9 @@ class Rocket {
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
     double mach_ = 0.0;         // Freestream air mach number
     double alpha_ = 0.0;        // Rocket total angle-of-attack to air
+
+    //----------- Flap Parameters ---------
+    Flaps flaps_{};
 
     //----------- Data Logging ----------
     std::shared_ptr<spdlog::logger> rocket_logger_;
