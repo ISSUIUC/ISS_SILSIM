@@ -172,14 +172,35 @@ void Accelerometer::log_sensor_state(double tStamp) {
 
 // TODO implement magnetometer
 Magnetometer::Magnetometer(std::string name, Rocket& rocket,
-                           double refresh_rate, double noise_mean,
+                           double refresh_rate,
+                           spdlog_basic_sink_ptr silsim_sink, double noise_mean,
                            double noise_stddev)
-    : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {}
+    : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
+    if (silsim_sink) {
+        sensor_logger_ = std::make_shared<spdlog::logger>(
+            "Magnetometer:" + name, silsim_sink);
+        sensor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
+    }
+}
 void Magnetometer::update_data(double tStep) {}
 
 void Magnetometer::get_data(Vector3d& data) { data = {}; }
 
-void Magnetometer::log_sensor_state(double tStamp) { (void)tStamp; }
+void Magnetometer::log_sensor_state(double tStamp) {
+    if (sensor_logger_) {
+        // clang-format off
+        std::stringstream datalog_ss;
+
+        datalog_ss << "DATA,"
+                   << tStamp << ","
+                   << data_.x() << ","
+                   << data_.y() << ","
+                   << data_.z();
+
+        sensor_logger_->info(datalog_ss.str());
+        // clang-format on
+    }
+}
 
 /*****************************************************************************/
 /*                        BAROMETER MEMBER FUNCTIONS                         */
@@ -202,7 +223,7 @@ Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
 
 void Barometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
-        data_ = rocket_.get_r_vect().x();
+        data_ = rocket_.get_r_vect().z();
         new_data_ = true;
 
         if (inject_noise_) {
@@ -250,8 +271,15 @@ Vector3d randomize_vector(std::default_random_engine& generator,
 /*****************************************************************************/
 
 Thermometer::Thermometer(std::string name, Rocket& rocket, double refresh_rate,
-                         double noise_mean, double noise_stddev)
-    : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {}
+                         spdlog_basic_sink_ptr silsim_sink, double noise_mean,
+                         double noise_stddev)
+    : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
+    if (silsim_sink) {
+        sensor_logger_ = std::make_shared<spdlog::logger>("Thermometer:" + name,
+                                                          silsim_sink);
+        sensor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
+    }
+}
 
 void Thermometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
@@ -271,15 +299,34 @@ void Thermometer::update_data(double tStep) {
 
 double Thermometer::get_data() { return data_; }
 
-void Thermometer::log_sensor_state(double tStamp) { (void)tStamp; }
+void Thermometer::log_sensor_state(double tStamp) {
+    if (sensor_logger_) {
+        // clang-format off
+        std::stringstream datalog_ss;
+
+        datalog_ss << "DATA,"
+                   << tStamp << ","
+                   << data_;
+
+        sensor_logger_->info(datalog_ss.str());
+        // clang-format on
+    }
+}
 
 /*****************************************************************************/
 /*                        GPS SENSOR MEMBER FUNCTIONS                        */
 /*****************************************************************************/
 
 GPSSensor::GPSSensor(std::string name, Rocket& rocket, double refresh_rate,
-                     double noise_mean, double noise_stddev)
-    : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {}
+                     spdlog_basic_sink_ptr silsim_sink, double noise_mean,
+                     double noise_stddev)
+    : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
+    if (silsim_sink) {
+        sensor_logger_ =
+            std::make_shared<spdlog::logger>("GPSSensor:" + name, silsim_sink);
+        sensor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
+    }
+}
 
 void GPSSensor::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
@@ -301,4 +348,18 @@ void GPSSensor::update_data(double tStep) {
 
 void GPSSensor::get_data(Vector3d& data) { data = data_; }
 
-void GPSSensor::log_sensor_state(double tStamp) { (void)tStamp; }
+void GPSSensor::log_sensor_state(double tStamp) {
+    if (sensor_logger_) {
+        // clang-format off
+        std::stringstream datalog_ss;
+
+        datalog_ss << "DATA,"
+                   << tStamp << ","
+                   << data_.x() << ","
+                   << data_.y() << ","
+                   << data_.z();
+
+        sensor_logger_->info(datalog_ss.str());
+        // clang-format on
+    }
+}

@@ -138,7 +138,8 @@ class Accelerometer : public Sensor {
 class Magnetometer : public Sensor {
    public:
     Magnetometer(std::string name, Rocket& rocket, double refresh_rate,
-                 double noise_mean = 0.0f, double noise_stddev = 0.1f);
+                 spdlog_basic_sink_ptr silsim_sink, double noise_mean = 0.0f,
+                 double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     void get_data(Vector3d& data) override;
     void log_sensor_state(double tStamp) override;
@@ -151,6 +152,8 @@ class Magnetometer : public Sensor {
     Vector3d noise_;  // Noise vector to be added to measurement
 
     Vector3d bias_;  // Constant bias vector to be added to measurement
+
+    std::string datalog_format_string = "timestamp,mag_x_r,mag_y_rf,mag_z_rf";
 };
 
 /*****************************************************************************/
@@ -187,7 +190,8 @@ class Barometer : public Sensor {
 class Thermometer : public Sensor {
    public:
     Thermometer(std::string name, Rocket& rocket, double refresh_rate,
-                double noise_mean = 0.0f, double noise_stddev = 0.1f);
+                spdlog_basic_sink_ptr silsim_sink, double noise_mean = 0.0f,
+                double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     double get_data() override;
     void log_sensor_state(double tStamp) override;
@@ -198,6 +202,8 @@ class Thermometer : public Sensor {
     double noise_;  // Noise value to be added to measurement
 
     double bias_;  // Constant bias value to be added to measurement
+
+    std::string datalog_format_string = "timestamp,temperature";
 };
 
 /*****************************************************************************/
@@ -207,7 +213,8 @@ class Thermometer : public Sensor {
 class GPSSensor : public Sensor {
    public:
     GPSSensor(std::string name, Rocket& rocket, double refresh_rate,
-              double noise_mean = 0.0f, double noise_stddev = 0.1f);
+              spdlog_basic_sink_ptr silsim_sink, double noise_mean = 0.0f,
+              double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     void get_data(Vector3d& data) override;
     void log_sensor_state(double tStamp) override;
@@ -220,6 +227,9 @@ class GPSSensor : public Sensor {
     Vector3d noise_;  // Noise vector to be added to measurement
 
     Vector3d bias_;  // Constant bias vector to be added to measurement
+
+    std::string datalog_format_string =
+        "timestamp,lattitude,longitude,altitude";
 };
 
 /*****************************************************************************/

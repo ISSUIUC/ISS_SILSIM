@@ -72,11 +72,12 @@ int main() {
     Accelerometer accel1("LSM9_accel", rocket, 100, silsim_datalog_sink);
     accel1.enable_noise_injection();
     Gyroscope gyro1("LSM9_gyro", rocket, 100, silsim_datalog_sink);
-    Thermometer thermo1("MS5611_thermometer", rocket, 100);
-    Barometer baro1("MS5611_barometer", rocket, 100, 0, 150 / 1.645);
+    Thermometer thermo1("MS5611_thermometer", rocket, 100, silsim_datalog_sink);
+    Barometer baro1("MS5611_barometer", rocket, 100, silsim_datalog_sink, 0,
+                    150 / 1.645);
     baro1.enable_noise_injection();
-    GPSSensor gps1("ZOEM8Q_gps", rocket, 10);
-    Magnetometer mag1("LSM9_magnetometer", rocket, 100);
+    GPSSensor gps1("ZOEM8Q_gps", rocket, 10, silsim_datalog_sink);
+    Magnetometer mag1("LSM9_magnetometer", rocket, 100, silsim_datalog_sink);
 
     // Atmosphere & Wind Setup -------------------------------------------------
     Atmosphere atmosphere(silsim_datalog_sink);
