@@ -398,3 +398,7 @@ void Rocket::log_rocket_state(double tStamp) {
         // clang-format on
     }
 }
+
+void Rocket::log_control_surfaces(double tStamp) {
+    flaps_->log_flap_state(tStamp);
+}

@@ -68,6 +68,10 @@ int main() {
                            sin(angle / 2.0) * 0.707, 0};
     rocket.set_q_ornt(start_ornt);
 
+    // Contruct Control Surfaces -----------------------------------------------
+    std::shared_ptr<Flaps> flaps = std::make_shared<Flaps>(silsim_datalog_sink);
+    rocket.set_flaps(flaps);
+
     // Contruct Sensors -------------------------------------------------------
     Accelerometer accel1("LSM9_accel", rocket, 100, silsim_datalog_sink);
     accel1.enable_noise_injection();
@@ -96,8 +100,7 @@ int main() {
     // ForwardEuler engine(rocket, motor, atmosphere, silsim_datalog_sink);
 
     // CPU Emulation Setup -----------------------------------------------------
-    CpuState cpu(&accel1, &thermo1, &baro1, &gyro1, &gps1, &mag1,
-                 &rocket.get_flaps());
+    CpuState cpu(&accel1, &thermo1, &baro1, &gyro1, &gps1, &mag1, flaps.get());
 
     // Simulation Setup --------------------------------------------------------
     Simulation sim(0.01, &engine, atmosphere, rocket, motor, cpu,
