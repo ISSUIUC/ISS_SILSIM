@@ -71,6 +71,7 @@ class rocket_FSM : public CpuThread {
         Serial.println("### Rocket FSM thread entrance");
 #endif
         stateMachine.tickFSM();
+        stateMachine.log_FSM_state(timestamp);
         return 6.0;  // FSM runs at 100 Hz
     }
 

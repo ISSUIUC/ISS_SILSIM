@@ -35,7 +35,13 @@
 
 fsm_struct rocketTimers;
 
-rocketFSM::rocketFSM(struct pointers* ptr) { pointer_struct = ptr; }
+rocketFSM::rocketFSM(struct pointers* ptr) {
+    pointer_struct = ptr;
+
+    // SILSIM Data Logging
+    fsm_logger_ = std::make_shared<spdlog::logger>("FSM", silsim_datalog_sink);
+    fsm_logger_->info("DATALOG_FORMAT," + datalog_format_string);
+}
 
 void rocketFSM::tickFSM() {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -297,6 +303,9 @@ void rocketFSM::tickFSM() {
             //     // final state
             //     break;
     }
+
+    current_state_ = pointer_struct->sensorDataPointer->rocketState_data.rocketState;
+
     // Update timestamp for when rocket state was polled
     pointer_struct->sensorDataPointer->rocketState_data.timeStamp_RS =
         chVTGetSystemTime();
@@ -308,4 +317,16 @@ void rocketFSM::tickFSM() {
     chMtxUnlock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_RS);
     chMtxUnlock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_lowG);
     chMtxUnlock(&pointer_struct->dataloggerTHDVarsPointer.dataMutex_GPS);  //?
+}
+
+void rocketFSM::log_FSM_state(double tStamp) {
+    if (fsm_logger_) {
+        std::stringstream datalog_ss;
+
+        datalog_ss << "DATA,"
+                   << tStamp << ","
+                   << current_state_;
+
+        fsm_logger_->info(datalog_ss.str());
+    }
 }
