@@ -105,7 +105,7 @@ int main() {
     CpuState cpu(&accel1, &thermo1, &baro1, &gyro1, &gps1, &mag1, flaps.get());
 
     // Simulation Setup --------------------------------------------------------
-    Simulation sim(0.01, &engine, atmosphere, rocket, motor, cpu,
+    Simulation sim(0.001, &engine, atmosphere, rocket, motor, cpu,
                    silsim_datalog_sink);
 
     sim.add_sensor(&accel1);
@@ -118,8 +118,8 @@ int main() {
     // Run Simulation ----------------------------------------------------------
     std::cout << "Running Sim!" << std::endl;
 
-    // run 10000 steps
-    sim.run(10000);
+    // run simulation
+    sim.run(10000000);
 
     return 0;
 }

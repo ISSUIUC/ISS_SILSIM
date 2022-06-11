@@ -9,27 +9,21 @@ Controller::Controller(struct pointers* pointer_struct, PWMServo* twisty_boi): a
     current_state =
         &pointer_struct->sensorDataPointer->rocketState_data.rocketState;
     // dataMutex_state_ = &pointer_struct->dataloggerTHDVarsPointer->dataMutex_state;
+    
+    // SILSIM Data Logging
+   controller_logger_ = std::make_shared<spdlog::logger>("Controller", silsim_datalog_sink);
+   controller_logger_->info("DATALOG_FORMAT," + datalog_format_string_); 
 }
 
 void Controller::ctrlTickFunction() {
     // chMtxLock(dataMutex_state_);
     array<float, 2> init = {stateData_->state_x, stateData_->state_vx};
     // chMtxUnlock(dataMutex_state_);
-    float apogee_est = rk4_.sim_apogee(init, 0.1)[0];
-    if(init[0] > 9500) {
-        std::cout<<init[0]<<", "<<init[1]<<", "<<apogee_est<<std::endl;
-    }
+    apogee_est_ = rk4_.sim_apogee(init, 0.1)[0];
 
-    std::string str = std::to_string(apogee_est) + "\n";
+    u_ = kp*(apogee_est_ - apogee_des);
 
-    std::ofstream apogee;
-    apogee.open("apogee.csv", std::ios::app);
-    apogee << str;
-    apogee.close();
-
-    float u = kp*(apogee_est - apogee_des);
-
-    float min = abs(u - prev_u)/dt;
+    float min = abs(u_ - prev_u_)/dt;
 
     if (du_max < min) {
         min = du_max;
@@ -37,25 +31,22 @@ void Controller::ctrlTickFunction() {
 
     float sign = 1;
 
-    if (u - prev_u < 0) {
+    if (u_ - prev_u_ < 0) {
         sign = -1;
     }
-    u = u + sign*min*dt;
-    prev_u = u;
+    u_ = u_ + sign*min*dt;
+    prev_u_ = u_;
 
 
     //Set flap extension limits
-    if (u < min_extension) {
-        u = min_extension;
-    } else if (u > max_extension) {
-        u = max_extension;
+    if (u_ < min_extension) {
+        u_ = min_extension;
+    } else if (u_ > max_extension) {
+        u_ = max_extension;
     }
 
-    // std::cout << "Controller Flap Extension: " << u << std::endl;
-
-
     if (ActiveControl_ON()) {
-        activeControlServos.servoActuation(u);
+        activeControlServos.servoActuation(u_);
     } else {
         activeControlServos.servoActuation(0);
     }
@@ -97,4 +88,17 @@ bool Controller::ActiveControl_ON() {
             break;
     }
     return active_control_on;
+}
+
+void Controller::log_controller_state(double tStamp) {
+    if (controller_logger_) {
+        std::stringstream datalog_ss;
+
+        datalog_ss << "DATA,"
+                   << tStamp << ","
+                   << apogee_est_ << ","
+                   << u_;
+
+        controller_logger_->info(datalog_ss.str());
+    } 
 }

@@ -7,6 +7,8 @@
 #include <math.h>
 #include <array>
 
+#include "GlobalVars.h"
+
 using std::array;
 
 class Controller {
@@ -24,9 +26,18 @@ class Controller {
     float min_extension = 0;
     float max_extension = 17.88 / 1000;
     float dt = .006;
-    float prev_u = 0;
     float du_max = 0.01;
     float flap_width = 35.1 / 1000; // m
     FSM_State* current_state;
     ServoControl activeControlServos;
+
+    float apogee_est_ = 0.0;
+    float u_ = 0.0;
+    float prev_u_ = 0.0;
+
+    // SILSIM Data Logging
+    void log_controller_state(double tStamp);
+    std::shared_ptr<spdlog::logger> controller_logger_;
+    std::string datalog_format_string_ = 
+        "timestamp,apogee_est,u";
 };

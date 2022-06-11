@@ -236,6 +236,7 @@ class servo_THD : public CpuThread {
 #endif
 
         ac.ctrlTickFunction();
+        ac.log_controller_state(timestamp);
         return 6.0;  // FSM runs at 100 Hz
     }
 
