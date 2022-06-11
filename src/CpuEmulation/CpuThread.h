@@ -23,13 +23,13 @@ class CpuThread {
    public:
     CpuThread(uint8_t priority) : priority(priority) {}
     // returns sleep time
-    double tick();
+    double tick(double timestamp);
     virtual ~CpuThread() = default;
 
    private:
     // returns sleep time
     uint8_t priority;
-    virtual double loop() = 0;
+    virtual double loop(double timestamp) = 0;
 };
 
 #endif  // SILSIM_CPUTHREAD_H

@@ -14,6 +14,9 @@
 typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
     spdlog_basic_sink_ptr;
 
+// Globally available spdlog sink
+spdlog_basic_sink_ptr silsim_datalog_sink;
+
 /****************** Conversion Constants  ******************/
 constexpr double deg2rad = 3.14159265 / 180.0;
 constexpr double kLbsToKg = 0.453592;
@@ -30,9 +33,8 @@ constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
 int main() {
     // SILSIM Logging Setup ----------------------------------------------------
-    spdlog_basic_sink_ptr silsim_datalog_sink =
-        std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-            "logs/silsim_datalog.log");
+    silsim_datalog_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
+        "logs/silsim_datalog.log");
 
     silsim_datalog_sink->set_level(spdlog::level::info);
 

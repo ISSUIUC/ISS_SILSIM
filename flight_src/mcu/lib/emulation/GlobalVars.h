@@ -5,7 +5,15 @@
 #ifndef SILSIM_GLOBALVARS_H
 #define SILSIM_GLOBALVARS_H
 
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/spdlog.h>
+
 #include<CpuStateContext.h>
+
+typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
+    spdlog_basic_sink_ptr;
+
+extern spdlog_basic_sink_ptr silsim_datalog_sink;
 
 extern CpuStateContext* global_context;
 

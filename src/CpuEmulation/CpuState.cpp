@@ -41,7 +41,7 @@ void CpuState::tick(double timestamp) {
             [](const auto& a, const auto& b) { return a.second < b.second; });
 
         if (min_thread->second > timestamp) break;
-        min_thread->second += min_thread->first->tick();
+        min_thread->second += min_thread->first->tick(timestamp);
     }
 }
 

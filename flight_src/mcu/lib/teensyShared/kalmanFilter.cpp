@@ -20,20 +20,9 @@ KalmanFilter::KalmanFilter(struct pointers* pointer_struct) {
     dataMutex_state_ = &pointer_struct->dataloggerTHDVarsPointer.dataMutex_state;
     stateData_ = &pointer_struct->stateData;
 
-    std::ofstream Kalman;
-    Kalman.open("Kalman.csv");
-    Kalman << "Pos,Vel,Accel,invertboi_00,invertboi_01,invertboi_10,invertboi_11\n";
-    Kalman.close();
-
-    std::ofstream extension;
-    extension.open("extension.csv");
-    extension << "Flap Extension (m)\n";
-    extension.close(); 
-
-    std::ofstream apogee;
-    apogee.open("apogee.csv");
-    apogee << "Estimated Apogee (m)\n";
-    apogee.close(); 
+    // SILSIM Data Logging
+    kf_logger_ = std::make_shared<spdlog::logger>("KalmanFilter", silsim_datalog_sink);
+    kf_logger_->info("DATALOG_FORMAT," + datalog_format_string);
 }
 
 void KalmanFilter::kfTickFunction() {
@@ -170,12 +159,24 @@ void KalmanFilter::update() {
     stateData_->state_vx = x_k(1,0);
     stateData_->state_ax = x_k(2,0);
     chMtxUnlock(dataMutex_state_);
+}
 
-    std::string str = std::to_string(x_k(0,0)) + "," + std::to_string(x_k(1,0)) + "," + std::to_string(x_k(2,0)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(0,0)) + 
-    "," + std::to_string(((H * P_priori * H.transpose()) + R)(0,1)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(1,0)) + "," + std::to_string(((H * P_priori * H.transpose()) + R)(1,1)) + '\n';
+void KalmanFilter::log_kf_state(double tStamp) {
+    if (kf_logger_) {
+        std::stringstream datalog_ss;
 
-    std::ofstream Kalman;
-    Kalman.open("Kalman.csv", std::ios::app);
-    Kalman << str;
-    Kalman.close();
+        datalog_ss << "DATA,"
+                   << tStamp << ","
+
+                   << x_k(0,0) << ","
+                   << x_k(1,0) << ","
+                   << x_k(2,0) << ","
+
+                   << ((H * P_priori * H.transpose()) + R)(0,0) << ","
+                   << ((H * P_priori * H.transpose()) + R)(0,1) << ","
+                   << ((H * P_priori * H.transpose()) + R)(1,0) << ","
+                   << ((H * P_priori * H.transpose()) + R)(1,1); 
+
+        kf_logger_->info(datalog_ss.str());
+    } 
 }

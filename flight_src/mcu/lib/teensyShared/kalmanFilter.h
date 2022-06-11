@@ -6,6 +6,8 @@
 #include "sensors.h"
 #include "rk4.h"
 
+#include "GlobalVars.h"
+
 class KalmanFilter { 
     public:
 
@@ -45,4 +47,11 @@ class KalmanFilter {
     Eigen::Matrix<float, 3, 3> identity = Eigen::Matrix<float, 3, 3>::Identity();
 
     Eigen::Matrix<float, 3, 2> B = Eigen::Matrix<float, 3, 2>::Zero();
+
+    // SILSIM Data Logging
+    void log_kf_state(double tStamp);
+    std::shared_ptr<spdlog::logger> kf_logger_;
+    std::string datalog_format_string = 
+        "timestamp,Pos,Vel,Accel,"
+        "invertboi_00,invertboi_01,invertboi_10,invertboi_11";
 };

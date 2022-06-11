@@ -66,7 +66,7 @@ class rocket_FSM : public CpuThread {
         : CpuThread(prio),
           pointer_struct((struct pointers *)arg),
           stateMachine(pointer_struct) {}
-    double loop() override {
+    double loop(double timestamp) override {
 #ifdef THREAD_DEBUG
         Serial.println("### Rocket FSM thread entrance");
 #endif
@@ -86,7 +86,7 @@ class lowgIMU_THD : public CpuThread {
    public:
     lowgIMU_THD(void *arg, uint8_t prio)
         : CpuThread(prio), pointer_struct((struct pointers *)arg) {}
-    double loop() override {
+    double loop(double timestamp) override {
 #ifdef THREAD_DEBUG
         Serial.println("### Low G IMU thread entrance");
 #endif
@@ -112,7 +112,7 @@ class barometer_THD : public CpuThread {
         : CpuThread(prio), pointer_struct((struct pointers *)arg) {}
     // Load outside variables into the function
 
-    double loop() override {
+    double loop(double timestamp) override {
 #ifdef THREAD_DEBUG
         Serial.println("### Barometer thread entrance");
 #endif
@@ -138,7 +138,7 @@ class highgIMU_THD : public CpuThread {
     highgIMU_THD(void *arg, uint8_t prio)
         : CpuThread(prio), pointer_struct((struct pointers *)arg) {}
 
-    double loop() override {
+    double loop(double timestamp) override {
 #ifdef THREAD_DEBUG
         Serial.println("### High G IMU thread entrance");
 #endif
@@ -163,7 +163,7 @@ class gps_THD : public CpuThread {
     gps_THD(void *arg, uint8_t prio)
         : CpuThread(prio), pointer_struct((struct pointers *)arg) {}
 
-    double loop() override {
+    double loop(double timestamp) override {
 #ifdef THREAD_DEBUG
         Serial.println("### GPS thread entrance");
 #endif
@@ -197,8 +197,10 @@ class Kalman_Filter_THD : public CpuThread {
         Kf.Initialize(0.0, 0.0, 0.0);
     }
 
-   double loop() override {
+   double loop(double timestamp) override {
         Kf.kfTickFunction();
+
+        Kf.log_kf_state(timestamp);
         //Serial.println("Predicted Alt:");
         // Serial.println(std::to_string(Kf.x_k(0, 0)).c_str());
         // Serial.println("Predicted Vel:");
@@ -210,7 +212,7 @@ class Kalman_Filter_THD : public CpuThread {
 #ifdef THREAD_DEBUG
         Serial.println("### Kalman_Filter thread entrance");
 #endif
-        return 6.0;
+        return 10.0;
     }
 
    private:
@@ -228,7 +230,7 @@ class servo_THD : public CpuThread {
           pointer_struct((struct pointers *)arg),
           ac(pointer_struct, &servo_cw) {}
 
-    double loop() override {
+    double loop(double timestamp) override {
 #ifdef THREAD_DEBUG
         Serial.println("### Servo thread entrance");
 #endif
@@ -250,7 +252,7 @@ class mpuComm_THD : public CpuThread {
     mpuComm_THD(void *arg, uint8_t prio) : CpuThread(prio) {
         Serial1.begin(115200);
     }
-    double loop() override {
+    double loop(double timestamp) override {
 #ifdef THREAD_DEBUG
         Serial.println("### mpuComm thread entrance");
 #endif
@@ -303,7 +305,7 @@ class dataLogger_THD : public CpuThread {
     dataLogger_THD(void *arg, uint8_t prio)
         : CpuThread(prio), pointer_struct((struct pointers *)arg) {}
 
-    double loop() override {
+    double loop(double timestamp) override {
 #ifdef THREAD_DEBUG
         Serial.println("Data Logging thread entrance");
 #endif
