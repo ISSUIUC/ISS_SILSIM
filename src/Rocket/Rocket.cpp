@@ -34,11 +34,12 @@ using Eigen::Vector3d;
  * @param poweron True if the rocket motor is currently burning
  * @param protuberance The current amount of protuberance [0.0 - 1.0]
  */
-void Rocket::update_aero_coefficients(bool poweron, double protuberance) {
+void Rocket::update_aero_coefficients(bool poweron) {
     constexpr double kInchToMeters = 0.0254;
     if (rasaero_import_) {
         RASAeroCoefficients coefficients =
-            rasaero_import_->get_aero_coefficients(mach_, alpha_, protuberance);
+            rasaero_import_->get_aero_coefficients(mach_, alpha_,
+                                                   flaps_->extension());
 
         if (poweron) {
             set_total_axial_force_coeff(coefficients.ca_poweron);

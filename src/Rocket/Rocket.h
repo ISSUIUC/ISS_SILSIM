@@ -138,7 +138,8 @@ class Rocket {
     void set_flaps(std::shared_ptr<Flaps> flaps) { flaps_ = flaps; };
 
     /************************ Internal State Update ***************************/
-    void update_aero_coefficients(bool poweron, double protuberance_perecent);
+    void update_aero_coefficients(bool poweron);
+    void update_flaps(double tStep) { flaps_->update(tStep); };
 
     /********************** Reference Frame Conversions ***********************/
     // Converts arbitrary vector to/from ENU frame and rocket reference frame
