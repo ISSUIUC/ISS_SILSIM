@@ -8,6 +8,8 @@ Controller::Controller(struct pointers* pointer_struct, PWMServo* twisty_boi): a
     stateData_ = &pointer_struct->stateData;
     current_state =
         &pointer_struct->sensorDataPointer->rocketState_data.rocketState;
+    b_alt = &pointer_struct->sensorDataPointer->barometer_data.altitude;
+    dataMutex_barometer_ = &pointer_struct->dataloggerTHDVarsPointer.dataMutex_barometer;
     // dataMutex_state_ = &pointer_struct->dataloggerTHDVarsPointer->dataMutex_state;
     
     // SILSIM Data Logging
@@ -21,7 +23,7 @@ void Controller::ctrlTickFunction() {
     // chMtxUnlock(dataMutex_state_);
     apogee_est_ = rk4_.sim_apogee(init, 0.1)[0];
 
-    u_ = kp*(apogee_est_ - apogee_des);
+    float u_ = kp*(apogee_est - apogee_des_agl);
 
     float min = abs(u_ - prev_u_)/dt;
 
@@ -88,6 +90,18 @@ bool Controller::ActiveControl_ON() {
             break;
     }
     return active_control_on;
+}
+
+void Controller::setLaunchPadElevation(){
+    float sum = 0;
+    for(int i = 0; i < 30; i++){
+        chMtxLock(dataMutex_barometer_);
+        sum += *b_alt;
+        chMtxUnlock(dataMutex_barometer_);
+        chThdSleepMilliseconds(100);
+    }
+    launch_pad_alt = sum / 30;
+    apogee_des_agl = apogee_des_msl + launch_pad_alt;
 }
 
 void Controller::log_controller_state(double tStamp) {
