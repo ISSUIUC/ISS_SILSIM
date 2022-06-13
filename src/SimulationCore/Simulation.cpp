@@ -56,7 +56,7 @@ Simulation::Simulation(double tStep, PhysicsEngine* engine,
 
 void Simulation::run(int steps) {
     // Update rocket's initial aerodynamic coefficients
-    rocket_.update_aero_coefficients(motor_.is_burning(tStamp_), 0.0);
+    rocket_.update_aero_coefficients(motor_.is_burning(tStamp_));
 
     // Initial update of total mass to include propellant mass
     double rocket_structural_mass = rocket_.get_structural_mass();
@@ -70,6 +70,7 @@ void Simulation::run(int steps) {
     log_simulation_debug();
     log_sensors();
     rocket_.log_rocket_state(tStamp_);
+    rocket_.log_control_surfaces(tStamp_);
     motor_.log_motor_state(tStamp_);
     atmoshpere_.log_atmosphere_state(tStamp_);
 
@@ -81,8 +82,11 @@ void Simulation::run(int steps) {
         Vector3d r_vect_enu = rocket_.get_r_vect();
         Vector3d r_dot_enu = rocket_.get_r_dot();
 
+        // Update rocket's control surfaces
+        rocket_.update_flaps(tStep_);
+
         // Update rocket's aerodynamic coefficients for current state
-        rocket_.update_aero_coefficients(motor_.is_burning(tStamp_), 0.0);
+        rocket_.update_aero_coefficients(motor_.is_burning(tStamp_));
 
         // Update total mass to include new propellant mass
         rocket_.set_total_mass(rocket_structural_mass +
@@ -105,6 +109,7 @@ void Simulation::run(int steps) {
         log_simulation_debug();
         log_sensors();
         rocket_.log_rocket_state(tStamp_);
+        rocket_.log_control_surfaces(tStamp_);
         motor_.log_motor_state(tStamp_);
 
         // End simulation if apogee is reached

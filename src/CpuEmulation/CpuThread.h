@@ -14,18 +14,22 @@
 #ifndef SILSIM_CPUTHREAD_H
 #define SILSIM_CPUTHREAD_H
 
-struct CpuStateContext {
-    double timestamp;
-};
+#include "CpuStateContext.h"
+
+#define THD_WORKING
+//#define THD_FUNCTION(name, arg)
 
 class CpuThread {
    public:
-    explicit CpuThread(void (*FSW_function)());
-    double tick(CpuStateContext const& context);
+    CpuThread(uint8_t priority) : priority(priority) {}
+    // returns sleep time
+    double tick(double timestamp);
+    virtual ~CpuThread() = default;
 
    private:
-    void (*FSW_function_)();
-    double real_tick_(CpuStateContext const& context);
+    // returns sleep time
+    uint8_t priority;
+    virtual double loop(double timestamp) = 0;
 };
 
 #endif  // SILSIM_CPUTHREAD_H

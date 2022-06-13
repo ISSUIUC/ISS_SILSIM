@@ -31,6 +31,10 @@ using Eigen::Vector3d;
 typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
     spdlog_basic_sink_ptr;
 
+/*****************************************************************************/
+/*                             SENSOR BASE CLASS                             */
+/*****************************************************************************/
+
 class Sensor {
    public:
     Sensor(std::string name, Rocket& rocket, double refresh_rate,
@@ -75,6 +79,10 @@ class Sensor {
     std::shared_ptr<spdlog::logger> sensor_logger_;
 };
 
+/*****************************************************************************/
+/*                        GYROSCOPE CLASS DEFINITION                         */
+/*****************************************************************************/
+
 class Gyroscope : public Sensor {
    public:
     Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
@@ -96,6 +104,10 @@ class Gyroscope : public Sensor {
     std::string datalog_format_string =
         "timestamp,gyro_x_rf,gyro_y_rf,gyro_z_rf";
 };
+
+/*****************************************************************************/
+/*                      ACCELEROMETER CLASS DEFINITION                       */
+/*****************************************************************************/
 
 class Accelerometer : public Sensor {
    public:
@@ -119,6 +131,35 @@ class Accelerometer : public Sensor {
         "timestamp,accel_x_rf,accel_y_rf,accel_z_rf";
 };
 
+/*****************************************************************************/
+/*                       MAGNETOMETER CLASS DEFINITION                       */
+/*****************************************************************************/
+
+class Magnetometer : public Sensor {
+   public:
+    Magnetometer(std::string name, Rocket& rocket, double refresh_rate,
+                 spdlog_basic_sink_ptr silsim_sink, double noise_mean = 0.0f,
+                 double noise_stddev = 0.1f);
+    void update_data(double tStep) override;
+    void get_data(Vector3d& data) override;
+    void log_sensor_state(double tStamp) override;
+
+    void set_constant_bias(Vector3d bias) { bias_ = bias; };
+
+   private:
+    Vector3d data_;  // The sensor's current reading
+
+    Vector3d noise_;  // Noise vector to be added to measurement
+
+    Vector3d bias_;  // Constant bias vector to be added to measurement
+
+    std::string datalog_format_string = "timestamp,mag_x_r,mag_y_rf,mag_z_rf";
+};
+
+/*****************************************************************************/
+/*                         BAROMETER CLASS DEFINITION                        */
+/*****************************************************************************/
+
 // TODO: Implement functions for both altitude and pressure measurements (and
 // specify units)
 class Barometer : public Sensor {
@@ -141,6 +182,59 @@ class Barometer : public Sensor {
 
     std::string datalog_format_string = "timestamp,baro_altitude";
 };
+
+/*****************************************************************************/
+/*                       THERMOMETER CLASS DEFINITION                        */
+/*****************************************************************************/
+
+class Thermometer : public Sensor {
+   public:
+    Thermometer(std::string name, Rocket& rocket, double refresh_rate,
+                spdlog_basic_sink_ptr silsim_sink, double noise_mean = 0.0f,
+                double noise_stddev = 0.1f);
+    void update_data(double tStep) override;
+    double get_data() override;
+    void log_sensor_state(double tStamp) override;
+
+   private:
+    double data_;  // The sensor's current reading
+
+    double noise_;  // Noise value to be added to measurement
+
+    double bias_;  // Constant bias value to be added to measurement
+
+    std::string datalog_format_string = "timestamp,temperature";
+};
+
+/*****************************************************************************/
+/*                        GPS SENSOR CLASS DEFINITION                        */
+/*****************************************************************************/
+
+class GPSSensor : public Sensor {
+   public:
+    GPSSensor(std::string name, Rocket& rocket, double refresh_rate,
+              spdlog_basic_sink_ptr silsim_sink, double noise_mean = 0.0f,
+              double noise_stddev = 0.1f);
+    void update_data(double tStep) override;
+    void get_data(Vector3d& data) override;
+    void log_sensor_state(double tStamp) override;
+
+    void set_constant_bias(Vector3d bias) { bias_ = bias; };
+
+   private:
+    Vector3d data_;  // The sensor's current reading
+
+    Vector3d noise_;  // Noise vector to be added to measurement
+
+    Vector3d bias_;  // Constant bias vector to be added to measurement
+
+    std::string datalog_format_string =
+        "timestamp,lattitude,longitude,altitude";
+};
+
+/*****************************************************************************/
+/*                             UTILITY FUNCTIONS                             */
+/*****************************************************************************/
 
 Vector3d randomize_vector(std::default_random_engine& generator,
                           std::normal_distribution<double>& dist);

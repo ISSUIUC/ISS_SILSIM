@@ -26,6 +26,7 @@
 #include <string>
 #include <vector>
 
+#include "Flaps.h"
 #include "RASAeroImport.h"
 
 using Eigen::Quaterniond;
@@ -96,6 +97,8 @@ class Rocket {
 
     std::array<double, 9> get_I() const { return I_; };
 
+    std::shared_ptr<Flaps> get_flaps() { return flaps_; }
+
     /**************************** Set parameters ******************************/
     void set_r_vect(Vector3d vector) { r_vect_ = vector; };
     void set_r_dot(Vector3d vector) { r_dot_ = vector; };
@@ -132,8 +135,11 @@ class Rocket {
         cp_vect_ = {0, 0, -(nose_to_cp_ - nose_to_cg_)};
     };
 
+    void set_flaps(std::shared_ptr<Flaps> flaps) { flaps_ = flaps; };
+
     /************************ Internal State Update ***************************/
-    void update_aero_coefficients(bool poweron, double protuberance_perecent);
+    void update_aero_coefficients(bool poweron);
+    void update_flaps(double tStep) { flaps_->update(tStep); };
 
     /********************** Reference Frame Conversions ***********************/
     // Converts arbitrary vector to/from ENU frame and rocket reference frame
@@ -158,6 +164,7 @@ class Rocket {
 
     /*************************** Logging Functions ****************************/
     void log_rocket_state(double tStamp);
+    void log_control_surfaces(double tStamp);
 
    private:
     // The following are in ENU frame
@@ -196,6 +203,9 @@ class Rocket {
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
     double mach_ = 0.0;         // Freestream air mach number
     double alpha_ = 0.0;        // Rocket total angle-of-attack to air
+
+    //----------- Control Surfaces ---------
+    std::shared_ptr<Flaps> flaps_;
 
     //----------- Data Logging ----------
     std::shared_ptr<spdlog::logger> rocket_logger_;
