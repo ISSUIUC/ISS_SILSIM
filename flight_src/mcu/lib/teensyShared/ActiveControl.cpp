@@ -98,7 +98,7 @@ void Controller::setLaunchPadElevation(){
         chMtxLock(dataMutex_barometer_);
         sum += *b_alt;
         chMtxUnlock(dataMutex_barometer_);
-        chThdSleepMilliseconds(100);
+        // chThdSleepMilliseconds(100);
     }
     launch_pad_alt = sum / 30;
     apogee_des_agl = apogee_des_msl + launch_pad_alt;
