@@ -182,9 +182,18 @@ Magnetometer::Magnetometer(std::string name, Rocket& rocket,
         sensor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
     }
 }
-void Magnetometer::update_data(double tStep) {}
 
-void Magnetometer::get_data(Vector3d& data) { data = {}; }
+void Magnetometer::update_data(double tStep) {
+    Vector3d north_enu = {0.0, 10000.0, 0.0};
+    Vector3d north_rf = rocket_.enu2r(north_enu);
+    data_ = north_rf;
+    new_data_ = true;
+}
+
+void Magnetometer::get_data(Vector3d& data) {
+    data = data_;
+    new_data_ = false;
+}
 
 void Magnetometer::log_sensor_state(double tStamp) {
     if (sensor_logger_) {

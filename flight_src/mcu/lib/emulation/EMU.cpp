@@ -12,7 +12,8 @@
 #include "SPI.h"
 #include "SparkFunLSM9DS1.h"
 #include "SD.h"
-// #include <iostream>
+
+#include <iostream>
 
 
 //Define Table for resolutions (for aRes, gRes, mRes)
@@ -229,6 +230,10 @@ void LSM9DS1::readMag() {
     mx = scaled.x();
     my = scaled.y();
     mz = scaled.z();
+
+    std::cout << "Debug LSM9DS1::readMag()  "; 
+    //std::cout << mx << "," << my << "," << mz << std::endl;
+    std::cout << data.x() << "," << data.y() << "," << data.z() << std::endl;
 }
 float LSM9DS1::calcMag(int16_t mag) {
     return mag * mRes;

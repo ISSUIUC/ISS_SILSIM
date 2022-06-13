@@ -30,6 +30,8 @@
 #include "pins.h"
 #include "sensors.h"
 
+#include <iostream>
+
 /**
  * @brief Construct a new thd function object to handle data collection from the
  * low-g IMU.
@@ -66,6 +68,10 @@ void lowGimuTickFunction(LSM9DS1* lsm, DataLogBuffer* data_log_buffer,
     lowG_Data->my = lsm->calcMag(lsm->my);
     lowG_Data->mz = lsm->calcMag(lsm->mz);
     //! Unlocking &dataMutex for low g
+    
+    std::cout << "Debug lowGimuTickFunction: "; 
+    // std::cout << lsm->calcMag(lsm->mx) << "," << lsm->calcMag(lsm->my) << "," << lsm->calcMag(lsm->mz) << std::endl;
+    std::cout << lsm->mx << "," << lsm->my << "," << lsm->mz << std::endl;
 
     data_log_buffer->lowGFifo.push(*lowG_Data);
     chMtxUnlock(&data_log_buffer->dataMutex_lowG);
