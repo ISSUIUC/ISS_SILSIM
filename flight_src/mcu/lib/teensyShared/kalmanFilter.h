@@ -19,7 +19,9 @@ class KalmanFilter {
     void update();
 
     void kfTickFunction();
-
+    
+    float getFieldAlt();
+    
     // private:
 
     float s_dt = 0.006;
