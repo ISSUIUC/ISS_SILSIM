@@ -154,7 +154,6 @@ void LSM9DS1::readAccel() {
     Eigen::Vector3d data;
     global_context->accelerometer_pointer->get_data(data);
 
-
     double clamp_val = 0;
     if(aRes == SENSITIVITY_ACCELEROMETER_2){
         clamp_val = 2;
@@ -163,6 +162,8 @@ void LSM9DS1::readAccel() {
     } else if(aRes == SENSITIVITY_ACCELEROMETER_8){
         clamp_val = 8;
     } else if(aRes == SENSITIVITY_ACCELEROMETER_16){
+        clamp_val = 16;
+    } else {
         clamp_val = 16;
     }
 
@@ -230,10 +231,6 @@ void LSM9DS1::readMag() {
     mx = scaled.x();
     my = scaled.y();
     mz = scaled.z();
-
-    std::cout << "Debug LSM9DS1::readMag()  "; 
-    //std::cout << mx << "," << my << "," << mz << std::endl;
-    std::cout << data.x() << "," << data.y() << "," << data.z() << std::endl;
 }
 float LSM9DS1::calcMag(int16_t mag) {
     return mag * mRes;

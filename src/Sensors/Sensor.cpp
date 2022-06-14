@@ -184,7 +184,7 @@ Magnetometer::Magnetometer(std::string name, Rocket& rocket,
 }
 
 void Magnetometer::update_data(double tStep) {
-    Vector3d north_enu = {0.0, 10000.0, 0.0};
+    Vector3d north_enu = {0.0, 1.0, 0.0};
     Vector3d north_rf = rocket_.enu2r(north_enu);
     data_ = north_rf;
     new_data_ = true;

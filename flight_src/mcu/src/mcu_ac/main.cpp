@@ -74,7 +74,7 @@ class rocket_FSM : public CpuThread {
 #endif
         stateMachine.tickFSM();
         stateMachine.log_FSM_state(timestamp);
-        return 6.0;  // FSM runs at 100 Hz
+        return 10.0;  // FSM runs at 100 Hz
     }
 
    private:
@@ -204,7 +204,7 @@ class Kalman_Filter_THD : public CpuThread {
    double loop(double timestamp) override {
         Kf.kfTickFunction();
 
-        madgwick.MadgwickAHRSupdate();
+        madgwick.MadgwickAHRSupdateIMU();
 
         Kf.log_kf_state(timestamp);
         madgwick.log_madgwick_state(timestamp);
@@ -399,6 +399,7 @@ void emu_setup() {
     }
 
     lowGimu.setAccelScale(16);
+    lowGimu.setMagScale(16);
 
     // GPS Setup
     if (!gps.begin(SPI, ZOEM8Q0_CS, 4000000)) {

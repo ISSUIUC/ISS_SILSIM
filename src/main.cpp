@@ -77,7 +77,8 @@ int main() {
     // Contruct Sensors -------------------------------------------------------
     Accelerometer accel1("LSM9_accel", rocket, 100, silsim_datalog_sink);
     accel1.enable_noise_injection();
-    Gyroscope gyro1("LSM9_gyro", rocket, 100, silsim_datalog_sink);
+    Gyroscope gyro1("LSM9_gyro", rocket, 100, silsim_datalog_sink, 0.001, 0.01);
+    gyro1.enable_noise_injection();
     Thermometer thermo1("MS5611_thermometer", rocket, 100, silsim_datalog_sink);
     Barometer baro1("MS5611_barometer", rocket, 100, silsim_datalog_sink, 0,
                     150 / 1.645);
