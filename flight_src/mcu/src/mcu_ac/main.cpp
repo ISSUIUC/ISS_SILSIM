@@ -229,7 +229,7 @@ class servo_THD : public CpuThread {
     servo_THD(void *arg, uint8_t prio)
         : CpuThread(prio),
           pointer_struct((struct pointers *)arg),
-          ac(pointer_struct, &servo_cw) {float sum = 0;
+          ac(pointer_struct, &servo_cw) {
             ac.setLaunchPadElevation();
           }
 
