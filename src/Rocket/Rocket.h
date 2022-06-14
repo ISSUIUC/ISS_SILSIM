@@ -188,8 +188,8 @@ class Rocket {
     // Vector3d launch_geod_{40.111801, -88.228691, 216};
     // (40.111801, -88.228691, 216) - Talbot Laboratory
     // Spaceport America
-    Vector3d launch_ecef_{ -1563305, -5123022, 3453817};
-    Vector3d launch_geod_{32.990278,  -106.969722, 1401};
+    Vector3d launch_ecef_{-1563305, -5123022, 3453817};
+    Vector3d launch_geod_{32.990278, -106.969722, 1401};
 
     //---------- Intertial Parameters ----------
     std::array<double, 9> I_{};       // Rocket moment of inertia tensor
