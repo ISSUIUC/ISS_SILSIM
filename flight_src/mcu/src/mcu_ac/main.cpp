@@ -28,7 +28,6 @@
 #include "ActiveControl.h"
 #include "KX134-1211.h"  //High-G IMU Library
 #include "MS5611.h"      //Barometer library
-#include "MadgwickAHRS.cpp"
 #include "ServoControl.h"
 #include "SparkFunLSM9DS1.h"                       //Low-G IMU Library
 #include "SparkFun_u-blox_GNSS_Arduino_Library.h"  //GPS Library
@@ -195,8 +194,7 @@ class Kalman_Filter_THD : public CpuThread {
     Kalman_Filter_THD(void *arg, uint8_t prio)
         : CpuThread(prio),
           pointer_struct((struct pointers *)arg),
-          Kf((struct pointers *)arg),
-          madgwick((struct pointers *)arg) {
+          Kf((struct pointers *)arg) {
         Serial.println("Initialize Kalman");
         Kf.Initialize(0.0, 0.0, 0.0);
     }
@@ -204,10 +202,7 @@ class Kalman_Filter_THD : public CpuThread {
    double loop(double timestamp) override {
         Kf.kfTickFunction();
 
-        madgwick.MadgwickAHRSupdateIMU();
-
         Kf.log_kf_state(timestamp);
-        madgwick.log_madgwick_state(timestamp);
 
         //Serial.println("Predicted Alt:");
         // Serial.println(std::to_string(Kf.x_k(0, 0)).c_str());
@@ -225,7 +220,6 @@ class Kalman_Filter_THD : public CpuThread {
 
    private:
     KalmanFilter Kf;
-    MadgwickAHRS madgwick;
     struct pointers *pointer_struct;
 };
 
