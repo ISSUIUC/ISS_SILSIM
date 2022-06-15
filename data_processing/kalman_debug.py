@@ -8,8 +8,6 @@ plt.style.use('dark_background')
 
 data, events = logutils.ingest_log("logs/silsim_datalog.log")
 
-data['KalmanFilter']['timestamp'] 
-
 def quat_to_euler(x, y, z, w):
         rad2deg = 180 / np.pi
 
@@ -27,12 +25,12 @@ def quat_to_euler(x, y, z, w):
      
         return roll, pitch, yaw # in degrees
 
-q0 = data['MadgwickAHRS']['q0']
-q1 = data['MadgwickAHRS']['q1']
-q2 = data['MadgwickAHRS']['q2']
-q3 = data['MadgwickAHRS']['q3']
+q0 = data['KalmanFilter']['q0']
+q1 = data['KalmanFilter']['q1']
+q2 = data['KalmanFilter']['q2']
+q3 = data['KalmanFilter']['q3']
 
-madgwick_roll, madgwick_pitch, madgwick_yaw = quat_to_euler(q1, q2, q3, q0)
+kf_roll, kf_pitch, kf_yaw = quat_to_euler(q1, q2, q3, q0)
 
 plt.figure()
 #plt.plot(data['KalmanFilter']['timestamp'], 
@@ -45,19 +43,19 @@ plt.figure()
 #         data['KalmanFilter']['Accel'], label="KF Estimated Accel [m/s^2]")
 
 plt.subplot(311)
-plt.plot(data['MadgwickAHRS']['timestamp'], madgwick_yaw, label="Estimated Yaw [deg]")
+plt.plot(data['KalmanFilter']['timestamp'], kf_yaw, label="Estimated Yaw [deg]")
 plt.plot(data['Simulation']['timestamp'], data['Simulation']['yaw'],
          linestyle='--', color='r', label="Yaw Truth")
 plt.legend()
 
 plt.subplot(312)
-plt.plot(data['MadgwickAHRS']['timestamp'], madgwick_pitch, label="Estimated Pitch [deg]")
+plt.plot(data['KalmanFilter']['timestamp'], kf_pitch, label="Estimated Pitch [deg]")
 plt.plot(data['Simulation']['timestamp'], data['Simulation']['pitch'],
          linestyle='--', color='r', label="Pitch Truth")
 plt.legend()
 
 plt.subplot(313)
-plt.plot(data['MadgwickAHRS']['timestamp'], madgwick_roll, label="Estimated Roll [deg]")
+plt.plot(data['KalmanFilter']['timestamp'], kf_roll, label="Estimated Roll [deg]")
 plt.plot(data['Simulation']['timestamp'], data['Simulation']['roll'],
          linestyle='--', color='r', label="Roll Truth")
 plt.legend()

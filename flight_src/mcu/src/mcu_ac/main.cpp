@@ -395,6 +395,7 @@ void emu_setup() {
     }
 
     lowGimu.setAccelScale(16);
+    lowGimu.setGyroScale(2000);
     lowGimu.setMagScale(16);
 
     // GPS Setup
