@@ -12,7 +12,8 @@
 #include "SPI.h"
 #include "SparkFunLSM9DS1.h"
 #include "SD.h"
-// #include <iostream>
+
+#include <iostream>
 
 
 //Define Table for resolutions (for aRes, gRes, mRes)
@@ -153,7 +154,6 @@ void LSM9DS1::readAccel() {
     Eigen::Vector3d data;
     global_context->accelerometer_pointer->get_data(data);
 
-
     double clamp_val = 0;
     if(aRes == SENSITIVITY_ACCELEROMETER_2){
         clamp_val = 2;
@@ -162,6 +162,8 @@ void LSM9DS1::readAccel() {
     } else if(aRes == SENSITIVITY_ACCELEROMETER_8){
         clamp_val = 8;
     } else if(aRes == SENSITIVITY_ACCELEROMETER_16){
+        clamp_val = 16;
+    } else {
         clamp_val = 16;
     }
 

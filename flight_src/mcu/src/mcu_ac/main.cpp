@@ -38,6 +38,7 @@
 #include "rocketFSM.h"
 #include "sensors.h"
 #include "kalmanFilter.h"
+#include "MadgwickAHRS.h"
 
 // emulation for global variables
 #include <CpuThread.h>
@@ -72,7 +73,7 @@ class rocket_FSM : public CpuThread {
 #endif
         stateMachine.tickFSM();
         stateMachine.log_FSM_state(timestamp);
-        return 6.0;  // FSM runs at 100 Hz
+        return 10.0;  // FSM runs at 100 Hz
     }
 
    private:
@@ -202,6 +203,7 @@ class Kalman_Filter_THD : public CpuThread {
         Kf.kfTickFunction();
 
         Kf.log_kf_state(timestamp);
+
         //Serial.println("Predicted Alt:");
         // Serial.println(std::to_string(Kf.x_k(0, 0)).c_str());
         // Serial.println("Predicted Vel:");
@@ -393,6 +395,7 @@ void emu_setup() {
     }
 
     lowGimu.setAccelScale(16);
+    lowGimu.setMagScale(16);
 
     // GPS Setup
     if (!gps.begin(SPI, ZOEM8Q0_CS, 4000000)) {

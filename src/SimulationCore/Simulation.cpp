@@ -74,6 +74,25 @@ void Simulation::run(int steps) {
     motor_.log_motor_state(tStamp_);
     atmoshpere_.log_atmosphere_state(tStamp_);
 
+    // Wait 15 seconds before ignition
+    while (tStamp_ < 15.0) {
+        // Update all sensors' internal state
+        update_sensors();
+
+        // Tick the emulated CPU and threads
+        cpu_.tick(tStamp_);
+
+        // Do all the data logging!
+        log_simulation_state();
+        log_simulation_debug();
+        log_sensors();
+        rocket_.log_rocket_state(tStamp_);
+        rocket_.log_control_surfaces(tStamp_);
+        motor_.log_motor_state(tStamp_);
+
+        tStamp_ += tStep_;
+    }
+
     // send it
     motor_.ignite(tStamp_);
 
