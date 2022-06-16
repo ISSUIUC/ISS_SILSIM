@@ -47,11 +47,19 @@ void KalmanFilter::kfTickFunction() {
     update();
 }
 
-void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
+void KalmanFilter::Initialize() {
+    float sum = 0;
+    for(int i = 0; i < 30; i++){
+        chMtxLock(mutex_barometer_);
+        sum += baro_data_ptr_->altitude;
+        chMtxUnlock(mutex_barometer_);
+        // chThdSleepMilliseconds(100);
+    }
+
     // set x_k
-    x_k(0,0) = pos_f;
-    x_k(1,0) = vel_f;
-    x_k(2,0) = accel_f;
+    x_k(0,0) = sum / 30;
+    x_k(1,0) = 0;
+    x_k(2,0) = 0;
     
     // set F
     F_mat(0, 1) = s_dt;
@@ -96,8 +104,8 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
     Q = Q * scale_fact;
 
     // set R
-    R(0,0) = 2;
-    R(1,1) = 0.01;
+    R(0,0) = 1;
+    R(1,1) = .01;
 
     // set B
     B(2,0) = -1;

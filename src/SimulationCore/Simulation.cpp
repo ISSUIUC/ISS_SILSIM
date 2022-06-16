@@ -75,7 +75,7 @@ void Simulation::run(int steps) {
     atmoshpere_.log_atmosphere_state(tStamp_);
 
     // Wait 15 seconds before ignition
-    while (tStamp_ < 15.0) {
+    while (tStamp_ < 60.0) {
         // Update all sensors' internal state
         update_sensors();
 

@@ -196,7 +196,7 @@ class Kalman_Filter_THD : public CpuThread {
           pointer_struct((struct pointers *)arg),
           Kf((struct pointers *)arg) {
         Serial.println("Initialize Kalman");
-        Kf.Initialize(0.0, 0.0, 0.0);
+        Kf.Initialize();
     }
 
    double loop(double timestamp) override {

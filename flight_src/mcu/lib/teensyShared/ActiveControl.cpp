@@ -23,7 +23,7 @@ void Controller::ctrlTickFunction() {
     // chMtxUnlock(dataMutex_state_);
     apogee_est_ = rk4_.sim_apogee(init, 0.1)[0];
 
-    u_ = kp*(apogee_est_ - apogee_des_agl);
+    u_ = kp*(apogee_est_ - apogee_des_msl);
 
     float min = abs(u_ - prev_u_)/dt;
 
