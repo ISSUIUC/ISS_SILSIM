@@ -74,8 +74,8 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
 
     // float scale_fact = 22.19;
     // float scale_fact = 13.25;
-    // float scale_fact = .00899;
-    float scale_fact = 12.;
+    float scale_fact = .00899;
+    // float scale_fact = 12.;
     Q = Q * scale_fact;
 
     // set R
@@ -120,7 +120,7 @@ void KalmanFilter::update() {
 
     // Sensor Measurements
     chMtxLock(mutex_highG_);
-    y_k(1,0) = (*gz_H) * 9.81;
+    y_k(1,0) = (*gz_H);
     // Serial.println("HIGH G ACCEL Z: ");
     // Serial.println(std::to_string((*gz_H)*9.81).c_str());
     chMtxUnlock(mutex_highG_);

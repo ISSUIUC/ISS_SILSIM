@@ -101,7 +101,7 @@ void Controller::setLaunchPadElevation(){
         // chThdSleepMilliseconds(100);
     }
     launch_pad_alt = sum / 30;
-    apogee_des_agl = apogee_des_msl + launch_pad_alt;
+    apogee_des_msl = apogee_des_agl + launch_pad_alt;
 }
 
 void Controller::log_controller_state(double tStamp) {

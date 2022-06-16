@@ -30,8 +30,8 @@ class Controller {
     float du_max = 0.01;
     float flap_width = 35.1 / 1000; // m
     float launch_pad_alt = 0;
-    const float apogee_des_msl = 9144;
-    float apogee_des_agl = apogee_des_msl;
+    const float apogee_des_agl = 9144;
+    float apogee_des_msl = apogee_des_agl;
     float* b_alt;
     mutex_t* dataMutex_barometer_;
     FSM_State* current_state;

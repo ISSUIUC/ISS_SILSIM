@@ -81,7 +81,7 @@ int main() {
     gyro1.enable_noise_injection();
     Thermometer thermo1("MS5611_thermometer", rocket, 100, silsim_datalog_sink);
     Barometer baro1("MS5611_barometer", rocket, 100, silsim_datalog_sink, 0,
-                    150 / 1.645);
+                    20);
     baro1.enable_noise_injection();
     GPSSensor gps1("ZOEM8Q_gps", rocket, 10, silsim_datalog_sink);
     Magnetometer mag1("LSM9_magnetometer", rocket, 100, silsim_datalog_sink);
