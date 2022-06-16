@@ -223,7 +223,7 @@ Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
                      double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
     // Barometer data adjusted to be MSL (New Mexico MSL altitude is 1310m)
-    data_ = rocket_.get_r_vect().z()+ 1310;
+    data_ = rocket_.get_r_vect().z() + 1310;
     bias_ = 0;
     noise_ = 0;
 
