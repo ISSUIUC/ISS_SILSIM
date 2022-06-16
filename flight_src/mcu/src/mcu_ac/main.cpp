@@ -98,7 +98,7 @@ class lowgIMU_THD : public CpuThread {
         LowGData *lowG_Data = &pointer_struct->sensorDataPointer->lowG_data;
         lowGimuTickFunction(lsm, data_log_buffer, lowG_Data);
 
-        return 6.0;
+        return 1.0;
     }
 
    private:
@@ -215,7 +215,7 @@ class Kalman_Filter_THD : public CpuThread {
 #ifdef THREAD_DEBUG
         Serial.println("### Kalman_Filter thread entrance");
 #endif
-        return 10.0;
+        return 5.0;
     }
 
    private:

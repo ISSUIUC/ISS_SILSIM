@@ -48,15 +48,59 @@ for idx, angle in enumerate(kf_yaw):
 abort_timestamp = data['KalmanFilter']['timestamp'][abort_idx]
 
 plt.figure()
-#plt.plot(data['KalmanFilter']['timestamp'], 
-#         data['KalmanFilter']['Pos'], label="KF Estimated Position [m]")
-#
-#plt.plot(data['KalmanFilter']['timestamp'], 
-#         data['KalmanFilter']['Vel'], label="KF Estimated Velocity [m/s]")
-#
-#plt.plot(data['KalmanFilter']['timestamp'], 
-#         data['KalmanFilter']['Accel'], label="KF Estimated Accel [m/s^2]")
+plt.plot(data['KalmanFilter']['timestamp'], 
+         data['KalmanFilter']['Pos'], label="KF Estimated Position [m]")
 
+plt.plot(data['KalmanFilter']['timestamp'], 
+         data['KalmanFilter']['Vel'], label="KF Estimated Velocity [m/s]")
+
+plt.plot(data['KalmanFilter']['timestamp'], 
+         data['KalmanFilter']['Accel'], label="KF Estimated Accel [m/s^2]")
+plt.legend()
+plt.grid()
+
+plt.figure()
+plt.subplot(311)
+plt.plot(data['Gyroscope:LSM9_gyro']['timestamp'],
+         data['Gyroscope:LSM9_gyro']['gyro_x_rf'],
+         color='g', linewidth=0.4, label="Gyro X Raw [rad/sec]")
+plt.plot(data['Rocket']['timestamp'],
+         data['Rocket']['ang_vel_x_rf'],
+         color='orange', linestyle='--', linewidth=1.0, 
+         label="X Ang. Velocity RF Truth [rad/sec]")
+plt.plot(data['KalmanFilter']['timestamp'],
+         data['KalmanFilter']['gx_filt'],
+         color='r', linestyle='--', linewidth=1.0, 
+         label="Gyro X Low-Pass Filtered [rad/sec]")
+plt.legend()
+plt.subplot(312)
+plt.plot(data['Gyroscope:LSM9_gyro']['timestamp'],
+         data['Gyroscope:LSM9_gyro']['gyro_y_rf'],
+         color='g', linewidth=0.4, label="Gyro Y Raw [rad/sec]")
+plt.plot(data['Rocket']['timestamp'],
+         data['Rocket']['ang_vel_y_rf'],
+         color='orange', linestyle='--', linewidth=1.0, 
+         label="Y Ang. Velocity RF Truth [rad/sec]")
+plt.plot(data['KalmanFilter']['timestamp'],
+         data['KalmanFilter']['gy_filt'],
+         color='r', linestyle='--', linewidth=1.0, 
+         label="Gyro Y Low-Pass Filtered [rad/sec]")
+plt.legend()
+plt.subplot(313)
+plt.plot(data['Gyroscope:LSM9_gyro']['timestamp'],
+         data['Gyroscope:LSM9_gyro']['gyro_z_rf'],
+         color='g', linewidth=0.4, label="Gyro Z Raw [rad/sec]")
+plt.plot(data['Rocket']['timestamp'],
+         data['Rocket']['ang_vel_z_rf'],
+         color='orange', linestyle='--', linewidth=1.0, 
+         label="Z Ang. Velocity RF Truth [rad/sec]")
+plt.plot(data['KalmanFilter']['timestamp'],
+         data['KalmanFilter']['gz_filt'],
+         color='r', linestyle='--', linewidth=1.0, 
+         label="Gyro Z Low-Pass Filtered [rad/sec]")
+plt.legend()
+
+plt.figure()
 plt.subplot(311)
 plt.plot(data['KalmanFilter']['timestamp'], kf_yaw, label="Estimated Yaw [deg]")
 plt.plot(data['Simulation']['timestamp'], data['Simulation']['yaw'],

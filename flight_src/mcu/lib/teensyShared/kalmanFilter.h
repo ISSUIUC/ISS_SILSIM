@@ -28,9 +28,7 @@ class KalmanFilter {
     
     private:
 
-        float invSqrt(float x);
-
-        float s_dt = 0.01;
+        float s_dt = 0.005;
 
         mutex_t* mutex_lowG_;
         mutex_t* mutex_highG_;
@@ -59,12 +57,20 @@ class KalmanFilter {
 
         Eigen::Matrix<float, 3, 2> B = Eigen::Matrix<float, 3, 2>::Zero();
 
+        // Low-Pass filter implementation
+        void low_pass_filter_gyro(float gx, float gy, float gz);
+        float gx_filt = 0.0, gy_filt = 0.0, gz_filt = 0.0;
+
         // Attitude quaternion
         float q0 = 1.0, q1 = 0.0, q2 = 0.0, q3 = 0.0;
+
+        // Fast inverse square-root
+        float invSqrt(float x);
 
         // SILSIM Data Logging
         std::shared_ptr<spdlog::logger> kf_logger_;
         std::string datalog_format_string_ = 
-            "timestamp,q0,q1,q2,q3,Pos,Vel,Accel,"
+            "timestamp,"
+            "gx_filt,gy_filt,gz_filt,q0,q1,q2,q3,Pos,Vel,Accel,"
             "invertboi_00,invertboi_01,invertboi_10,invertboi_11";
 };

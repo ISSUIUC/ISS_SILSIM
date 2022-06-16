@@ -69,6 +69,7 @@ Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
 void Gyroscope::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
         data_ = rocket_.enu2r(rocket_.get_w_vect());
+        last_update_tStep_ = tStep;
         new_data_ = true;
 
         if (inject_noise_) {
@@ -132,6 +133,7 @@ void Accelerometer::update_data(double tStep) {
         Vector3d specific_force = total_accel - gravity_rocket_frame;
 
         data_ = specific_force;
+        last_update_tStep_ = tStep;
         new_data_ = true;
 
         if (inject_noise_) {
@@ -187,6 +189,7 @@ void Magnetometer::update_data(double tStep) {
     Vector3d north_enu = {0.0, 1.0, 0.0};
     Vector3d north_rf = rocket_.enu2r(north_enu);
     data_ = north_rf;
+    last_update_tStep_ = tStep;
     new_data_ = true;
 }
 
@@ -233,6 +236,7 @@ Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
 void Barometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
         data_ = rocket_.get_r_vect().z();
+        last_update_tStep_ = tStep;
         new_data_ = true;
 
         if (inject_noise_) {
@@ -293,6 +297,7 @@ Thermometer::Thermometer(std::string name, Rocket& rocket, double refresh_rate,
 void Thermometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
         data_ = Atmosphere::get_temperature(rocket_.get_r_vect().z());
+        last_update_tStep_ = tStep;
         new_data_ = true;
 
         if (inject_noise_) {
@@ -340,6 +345,7 @@ GPSSensor::GPSSensor(std::string name, Rocket& rocket, double refresh_rate,
 void GPSSensor::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
         data_ = rocket_.get_r_vect();
+        last_update_tStep_ = tStep;
         new_data_ = true;
 
         if (inject_noise_) {

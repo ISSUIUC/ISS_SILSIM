@@ -176,14 +176,14 @@ void KalmanFilter::attitude_dead_reckoning() {
     float gz = lowG_data_ptr_->gz;
     chMtxUnlock(mutex_lowG_);
 
-    std::cout << "Gyroscope: ";
-    std::cout << gx << ", " << gy << ", " << gz << std::endl;
+    // Apply low-pass filter on reading
+    low_pass_filter_gyro(gx, gy, gz);
 
 	// Rate of change of quaternion from gyroscope
-	float qDot0 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
-	float qDot1 = 0.5f * (q0 * gx + q2 * gz - q3 * gy);
-	float qDot2 = 0.5f * (q0 * gy - q1 * gz + q3 * gx);
-	float qDot3 = 0.5f * (q0 * gz + q1 * gy - q2 * gx);
+	float qDot0 = 0.5f * (-q1 * gx_filt - q2 * gy_filt - q3 * gz_filt);
+	float qDot1 = 0.5f * (q0 * gx_filt + q2 * gz_filt - q3 * gy_filt);
+	float qDot2 = 0.5f * (q0 * gy_filt - q1 * gz_filt + q3 * gx_filt);
+	float qDot3 = 0.5f * (q0 * gz_filt + q1 * gy_filt - q2 * gx_filt);
 
     // Integrate rate-of-change of quaternion
     q0 += qDot0 * s_dt;
@@ -209,6 +209,22 @@ void KalmanFilter::attitude_dead_reckoning() {
 
 }
 
+void KalmanFilter::low_pass_filter_gyro(float gx, float gy, float gz) {
+
+    constexpr float cutoff_freq = 0.005;      // Cutoff Frequency [Hz]
+    constexpr float sample_period = 0.005;   // Sample period [s]
+
+    constexpr float RC = 1.0 / (2 * 3.14159265 * cutoff_freq);
+    constexpr float coeff1 = sample_period / (sample_period + RC);
+    constexpr float coeff2 = RC / (sample_period + RC);
+    
+    // constexpr float alpha = 0.001;
+
+    gx_filt = coeff1*gx + coeff2*gx_filt;
+    gy_filt = coeff1*gy + coeff2*gy_filt;
+    gz_filt = coeff1*gz + coeff2*gz_filt;
+}
+
 // Fast inverse square-root
 // See: http://en.wikipedia.org/wiki/Fast_inverse_square_root
 float KalmanFilter::invSqrt(float x) {
@@ -227,6 +243,10 @@ void KalmanFilter::log_kf_state(double tStamp) {
 
         datalog_ss << "DATA,"
                    << tStamp << ","
+
+                   << gx_filt << ","
+                   << gy_filt << ","
+                   << gz_filt << ","
 
                    << q0 << ","
                    << q1 << ","
