@@ -67,12 +67,12 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
     H(1,2) = 1;
 
     // set P_k
-    P_k(0,0) = .058;
-    P_k(0,1) = .024;
-    P_k(0,2) = .004;
-    P_k(1,1) = .019;
-    P_k(2,2) = .0086;
-    P_k(1,2) = .007;
+    P_k(0,0) = 0;
+    P_k(0,1) = 0;
+    P_k(0,2) = 0;
+    P_k(1,1) = 0;
+    P_k(2,2) = 0;
+    P_k(1,2) = 0;
     P_k(2,1) = P_k(1,2);
     P_k(1,0) = P_k(0,1);
     P_k(2,0) = P_k(0,2);
@@ -138,7 +138,7 @@ void KalmanFilter::update() {
 
     // Sensor Measurements
     chMtxLock(mutex_highG_);
-    y_k(1,0) = (highG_data_ptr_->hg_az);
+    y_k(1,0) = (highG_data_ptr_->hg_az) * 9.81;
     chMtxUnlock(mutex_highG_);
 
     chMtxLock(mutex_barometer_);

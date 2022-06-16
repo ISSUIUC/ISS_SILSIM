@@ -132,7 +132,7 @@ void Accelerometer::update_data(double tStep) {
         Vector3d gravity_rocket_frame = rocket_.gravity_vector_rf() * 9.81;
         Vector3d specific_force = total_accel - gravity_rocket_frame;
 
-        data_ = specific_force;
+        data_ = specific_force/9.81;
         last_update_tStep_ = tStep;
         new_data_ = true;
 
