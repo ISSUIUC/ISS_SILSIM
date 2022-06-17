@@ -223,9 +223,11 @@ Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
                      double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
     // Barometer data adjusted to be MSL (New Mexico MSL altitude is 1401)
-    data_ = rocket_.get_r_vect().z() + 1401;
+    alt = rocket_.get_r_vect().z() + 1401;
     bias_ = 0;
     noise_ = 0;
+
+    data_ = Atmosphere::get_pressure(alt);
 
     if (silsim_sink) {
         sensor_logger_ =
@@ -237,18 +239,19 @@ Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
 void Barometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
         // Barometer data adjusted to be MSL (New Mexico MSL altitude is 1401)
-        data_ = rocket_.get_r_vect().z() + 1401;
+        alt = rocket_.get_r_vect().z() + 1401;
         last_update_tStep_ = tStep;
         new_data_ = true;
 
         if (inject_noise_) {
             noise_ = normal_dist_(generator_);
-            data_ += noise_;
+            alt += noise_;
         }
 
         if (inject_bias_) {
-            data_ += bias_;
+            alt += bias_;
         }
+        data_ = Atmosphere::get_pressure(alt);
     }
 }
 
