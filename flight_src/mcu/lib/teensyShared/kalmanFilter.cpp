@@ -106,8 +106,8 @@ void KalmanFilter::Initialize() {
     Q = Q * scale_fact;
 
     // set R
-    R(0,0) = 30;
-    R(1,1) = 1;
+    R(0,0) = .1;
+    R(1,1) = .01;
 
     // set B
     B(2,0) = -1;
@@ -148,7 +148,7 @@ void KalmanFilter::update() {
 
     // Sensor Measurements
     chMtxLock(mutex_highG_);
-    y_k(1,0) = (highG_data_ptr_->hg_az) * 9.81;
+    y_k(1,0) = (highG_data_ptr_->hg_az) * 9.81 - 9.81;
     chMtxUnlock(mutex_highG_);
 
     chMtxLock(mutex_barometer_);

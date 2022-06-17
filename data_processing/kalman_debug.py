@@ -49,7 +49,7 @@ abort_timestamp = data['KalmanFilter']['timestamp'][abort_idx]
 plt.figure()
 plt.subplot(311)
 plt.plot(data['KalmanFilter']['timestamp'], 
-        data['KalmanFilter']['Pos'], label="KF Estimated Position [m]")
+        data['KalmanFilter']['Pos']-1401, label="KF Estimated Position [m]")
 plt.plot(data['Rocket']['timestamp'], 
         data['Rocket']['pos_z_enu'], label="Real Alt [m]")
 plt.legend()
@@ -66,8 +66,6 @@ plt.plot(data['KalmanFilter']['timestamp'],
         data['KalmanFilter']['Accel'], label="KF Estimated Accel [m/s^2]")
 plt.plot(data['Rocket']['timestamp'], 
         data['Rocket']['accel_z_enu'], label="Real Accel [m/s]")
-plt.plot(data['Accelerometer:LSM9_accel']['timestamp'],
-         data['Accelerometer:LSM9_accel']['accel_z_rf']*9.81, label="Accelerometer")
 plt.legend()
 
 plt.figure()

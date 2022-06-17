@@ -71,10 +71,10 @@ void delay(uint32_t ms) {
 
 KX134::KX134() {}
 void KX134::update_data() {
-    Eigen::Vector3d data;
+    Eigen::Vector3d data; // data is in g
     global_context->accelerometer_pointer->get_data(data);
 
-    Eigen::Vector3d scaled = (data/9.81) * 1024;
+    Eigen::Vector3d scaled = (data) * 1024;
     x_accel = scaled.x();
     y_accel = scaled.y();
     z_accel = scaled.z();

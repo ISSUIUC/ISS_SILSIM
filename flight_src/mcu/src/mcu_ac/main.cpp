@@ -342,6 +342,7 @@ void chSetup() {
                       &sensor_pointers);
     chThdCreateStatic(highgIMU_WA, sizeof(highgIMU_WA), NORMALPRIO,
                       highgIMU_THD, &sensor_pointers);
+    // chThdSleepMilliseconds(500);
     chThdCreateStatic(servo_WA, sizeof(servo_WA), NORMALPRIO, servo_THD,
                       &sensor_pointers);
     chThdCreateStatic(lowg_dataLogger_WA, sizeof(lowg_dataLogger_WA),

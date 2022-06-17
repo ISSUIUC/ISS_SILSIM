@@ -17,5 +17,5 @@ extern CpuStateContext* global_context;
 double CpuThread::tick(double timestamp) {
     assert(global_context != nullptr);
     // convert sleep time to seconds
-    return loop(timestamp) / 1000.0;
+    return loop(timestamp) / 1000.0 + (rand() % 5) / 1000.0;
 }
