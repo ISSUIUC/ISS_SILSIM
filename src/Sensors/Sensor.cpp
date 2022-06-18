@@ -267,7 +267,8 @@ void Barometer::log_sensor_state(double tStamp) {
 
         datalog_ss << "DATA,"
                    << tStamp << ","
-                   << data_;
+                   << data_ << ","
+                   << alt;
 
         sensor_logger_->info(datalog_ss.str());
         // clang-format on

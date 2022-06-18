@@ -47,92 +47,99 @@ for idx, angle in enumerate(kf_yaw):
 abort_timestamp = data['KalmanFilter']['timestamp'][abort_idx]
 
 plt.figure()
-plt.subplot(311)
+plt.subplot(411)
 plt.plot(data['KalmanFilter']['timestamp'], 
         data['KalmanFilter']['Pos']-1401, label="KF Estimated Position [m]")
 plt.plot(data['Rocket']['timestamp'], 
         data['Rocket']['pos_z_enu'], label="Real Alt [m]")
+# plt.plot(data['Barometer:MS5611_barometer']['timestamp'], 
+#         data['Barometer:MS5611_barometer']['altitude']-1401, label="Sensor Alt [m]")
 plt.legend()
 
-plt.subplot(312)
+plt.subplot(412)
+plt.plot(data['Controller']['timestamp'], 
+        data['Controller']['apogee_est']-1401, label="Est Apogee [m]")
+plt.legend()
+
+plt.subplot(413)
 plt.plot(data['KalmanFilter']['timestamp'], 
         data['KalmanFilter']['Vel'], label="KF Estimated Velocity [m/s]")
 plt.plot(data['Rocket']['timestamp'], 
         data['Rocket']['vel_z_enu'], label="Real Velocity [m/s]")
 plt.legend()
 
-plt.subplot(313)
+plt.subplot(414)
 plt.plot(data['KalmanFilter']['timestamp'], 
         data['KalmanFilter']['Accel'], label="KF Estimated Accel [m/s^2]")
 plt.plot(data['Rocket']['timestamp'], 
         data['Rocket']['accel_z_enu'], label="Real Accel [m/s]")
 plt.legend()
 
-plt.figure()
-plt.subplot(311)
-plt.plot(data['Gyroscope:LSM9_gyro']['timestamp'],
-         data['Gyroscope:LSM9_gyro']['gyro_x_rf'],
-         color='g', linewidth=0.4, label="Gyro X Raw [rad/sec]")
-plt.plot(data['Rocket']['timestamp'],
-         data['Rocket']['ang_vel_x_rf'],
-         color='orange', linestyle='--', linewidth=1.0, 
-         label="X Ang. Velocity RF Truth [rad/sec]")
-plt.plot(data['KalmanFilter']['timestamp'],
-         data['KalmanFilter']['gx_filt'],
-         color='r', linestyle='--', linewidth=1.0, 
-         label="Gyro X Low-Pass Filtered [rad/sec]")
-plt.legend()
-plt.subplot(312)
-plt.plot(data['Gyroscope:LSM9_gyro']['timestamp'],
-         data['Gyroscope:LSM9_gyro']['gyro_y_rf'],
-         color='g', linewidth=0.4, label="Gyro Y Raw [rad/sec]")
-plt.plot(data['Rocket']['timestamp'],
-         data['Rocket']['ang_vel_y_rf'],
-         color='orange', linestyle='--', linewidth=1.0, 
-         label="Y Ang. Velocity RF Truth [rad/sec]")
-plt.plot(data['KalmanFilter']['timestamp'],
-         data['KalmanFilter']['gy_filt'],
-         color='r', linestyle='--', linewidth=1.0, 
-         label="Gyro Y Low-Pass Filtered [rad/sec]")
-plt.legend()
-plt.subplot(313)
-plt.plot(data['Gyroscope:LSM9_gyro']['timestamp'],
-         data['Gyroscope:LSM9_gyro']['gyro_z_rf'],
-         color='g', linewidth=0.4, label="Gyro Z Raw [rad/sec]")
-plt.plot(data['Rocket']['timestamp'],
-         data['Rocket']['ang_vel_z_rf'],
-         color='orange', linestyle='--', linewidth=1.0, 
-         label="Z Ang. Velocity RF Truth [rad/sec]")
-plt.plot(data['KalmanFilter']['timestamp'],
-         data['KalmanFilter']['gz_filt'],
-         color='r', linestyle='--', linewidth=1.0, 
-         label="Gyro Z Low-Pass Filtered [rad/sec]")
-plt.legend()
+# plt.figure()
+# plt.subplot(311)
+# plt.plot(data['Gyroscope:LSM9_gyro']['timestamp'],
+#          data['Gyroscope:LSM9_gyro']['gyro_x_rf'],
+#          color='g', linewidth=0.4, label="Gyro X Raw [rad/sec]")
+# plt.plot(data['Rocket']['timestamp'],
+#          data['Rocket']['ang_vel_x_rf'],
+#          color='orange', linestyle='--', linewidth=1.0, 
+#          label="X Ang. Velocity RF Truth [rad/sec]")
+# plt.plot(data['KalmanFilter']['timestamp'],
+#          data['KalmanFilter']['gx_filt'],
+#          color='r', linestyle='--', linewidth=1.0, 
+#          label="Gyro X Low-Pass Filtered [rad/sec]")
+# plt.legend()
+# plt.subplot(312)
+# plt.plot(data['Gyroscope:LSM9_gyro']['timestamp'],
+#          data['Gyroscope:LSM9_gyro']['gyro_y_rf'],
+#          color='g', linewidth=0.4, label="Gyro Y Raw [rad/sec]")
+# plt.plot(data['Rocket']['timestamp'],
+#          data['Rocket']['ang_vel_y_rf'],
+#          color='orange', linestyle='--', linewidth=1.0, 
+#          label="Y Ang. Velocity RF Truth [rad/sec]")
+# plt.plot(data['KalmanFilter']['timestamp'],
+#          data['KalmanFilter']['gy_filt'],
+#          color='r', linestyle='--', linewidth=1.0, 
+#          label="Gyro Y Low-Pass Filtered [rad/sec]")
+# plt.legend()
+# plt.subplot(313)
+# plt.plot(data['Gyroscope:LSM9_gyro']['timestamp'],
+#          data['Gyroscope:LSM9_gyro']['gyro_z_rf'],
+#          color='g', linewidth=0.4, label="Gyro Z Raw [rad/sec]")
+# plt.plot(data['Rocket']['timestamp'],
+#          data['Rocket']['ang_vel_z_rf'],
+#          color='orange', linestyle='--', linewidth=1.0, 
+#          label="Z Ang. Velocity RF Truth [rad/sec]")
+# plt.plot(data['KalmanFilter']['timestamp'],
+#          data['KalmanFilter']['gz_filt'],
+#          color='r', linestyle='--', linewidth=1.0, 
+#          label="Gyro Z Low-Pass Filtered [rad/sec]")
+# plt.legend()
 
-plt.figure()
-plt.subplot(311)
-plt.plot(data['KalmanFilter']['timestamp'], kf_yaw, label="Estimated Yaw [deg]")
-plt.plot(data['Simulation']['timestamp'], data['Simulation']['yaw'],
-         linestyle='--', color='g', label="Yaw Truth")
-plt.axvline(15.0, linestyle='--', color='g', linewidth=0.5, label="Ignition")
-plt.axvline(abort_timestamp, linestyle='--', color='r', linewidth=0.8, label="Abort Trigger")
-plt.legend()
+# plt.figure()
+# plt.subplot(311)
+# plt.plot(data['KalmanFilter']['timestamp'], kf_yaw, label="Estimated Yaw [deg]")
+# plt.plot(data['Simulation']['timestamp'], data['Simulation']['yaw'],
+#          linestyle='--', color='g', label="Yaw Truth")
+# plt.axvline(15.0, linestyle='--', color='g', linewidth=0.5, label="Ignition")
+# plt.axvline(abort_timestamp, linestyle='--', color='r', linewidth=0.8, label="Abort Trigger")
+# plt.legend()
 
-plt.subplot(312)
-plt.plot(data['KalmanFilter']['timestamp'], kf_pitch, label="Estimated Pitch [deg]")
-plt.plot(data['Simulation']['timestamp'], data['Simulation']['pitch'],
-         linestyle='--', color='g', label="Pitch Truth")
-plt.axvline(15.0, linestyle='--', color='g', linewidth=0.5, label="Ignition")
-plt.axvline(abort_timestamp, linestyle='--', color='r', linewidth=0.8, label="Abort Trigger")
-plt.legend()
+# plt.subplot(312)
+# plt.plot(data['KalmanFilter']['timestamp'], kf_pitch, label="Estimated Pitch [deg]")
+# plt.plot(data['Simulation']['timestamp'], data['Simulation']['pitch'],
+#          linestyle='--', color='g', label="Pitch Truth")
+# plt.axvline(15.0, linestyle='--', color='g', linewidth=0.5, label="Ignition")
+# plt.axvline(abort_timestamp, linestyle='--', color='r', linewidth=0.8, label="Abort Trigger")
+# plt.legend()
 
-plt.subplot(313)
-plt.plot(data['KalmanFilter']['timestamp'], kf_roll, label="Estimated Roll [deg]")
-plt.plot(data['Simulation']['timestamp'], data['Simulation']['roll'],
-         linestyle='--', color='g', label="Roll Truth")
-plt.axvline(15.0, linestyle='--', color='g', linewidth=0.5, label="Ignition")
-plt.axvline(abort_timestamp, linestyle='--', color='r', linewidth=0.8, label="Abort Trigger")
-plt.legend()
+# plt.subplot(313)
+# plt.plot(data['KalmanFilter']['timestamp'], kf_roll, label="Estimated Roll [deg]")
+# plt.plot(data['Simulation']['timestamp'], data['Simulation']['roll'],
+#          linestyle='--', color='g', label="Roll Truth")
+# plt.axvline(15.0, linestyle='--', color='g', linewidth=0.5, label="Ignition")
+# plt.axvline(abort_timestamp, linestyle='--', color='r', linewidth=0.8, label="Abort Trigger")
+# plt.legend()
 
 # plt.subplot(311)
 # plt.plot(data['MadgwickAHRS']['timestamp'], madgwick_yaw, label="Estimated Yaw [deg]")

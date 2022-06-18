@@ -99,15 +99,17 @@ void KalmanFilter::Initialize() {
     Q(2,0) = Q(0,2);
     Q(2,1) = Q(1,2);
 
-    // float scale_fact = 22.19;
-    // float scale_fact = 13.25;
-    float scale_fact = .00899;
-    // float scale_fact = 12.;
+    float scale_fact = 75.19;
+    // float scale_fact = 14.25;
+    // float scale_fact = .000000599;
+    // float scale_fact = 13;
     Q = Q * scale_fact;
 
     // set R
     R(0,0) = .1;
-    R(1,1) = .01;
+    R(1,1) = 2.;
+    // R(0,0) = 2.;
+    // R(1,1) = .01;
 
     // set B
     B(2,0) = -1;

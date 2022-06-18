@@ -182,7 +182,7 @@ class Barometer : public Sensor {
 
     double bias_;  // Constant bias value to be added to measurement
 
-    std::string datalog_format_string = "timestamp,pressure";
+    std::string datalog_format_string = "timestamp,pressure,altitude";
 };
 
 /*****************************************************************************/
