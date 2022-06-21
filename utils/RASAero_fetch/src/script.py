@@ -36,7 +36,7 @@ def main():
     files = os.listdir(ras_pth)
     for i in range(len(files)):
         filename_length = len(files[i])
-        protuberances.append(int(files[i][filename_length-8:filename_length-5]))
+        protuberances.append(int(files[i][filename_length-9:filename_length-5]))
 
     # run sims for each protuberance
     for i in range(len(protuberances)):
