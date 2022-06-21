@@ -14,7 +14,7 @@ def main():
 
     # define paths
     out_pth = os.getcwd()[:-3] + "output\\"
-    ras_pth = os.getcwd()[:-3] + "cdx1\\"
+    ras_pth = os.getcwd()[:-3] + "CDX1\\"
 
     # define PyAutoGUI interface
     pyautogui.PAUSE = 0.8
@@ -23,7 +23,7 @@ def main():
     # define simulation parameters
     protuberances = []
     alpha = 16
-    nozzle_exit_diameter = 2.7
+    nozzle_exit_diameter = 3.0
     ned_string = str(nozzle_exit_diameter).zfill(5)
 
     # RASAero application 
@@ -43,13 +43,13 @@ def main():
 
         # define parameters to open cdx1 file
         protuberance = protuberances[i]
-        rasaero_file = "Intrepid_5800_mk6_{}.cdx1".format(str(protuberance).zfill(3))
+        rasaero_file = "Intrepid_II_{}.CDX1".format(str(protuberance).zfill(3))
         pyautogui.moveTo(screenWidth * 0.5, screenHeight * 0.5)
         pyautogui.click()
         pyautogui.press('alt')
         pyautogui.press('enter')
         pyautogui.hotkey('ctrl', 'o')
-        pyautogui.PAUSE = 1.5
+        pyautogui.PAUSE = 0.5
         
         # accounting for non-initial protuberance interations
         if (i != 0):
@@ -61,7 +61,7 @@ def main():
         pyautogui.press('delete')
         pyautogui.write(ras_pth)
         pyautogui.press('enter')
-        pyautogui.PAUSE = 1.5
+        pyautogui.PAUSE = 0.5
         
         # open file
         for j in range(6):
@@ -70,7 +70,7 @@ def main():
         pyautogui.press('enter')
 
         # define nozzle exit diameter
-        pyautogui.PAUSE = 0.01
+        pyautogui.PAUSE = 0.5
         pyautogui.press('alt')
         pyautogui.press('right')
         pyautogui.press('enter')
@@ -86,7 +86,7 @@ def main():
         for j in range(alpha):
 
             print(f"Running Alpha = {j}")
-            pyautogui.PAUSE = 0.1
+            pyautogui.PAUSE = 0.01
         
             # define output file name
             output_path = (out_pth + "{}_{}.txt").format(str(j).zfill(2), str(protuberance).zfill(3))
