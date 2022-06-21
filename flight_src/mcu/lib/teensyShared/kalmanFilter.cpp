@@ -90,7 +90,7 @@ void KalmanFilter::Initialize() {
 
     // set Q
     Q(0,0) = pow(s_dt,5) / 20;
-    Q(0,1) = (pow(s_dt,4) / 8);
+    Q(0,1) = (pow(s_dt,4) / 8 * 80);
     Q(0,2) = pow(s_dt,3) / 6;
     Q(1,1) = pow(s_dt,3) / 8;
     Q(1,2) = pow(s_dt,2) / 2;
@@ -99,15 +99,15 @@ void KalmanFilter::Initialize() {
     Q(2,0) = Q(0,2);
     Q(2,1) = Q(1,2);
 
-    float scale_fact = 75.19;
+    // float scale_fact = 75.19;
     // float scale_fact = 14.25;
-    // float scale_fact = .000000599;
+    float scale_fact = .00999;
     // float scale_fact = 13;
     Q = Q * scale_fact;
 
     // set R
-    R(0,0) = .1;
-    R(1,1) = 2.;
+    R(0,0) = 5.;
+    R(1,1) = .0002;
     // R(0,0) = 2.;
     // R(1,1) = .01;
 
@@ -162,15 +162,18 @@ void KalmanFilter::update() {
     P_k = (identity - K*H) * P_priori;
 
     // check overflow on Kalman gain
-    // for(int i = 0; i < 3; i++) {
-    //     for(int j = 0; j < 3; j++) {
-    //         if(P_k(i,j) < 1e-7 && P_k(i,j) > -1e-7)
-    //             if (P_k(i,j) > 0)
-    //                 P_k(i, j) = 1e-7;
-    //             if (P_k(i,j) < 0)
-    //                 P_k(i, j) = -1e-7;
-    //     }
-    // }
+    for(int i = 0; i < 3; i++) {
+        for(int j = 0; j < 3; j++) {
+            if(P_k(i,j) < 1e-6 && P_k(i,j) > -1e-6) {
+                if (P_k(i,j) > 0) {
+                    P_k(i, j) = 1e-6;
+                }
+                if (P_k(i,j) < 0) {
+                    P_k(i, j) = -1e-6;
+                }
+            }
+        }
+    }
 
     chMtxLock(mutex_state_);
     state_data_ptr_->state_x = x_k(0,0);

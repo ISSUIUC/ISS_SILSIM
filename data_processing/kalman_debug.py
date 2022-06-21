@@ -72,7 +72,7 @@ plt.subplot(414)
 plt.plot(data['KalmanFilter']['timestamp'], 
         data['KalmanFilter']['Accel'], label="KF Estimated Accel [m/s^2]")
 plt.plot(data['Rocket']['timestamp'], 
-        data['Rocket']['accel_z_enu'], label="Real Accel [m/s]")
+        data['Rocket']['accel_z_enu'], label="Real Accel [m/^s]")
 plt.legend()
 
 # plt.figure()
