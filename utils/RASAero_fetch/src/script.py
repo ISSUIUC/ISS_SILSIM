@@ -43,7 +43,7 @@ def main():
 
         # define parameters to open cdx1 file
         protuberance = protuberances[i]
-        rasaero_file = "Intrepid_II_{}.CDX1".format(str(protuberance).zfill(3))
+        rasaero_file = "Intrepid_II_{}.CDX1".format(str(protuberance).zfill(4))
         pyautogui.moveTo(screenWidth * 0.5, screenHeight * 0.5)
         pyautogui.click()
         pyautogui.press('alt')
@@ -89,7 +89,7 @@ def main():
             pyautogui.PAUSE = 0.01
         
             # define output file name
-            output_path = (out_pth + "{}_{}.txt").format(str(j).zfill(2), str(protuberance).zfill(3))
+            output_path = (out_pth + "{}_{}.txt").format(str(j).zfill(2), str(protuberance).zfill(4))
 
             # input angle of attack for iteration
             pyautogui.hotkey('ctrl', 'a')
