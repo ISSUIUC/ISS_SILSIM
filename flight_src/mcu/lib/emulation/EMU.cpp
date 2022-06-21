@@ -12,6 +12,7 @@
 #include "SPI.h"
 #include "SparkFunLSM9DS1.h"
 #include "SD.h"
+#include "SparkFun_Qwiic_KX13X.h"
 
 #include <iostream>
 
@@ -67,7 +68,12 @@ void delay(uint32_t ms) {
     throw std::runtime_error("delay needs to be replaced to run within the simulator");
 }
 
+outputData QwiicKX134::getAccelData() {
+    Eigen::Vector3d data;
+    global_context->accelerometer_pointer->get_data(data);
 
+    return {data.x(), data.y(), data.z()};
+}
 
 KX134::KX134() {}
 void KX134::update_data() {
