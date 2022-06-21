@@ -22,11 +22,11 @@ constexpr double deg2rad = 3.14159265 / 180.0;
 constexpr double kLbsToKg = 0.453592;
 constexpr double kInchToMeters = 0.0254;
 
-/***************** Intrepid MK6 Parameters *****************/
-constexpr double kIntrepidDryMass = 46.52 * kLbsToKg;
-constexpr double kIntrepidWetMass = 67.30 * kLbsToKg;
-constexpr double kIntrepidWetCGLocation = 82.79 * kInchToMeters;
-constexpr double kIntrepidDryCGLocation = 73.06 * kInchToMeters;
+/***************** Intrepid-II MK2 Parameters *****************/
+constexpr double kIntrepidDryMass = 41.15 * kLbsToKg;
+constexpr double kIntrepidWetMass = 61.93 * kLbsToKg;
+constexpr double kIntrepidWetCGLocation = 84.55 * kInchToMeters;
+constexpr double kIntrepidDryCGLocation = 75.35 * kInchToMeters;
 constexpr double kIntrepidTotalLength = 130.0 * kInchToMeters;
 constexpr double kIntrepidDiameter = 4.02 * kInchToMeters;
 constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
@@ -65,7 +65,7 @@ int main() {
     I_tensor[8] = 0.5 * mass * kIntrepidRadius * kIntrepidRadius;
     rocket.set_I(I_tensor);
 
-    double angle = 3.0 * deg2rad;
+    double angle = 6.0 * deg2rad;
     Quaterniond start_ornt{cos(angle / 2.0), sin(angle / 2.0) * 0.707,
                            sin(angle / 2.0) * 0.707, 0};
     rocket.set_q_ornt(start_ornt);

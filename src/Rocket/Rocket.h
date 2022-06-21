@@ -84,8 +84,8 @@ class Rocket {
     double get_total_normal_force_coeff() const {
         return total_normal_force_coeff_;
     };
-    double get_total_axial_force_coeff() const {
-        return total_axial_force_coeff_;
+    double get_total_drag_force_coeff() const {
+        return total_drag_force_coeff_;
     };
     double get_nose_to_cg() const { return nose_to_cg_; };
     double get_nose_to_cp() const { return nose_to_cp_; };
@@ -123,8 +123,8 @@ class Rocket {
     void set_total_normal_force_coeff(double cn_total) {
         total_normal_force_coeff_ = cn_total;
     };
-    void set_total_axial_force_coeff(double ca_total) {
-        total_axial_force_coeff_ = ca_total;
+    void set_total_drag_force_coeff(double ca_total) {
+        total_drag_force_coeff_ = ca_total;
     };
     void set_nose_to_cg(double nose_to_cg) {
         nose_to_cg_ = nose_to_cg;
@@ -187,7 +187,8 @@ class Rocket {
     // Vector3d launch_ecef_{150992.99, -4882549.85, 4087626.55};
     // Vector3d launch_geod_{40.111801, -88.228691, 216};
     // (40.111801, -88.228691, 216) - Talbot Laboratory
-    // Spaceport America
+    
+    // Spaceport America - 4,000' Elevation
     Vector3d launch_ecef_{-1563305, -5123022, 3453817};
     Vector3d launch_geod_{32.990278, -106.969722, 1401};
 
@@ -202,7 +203,7 @@ class Rocket {
     double reference_length_ = 3.2258;               // reference length in m
     double reference_area_ = 0.00811;                // reference area in m^2
     double total_normal_force_coeff_ = 9.65;  // total normal force coefficient
-    double total_axial_force_coeff_ = 0.630;  // total axial force coefficient
+    double total_drag_force_coeff_ = 0.630;  // total drag force coefficient
     double nose_to_cp_ = 4.03;  // nosecone tip to Cp distance in m
     double mach_ = 0.0;         // Freestream air mach number
     double alpha_ = 0.0;        // Rocket total angle-of-attack to air
@@ -227,7 +228,7 @@ class Rocket {
         "m_net_x_rf,m_net_y_rf,m_net_z_rf,"
         "q_ornt_w,q_ornt_x,q_ornt_y,q_ornt_z,"
         "structural_mass,total_mass,nose_to_cg,nose_to_cp,"
-        "total_normal_force_coeff,total_axial_force_coeff,"
+        "total_normal_force_coeff,total_drag_force_coeff,"
         "mach,alpha";
 };
 
