@@ -26,8 +26,8 @@ struct CpuStateContext {
 
     FSM_State rocketState = STATE_INIT;
 
-    SerialClass Serial;
-    SerialClass Serial1;
+    HardwareSerial Serial;
+    HardwareSerial Serial1;
 
     KX134 highGimu;
     LSM9DS1 lowGimu;

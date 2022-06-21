@@ -53,13 +53,13 @@ void chBegin(void (*mainThread)()) {
 void chSysUnlock() {}
 void chSysLock() {}
 
-void SerialClass::println(const char * str){
+void HardwareSerial::println(const char * str){
     puts(str);
 }
-void SerialClass::begin(uint32_t frequency) {}
-void SerialClass::write(void *data, uint32_t size) {}
-bool SerialClass::operator!() { return false; }
-SerialClass::operator bool() { return true; }
+void HardwareSerial::begin(uint32_t frequency) {}
+void HardwareSerial::write(void *data, uint32_t size) {}
+bool HardwareSerial::operator!() { return false; }
+HardwareSerial::operator bool() { return true; }
 
 void digitalWrite(uint8_t pin, uint8_t val){}
 void pinMode(uint8_t pin, uint8_t mode){}

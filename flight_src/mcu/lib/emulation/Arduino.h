@@ -12,11 +12,12 @@
 
 #define LED_BUILTIN 13
 
-struct SerialClass{
+struct HardwareSerial{
     void println(const char *);
     void begin(uint32_t frequency);
     void write(void * data, uint32_t size);
     bool operator!();
+    void setTimeout(int){}
     operator bool();
 };
 
