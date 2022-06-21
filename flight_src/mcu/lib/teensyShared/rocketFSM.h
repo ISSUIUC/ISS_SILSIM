@@ -21,8 +21,6 @@
 #ifndef ROCKET_FSM_H
 #define ROCKET_FSM_H
 
-#include "GlobalVars.h"
-
 #include "sensors.h"
 
 class rocketFSM {
@@ -30,19 +28,14 @@ class rocketFSM {
     rocketFSM(pointers *);
 
     void tickFSM();
-    
-    // SILSIM Data Logging
-    void log_FSM_state(double tStamp);
 
    private:
     pointers *pointer_struct;
-
-    FSM_State current_state_;
-
-    // SILSIM Data Logging
-    std::shared_ptr<spdlog::logger> fsm_logger_;
-    std::string datalog_format_string = 
-        "timestamp,state";
 };
+
+/**
+ * FSM timers and time data
+ */
+// static fsm_struct *rocketTimers;
 
 #endif

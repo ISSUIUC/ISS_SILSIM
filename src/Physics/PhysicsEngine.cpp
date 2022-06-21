@@ -52,7 +52,7 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
     double total_mass = rocket_.get_total_mass();
     double area = rocket_.get_reference_area();
     double CN = rocket_.get_total_normal_force_coeff();
-    double CA = rocket_.get_total_axial_force_coeff();
+    double CD = rocket_.get_total_drag_force_coeff();
 
     // enu2r pulls a quaternion from the rocket, be sure to set orientation
     // beforehand
@@ -81,12 +81,11 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
-        double axial_force_mag =
-            0.5 * CA * wind_relative_vel_mag_sqrd * area * density;
-        Vector3d axial_force_rf{
-            0, 0, std::copysign(axial_force_mag, -wind_relative_vel_rf.z())};
+        double drag_force_mag =
+            0.5 * CD * wind_relative_vel_mag_sqrd * area * density;
+        Vector3d drag_force_rf = drag_force_mag * -wind_relative_vel_rf.normalized();
 
-        aero_force_rf = normal_force_rf + axial_force_rf;
+        aero_force_rf = normal_force_rf + drag_force_rf;
     }
 
     Vector3d grav_rf = rocket_.gravity_vector_rf() * 9.81 * total_mass;
@@ -103,11 +102,11 @@ std::pair<Vector3d, Vector3d> PhysicsEngine::calc_forces_and_moments(
         normal_force_rf.normalize();
         normal_force_rf = normal_force_rf * normal_force_mag;
 
-        double axial_force_mag =
-            0.5 * CA * wind_relative_vel_mag_sqrd * area * density;
-        Vector3d axial_force_rf{
-            0, 0, std::copysign(axial_force_mag, -wind_relative_vel_rf.z())};
-        Vector3d aero_force_rf = normal_force_rf + axial_force_rf;
+        double drag_force_mag =
+            0.5 * CD * wind_relative_vel_mag_sqrd * area * density;
+        Vector3d drag_force_rf = drag_force_mag * -wind_relative_vel_rf.normalized();
+
+        Vector3d aero_force_rf = normal_force_rf + drag_force_rf;
         aero_moment_rf = cp_vect_rf.cross(aero_force_rf);
     }
 

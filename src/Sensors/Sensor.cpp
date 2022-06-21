@@ -69,6 +69,7 @@ Gyroscope::Gyroscope(std::string name, Rocket& rocket, double refresh_rate,
 void Gyroscope::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
         data_ = rocket_.enu2r(rocket_.get_w_vect());
+        last_update_tStep_ = tStep;
         new_data_ = true;
 
         if (inject_noise_) {
@@ -131,7 +132,8 @@ void Accelerometer::update_data(double tStep) {
         Vector3d gravity_rocket_frame = rocket_.gravity_vector_rf() * 9.81;
         Vector3d specific_force = total_accel - gravity_rocket_frame;
 
-        data_ = specific_force;
+        data_ = specific_force/9.81;
+        last_update_tStep_ = tStep;
         new_data_ = true;
 
         if (inject_noise_) {
@@ -187,6 +189,7 @@ void Magnetometer::update_data(double tStep) {
     Vector3d north_enu = {0.0, 1.0, 0.0};
     Vector3d north_rf = rocket_.enu2r(north_enu);
     data_ = north_rf;
+    last_update_tStep_ = tStep;
     new_data_ = true;
 }
 
@@ -219,9 +222,12 @@ Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
                      spdlog_basic_sink_ptr silsim_sink, double noise_mean,
                      double noise_stddev)
     : Sensor(name, rocket, refresh_rate, noise_mean, noise_stddev) {
-    data_ = rocket_.get_r_vect().x();
+    // Barometer data adjusted to be MSL (New Mexico MSL altitude is 1401)
+    alt = rocket_.get_r_vect().z() + 1401;
     bias_ = 0;
     noise_ = 0;
+
+    data_ = Atmosphere::get_pressure(alt);
 
     if (silsim_sink) {
         sensor_logger_ =
@@ -232,17 +238,20 @@ Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
 
 void Barometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
-        data_ = rocket_.get_r_vect().z();
+        // Barometer data adjusted to be MSL (New Mexico MSL altitude is 1401)
+        alt = rocket_.get_r_vect().z() + 1401;
+        last_update_tStep_ = tStep;
         new_data_ = true;
 
         if (inject_noise_) {
             noise_ = normal_dist_(generator_);
-            data_ += noise_;
+            alt += noise_;
         }
 
         if (inject_bias_) {
-            data_ += bias_;
+            alt += bias_;
         }
+        data_ = Atmosphere::get_pressure(alt);
     }
 }
 
@@ -258,7 +267,8 @@ void Barometer::log_sensor_state(double tStamp) {
 
         datalog_ss << "DATA,"
                    << tStamp << ","
-                   << data_;
+                   << data_ << ","
+                   << alt;
 
         sensor_logger_->info(datalog_ss.str());
         // clang-format on
@@ -293,6 +303,7 @@ Thermometer::Thermometer(std::string name, Rocket& rocket, double refresh_rate,
 void Thermometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
         data_ = Atmosphere::get_temperature(rocket_.get_r_vect().z());
+        last_update_tStep_ = tStep;
         new_data_ = true;
 
         if (inject_noise_) {
@@ -340,6 +351,7 @@ GPSSensor::GPSSensor(std::string name, Rocket& rocket, double refresh_rate,
 void GPSSensor::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
         data_ = rocket_.get_r_vect();
+        last_update_tStep_ = tStep;
         new_data_ = true;
 
         if (inject_noise_) {

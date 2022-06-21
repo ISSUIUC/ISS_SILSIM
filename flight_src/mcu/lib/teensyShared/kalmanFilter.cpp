@@ -1,14 +1,6 @@
 
 #include "kalmanFilter.h"
-
 #define EIGEN_MATRIX_PLUGIN "MatrixAddons.h"
-
-#include <iostream>
-#include <string>
-#include <fstream>
-
-#include <string>
-#include "GlobalVars.h"
 
 KalmanFilter::KalmanFilter(struct pointers* pointer_struct) {
     gz_L = &pointer_struct->sensorDataPointer->lowG_data.gz;
@@ -18,23 +10,33 @@ KalmanFilter::KalmanFilter(struct pointers* pointer_struct) {
     mutex_highG_ = &pointer_struct->dataloggerTHDVarsPointer.dataMutex_highG;
     dataMutex_barometer_ = &pointer_struct->dataloggerTHDVarsPointer.dataMutex_barometer;
     dataMutex_state_ = &pointer_struct->dataloggerTHDVarsPointer.dataMutex_state;
-    stateData_ = &pointer_struct->stateData;
-
-    // SILSIM Data Logging
-    kf_logger_ = std::make_shared<spdlog::logger>("KalmanFilter", silsim_datalog_sink);
-    kf_logger_->info("DATALOG_FORMAT," + datalog_format_string);
+    stateData_ = &pointer_struct->sensorDataPointer->state_data;
+    data_logger_ = &pointer_struct->dataloggerTHDVarsPointer;
+    current_state_ = &pointer_struct->sensorDataPointer->rocketState_data.rocketState;   
 }
 
 void KalmanFilter::kfTickFunction() {
-    priori();
-    update();
+    if(*current_state_ > STATE_IDLE){
+        priori();
+        update();
+    }
 }
 
-void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
+void KalmanFilter::Initialize() {
+    float sum = 0;
+    for(int i = 0; i < 30; i++){
+        chMtxLock(dataMutex_barometer_);
+        // std::cout<<baro_data_ptr_->altitude<<std::endl;
+        sum += *b_alt;
+        chMtxUnlock(dataMutex_barometer_);
+        chThdSleepMilliseconds(100);
+    }
+
     // set x_k
-    x_k(0,0) = pos_f;
-    x_k(1,0) = vel_f;
-    x_k(2,0) = accel_f;
+    x_k(0,0) = sum / 30;
+    // x_k(0,0) = 1401;
+    x_k(1,0) = 0;
+    x_k(2,0) = 0;
     
     // set F
     F_mat(0, 1) = s_dt;
@@ -50,12 +52,12 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
     H(1,2) = 1;
 
     // set P_k
-    P_k(0,0) = .058;
-    P_k(0,1) = .024;
-    P_k(0,2) = .004;
-    P_k(1,1) = .019;
-    P_k(2,2) = .0086;
-    P_k(1,2) = .007;
+    P_k(0,0) = 0;
+    P_k(0,1) = 0;
+    P_k(0,2) = 0;
+    P_k(1,1) = 0;
+    P_k(2,2) = 0;
+    P_k(1,2) = 0;
     P_k(2,1) = P_k(1,2);
     P_k(1,0) = P_k(0,1);
     P_k(2,0) = P_k(0,2);
@@ -63,7 +65,7 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
 
     // set Q
     Q(0,0) = pow(s_dt,5) / 20;
-    Q(0,1) = (pow(s_dt,4) / 8);
+    Q(0,1) = (pow(s_dt,4) / 8 * 80);
     Q(0,2) = pow(s_dt,3) / 6;
     Q(1,1) = pow(s_dt,3) / 8;
     Q(1,2) = pow(s_dt,2) / 2;
@@ -72,15 +74,17 @@ void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
     Q(2,0) = Q(0,2);
     Q(2,1) = Q(1,2);
 
-    // float scale_fact = 22.19;
-    // float scale_fact = 13.25;
-    // float scale_fact = .00899;
-    float scale_fact = 12.;
+    // float scale_fact = 75.19;
+    // float scale_fact = 14.25;
+    float scale_fact = .00999;
+    // float scale_fact = 13;
     Q = Q * scale_fact;
 
     // set R
-    R(0,0) = 2;
-    R(1,1) = 0.01;
+    R(0,0) = 5.;
+    R(1,1) = .0002;
+    // R(0,0) = 2.;
+    // R(1,1) = .01;
 
     // set B
     B(2,0) = -1;
@@ -114,19 +118,21 @@ void KalmanFilter::priori() {
 }
 
 void KalmanFilter::update() {
+ 
     // Update Kalman Gain
-    temp = (((H * P_priori * H.transpose()) + R).inverse());
+    temp = (((H * P_priori * H.transpose()) + R)).inverse();
     K = (P_priori * H.transpose()) * temp;
 
     // Sensor Measurements
     chMtxLock(mutex_highG_);
     y_k(1,0) = (*gz_H) * 9.81;
     // Serial.println("HIGH G ACCEL Z: ");
-    // Serial.println(std::to_string((*gz_H)*9.81).c_str());
+    // Serial.println((*gz_H)*9.81);
     chMtxUnlock(mutex_highG_);
 
     chMtxLock(dataMutex_barometer_);
     y_k(0,0) = *b_alt;
+    // Serial.println(y_k(0,0));
     // std::cout<< y_k(0,0) <<std::endl;
     chMtxUnlock(dataMutex_barometer_);
     
@@ -134,49 +140,11 @@ void KalmanFilter::update() {
     x_k = x_priori + K * (y_k - (H * x_priori));
     P_k = (identity - K*H) * P_priori;
 
-    // check overflow on Kalman gain
-    // for(int i = 0; i < 3; i++) {
-    //     for(int j = 0; j < 3; j++) {
-    //         if(P_k(i,j) < 1e-7 && P_k(i,j) > -1e-7)
-    //             if (P_k(i,j) > 0)
-    //                 P_k(i, j) = 1e-7;
-    //             if (P_k(i,j) < 0)
-    //                 P_k(i, j) = -1e-7;
-    //     }
-    // }
-
-    // std::cout << "STATE ESTIMATION: " << std::endl;
-    // std::cout << x_k(0,0) << " m" << std::endl;
-    // std::cout << x_k(1,0) << " m/s" << std::endl;
-    // std::cout << x_k(2,0) << " m/s^2" << std::endl;
-
-    // if (x_k(0,0) > 9200) {
-    //     std::cout << x_k(0,0) << std::endl;
-    // }
-
     chMtxLock(dataMutex_state_);
     stateData_->state_x = x_k(0,0);
     stateData_->state_vx = x_k(1,0);
     stateData_->state_ax = x_k(2,0);
+    stateData_->timeStamp_state = chVTGetSystemTime();
     chMtxUnlock(dataMutex_state_);
-}
-
-void KalmanFilter::log_kf_state(double tStamp) {
-    if (kf_logger_) {
-        std::stringstream datalog_ss;
-
-        datalog_ss << "DATA,"
-                   << tStamp << ","
-
-                   << x_k(0,0) << ","
-                   << x_k(1,0) << ","
-                   << x_k(2,0) << ","
-
-                   << ((H * P_priori * H.transpose()) + R)(0,0) << ","
-                   << ((H * P_priori * H.transpose()) + R)(0,1) << ","
-                   << ((H * P_priori * H.transpose()) + R)(1,0) << ","
-                   << ((H * P_priori * H.transpose()) + R)(1,1); 
-
-        kf_logger_->info(datalog_ss.str());
-    } 
+    data_logger_->pushStateFifo(stateData_);
 }

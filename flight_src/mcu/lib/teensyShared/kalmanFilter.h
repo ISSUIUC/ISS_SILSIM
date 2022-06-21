@@ -1,36 +1,33 @@
-#include "Eigen30.h"
-#include "Eigen/Core"
+#include "../EigenArduino-Eigen30/Eigen30.h"
 #include "ServoControl.h"
 #include "acShared.h"
 #include "dataLog.h"
 #include "sensors.h"
 #include "rk4.h"
 
-#include "GlobalVars.h"
-
 class KalmanFilter { 
     public:
 
     KalmanFilter(struct pointers* pointer_struct);
     
-    void Initialize(float pos_f, float vel_f, float accel_f);
+    void Initialize();
     void Initialize(float pos_f, float vel_f);
     void priori();
     void update();
 
     void kfTickFunction();
-    
-    float getFieldAlt();
-    
-    // private:
 
-    float s_dt = 0.006;
+    private:
 
+    float s_dt = 0.050;
+
+    DataLogBuffer* data_logger_;
     mutex_t* mutex_lowG_;
     mutex_t* mutex_highG_;
     mutex_t* dataMutex_barometer_;
     mutex_t* dataMutex_state_;
-    struct StateData* stateData_;
+    stateData* stateData_;
+    FSM_State* current_state_;
     float* b_alt;
     float* gz_L;
     float* gz_H;
@@ -49,11 +46,4 @@ class KalmanFilter {
     Eigen::Matrix<float, 3, 3> identity = Eigen::Matrix<float, 3, 3>::Identity();
 
     Eigen::Matrix<float, 3, 2> B = Eigen::Matrix<float, 3, 2>::Zero();
-
-    // SILSIM Data Logging
-    void log_kf_state(double tStamp);
-    std::shared_ptr<spdlog::logger> kf_logger_;
-    std::string datalog_format_string = 
-        "timestamp,Pos,Vel,Accel,"
-        "invertboi_00,invertboi_01,invertboi_10,invertboi_11";
 };

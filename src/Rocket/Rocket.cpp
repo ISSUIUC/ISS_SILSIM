@@ -42,9 +42,9 @@ void Rocket::update_aero_coefficients(bool poweron) {
                                                    flaps_->extension());
 
         if (poweron) {
-            set_total_axial_force_coeff(coefficients.ca_poweron);
+            set_total_drag_force_coeff(coefficients.cd_poweron);
         } else {
-            set_total_axial_force_coeff(coefficients.ca_poweroff);
+            set_total_drag_force_coeff(coefficients.cd_poweroff);
         }
 
         set_total_normal_force_coeff(coefficients.cn_total);
@@ -391,7 +391,7 @@ void Rocket::log_rocket_state(double tStamp) {
                    << nose_to_cg_ << ","
                    << nose_to_cp_ << ","
                    << total_normal_force_coeff_ << ","
-                   << total_axial_force_coeff_ << ","
+                   << total_drag_force_coeff_ << ","
                    << mach_ << "," 
                    << alpha_;
 
