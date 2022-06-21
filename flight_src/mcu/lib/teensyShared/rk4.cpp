@@ -1,20 +1,32 @@
-#include <iostream>
 #include <array>
-#include <chrono>
 #include <cmath>
 #include "rk4.h"
+#include <Arduino.h>
 
-#include "Atmosphere.h"
-
-using namespace std::chrono;
 
 using std::array;
 
+rk4::rk4() {
+        Atmosphere atmo;
+        atmo_ = atmo;
+    }
+
 float rk4::cd(float alt, float vel) {
-    float mach = vel/(Atmosphere::get_speed_of_sound(alt));
+    float mach = vel/(atmo_.get_speed_of_sound(alt));
+    // double cd = 0;
+    // for(int i = 0; i < 151; i++) {
+    //     cd += poly[i]*std::pow(mach, 150-i);
+    // }
+    // return float(cd);
+
+
+    //more efficent implementation
     double cd = 0;
+
+    double mach_power = 1;
     for(int i = 0; i < 151; i++) {
-        cd += poly[i]*std::pow(mach, 150-i);
+        cd += poly[150-i] * mach_power;
+        mach_power *= mach;
     }
     return float(cd);
 }
@@ -60,8 +72,8 @@ array<float, 2> rk4::sim_apogee(array<float, 2> state, float dt) {
     
     // Approximation - use the area of a circle for reference area
     float Sref_a = .007854;
-    
-    while (state[1] > 0) {
+
+    for(int iters = 0; iters < 120 && state[1] > 0; iters++) {
         
         // Define initial flap length at start of control time
         float l = 0;
@@ -71,7 +83,7 @@ array<float, 2> rk4::sim_apogee(array<float, 2> state, float dt) {
         float vel_f = state[1];
         
         // Density varies with altitude
-        float rho = Atmosphere::get_density(state[0]);
+        float rho = atmo_.get_density(state[0]);
         
         
         

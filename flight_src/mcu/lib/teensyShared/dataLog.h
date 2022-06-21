@@ -5,8 +5,9 @@
 #include <SD.h>
 #include <stdint.h>
 
+#include "VoltageSensor.h"
 #include "FifoBuffer.h"
-#include "KX134-1211.h"       //High-G IMU Library
+#include "SparkFun_Qwiic_KX13X.h"       //High-G IMU Library
 #include "MS5611.h"           //Barometer Library
 #include "SparkFunLSM9DS1.h"  //Low-G IMU Library
 #include "SparkFun_u-blox_GNSS_Arduino_Library.h"
@@ -54,6 +55,11 @@ struct GpsData {
     bool posLock;
     systime_t timeStamp_GPS;
 };
+struct flapData {
+    float l1;
+    float l2;
+    systime_t timeStamp_flaps;
+};
 
 /**
  * @brief Structure for all values collected from the barometer
@@ -63,37 +69,18 @@ struct BarometerData {
     float temperature;  // in degC
     float pressure;     // in mbar
     float altitude;     // in meter
-    int32_t timeStamp_barometer;
+    systime_t timeStamp_barometer;
 };
 
 /**
  * @brief Structure for all values tracked for state estimation
  *
  */
-struct StateData {
-    float state_q0 = 0;
-    float state_q1 = 0;
-    float state_q2 = 0;
-    float state_q3 = 0;
-
+struct stateData {
     float state_x = 0;
-    float state_y = 0;
-    float state_z = 0;
-
     float state_vx = 0;
-    float state_vy = 0;
-    float state_vz = 0;
-
     float state_ax = 0;
-    float state_ay = 0;
-    float state_az = 0;
-
-    float state_omegax = 0;
-    float state_omegay = 0;
-    float state_omegaz = 0;
-
-    float state_latitude = 0;
-    float state_longitude = 0;
+    float state_apo = 0;
 
     systime_t timeStamp_state = 0;
 };
@@ -131,11 +118,19 @@ struct sensorDataStruct_t {
 
     // State variables
     bool has_state_data;
-    StateData state_data;
+    stateData state_data;
 
     // Rocket State
     bool has_rocketState_data;
     rocketStateData rocketState_data;
+
+    // Flap state
+    bool has_flap_data;
+    flapData flap_data;
+
+    // Voltage state
+    bool has_voltage_data;
+    VoltageData voltage_data;
 };
 
 /**
@@ -146,41 +141,76 @@ enum sensors { LOWG_IMU, HIGHG_IMU, BAROMETER, GPS };
 
 #define FIFO_SIZE 1000
 /**
- * @brief A struct to hold all info for ring buffers and mutexes used for data.
+ * @brief A class to hold all info for ring buffers and mutexes used for data.
  *
  */
-struct DataLogBuffer {
+
+class DataLogBuffer {
+   private:
     FifoBuffer<LowGData, FIFO_SIZE> lowGFifo{};
     FifoBuffer<HighGData, FIFO_SIZE> highGFifo{};
     FifoBuffer<GpsData, FIFO_SIZE> gpsFifo{};
-    FifoBuffer<StateData, FIFO_SIZE> stateFifo{};
+    FifoBuffer<stateData, FIFO_SIZE> stateFifo{};
     FifoBuffer<rocketStateData, FIFO_SIZE> rocketStateFifo{};
+    FifoBuffer<flapData, FIFO_SIZE> flapFifo{};
+    FifoBuffer<VoltageData, FIFO_SIZE> voltageFifo{};
     FifoBuffer<BarometerData, FIFO_SIZE> barometerFifo{};
+    
 
+   public:
     MUTEX_DECL(dataMutex_lowG);
     MUTEX_DECL(dataMutex_highG);
     MUTEX_DECL(dataMutex_GPS);
     MUTEX_DECL(dataMutex_barometer);
+    MUTEX_DECL(dataMutex_flaps);
+    MUTEX_DECL(dataMutex_rocket_state);
+    MUTEX_DECL(dataMutex_voltage);
     MUTEX_DECL(dataMutex_state);
-    MUTEX_DECL(dataMutex_RS);
+
 
     sensorDataStruct_t current_data;
 
     File dataFile;
+
+    bool pushLowGFifo(LowGData* lowG_Data);
+    bool popLowGFifo(LowGData* lowG_Data);
+
+    bool pushHighGFifo(HighGData* highG_Data);
+    bool popHighGFifo(HighGData* highG_Data);
+
+    bool pushGpsFifo(GpsData* gps_Data);
+    bool popGpsFifo(GpsData* gps_Data);
+
+    bool pushStateFifo(stateData* state_data);
+    bool popStateFifo(stateData* state_data);
+
+    bool pushRocketStateFifo(rocketStateData* rocket_data);
+    bool popRocketStateFifo(rocketStateData* rocket_data);
+
+    bool pushBarometerFifo(BarometerData* barometer_data);
+    bool popBarometerFifo(BarometerData* barometer_data);
+
+    bool pushFlapsFifo(flapData* flap_data);
+    bool popFlapsFifo(flapData* flap_data);
+
+    bool pushVoltageFifo(VoltageData* voltage_data);
+    bool popVoltageFifo(VoltageData* voltage_data);
 };
 
 // TODO: Re-think this struct
 struct pointers {
     LSM9DS1* lowGimuPointer;
-    KX134* highGimuPointer;
+    QwiicKX134* highGimuPointer;
     MS5611* barometerPointer;
     SFE_UBLOX_GNSS* GPSPointer;
 
     sensorDataStruct_t* sensorDataPointer;
 
     DataLogBuffer dataloggerTHDVarsPointer;
+    bool abort;
+    bool testing_flaps;
 
-    StateData stateData;
+    fsm_struct rocketTimers;
 };
 
 void dataLoggerTickFunction(pointers*);
