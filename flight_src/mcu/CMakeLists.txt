@@ -15,7 +15,7 @@ target_include_directories(flight_emu PUBLIC
         lib/teensyShared
         lib/ServoControl
         ${SRC}/CpuEmulation
-        ${SRC}/Atmosphere
+        # ${SRC}/Atmosphere
         ${SRC}/Sensors
         ${SRC}/Rocket
         ${SRC}/Aero

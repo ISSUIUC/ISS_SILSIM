@@ -47,7 +47,7 @@ for idx, angle in enumerate(kf_yaw):
 abort_timestamp = data['KalmanFilter']['timestamp'][abort_idx]
 
 plt.figure()
-plt.subplot(411)
+plt.subplot(511)
 plt.plot(data['KalmanFilter']['timestamp'], 
         data['KalmanFilter']['Pos']-1401, label="KF Estimated Position [m]")
 plt.plot(data['Rocket']['timestamp'], 
@@ -56,23 +56,32 @@ plt.plot(data['Rocket']['timestamp'],
 #         data['Barometer:MS5611_barometer']['altitude']-1401, label="Sensor Alt [m]")
 plt.legend()
 
-plt.subplot(412)
+plt.subplot(512)
 plt.plot(data['Controller']['timestamp'], 
         data['Controller']['apogee_est']-1401, label="Est Apogee [m]")
+plt.plot(data['Controller']['timestamp'], 
+        np.ones_like(data['Controller']['timestamp'])*9144, label="Des Apogee [m]")
+plt.plot(data['Controller']['timestamp'], 
+        np.ones_like(data['Controller']['timestamp'])*9753, label="Waiver Altitude [m]")
 plt.legend()
 
-plt.subplot(413)
+plt.subplot(513)
 plt.plot(data['KalmanFilter']['timestamp'], 
         data['KalmanFilter']['Vel'], label="KF Estimated Velocity [m/s]")
 plt.plot(data['Rocket']['timestamp'], 
         data['Rocket']['vel_z_enu'], label="Real Velocity [m/s]")
 plt.legend()
 
-plt.subplot(414)
+plt.subplot(514)
 plt.plot(data['KalmanFilter']['timestamp'], 
         data['KalmanFilter']['Accel'], label="KF Estimated Accel [m/s^2]")
 plt.plot(data['Rocket']['timestamp'], 
         data['Rocket']['accel_z_enu'], label="Real Accel [m/^s]")
+plt.legend()
+
+plt.subplot(515)
+plt.plot(data['Flaps']['timestamp'], 
+        data['Flaps']['real_extension']*100, label="Flap Extension [%]")
 plt.legend()
 
 # plt.figure()
