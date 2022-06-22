@@ -43,7 +43,7 @@ class Flaps {
 
     std::shared_ptr<spdlog::logger> flaps_logger_;
     std::string datalog_format_string =
-        "timestmap,target_extension,real_extension";
+        "timestamp,target_extension,real_extension";
 };
 
 #endif  // SILSIM_FLAPS_H
