@@ -94,7 +94,9 @@ struct StateData {
 
     float state_latitude = 0;
     float state_longitude = 0;
-
+    
+    float state_apo = 0;
+    
     systime_t timeStamp_state = 0;
 };
 
@@ -181,6 +183,8 @@ struct pointers {
     DataLogBuffer dataloggerTHDVarsPointer;
 
     StateData stateData;
+
+    fsm_struct rocketTimers;
 };
 
 void dataLoggerTickFunction(pointers*);

@@ -98,7 +98,7 @@ class lowgIMU_THD : public CpuThread {
         LowGData *lowG_Data = &pointer_struct->sensorDataPointer->lowG_data;
         lowGimuTickFunction(lsm, data_log_buffer, lowG_Data);
 
-        return 1.0;
+        return 6.0;
     }
 
    private:
@@ -215,7 +215,7 @@ class Kalman_Filter_THD : public CpuThread {
 #ifdef THREAD_DEBUG
         Serial.println("### Kalman_Filter thread entrance");
 #endif
-        return 5.0;
+        return 10.0;
     }
 
    private:
@@ -342,7 +342,6 @@ void chSetup() {
                       &sensor_pointers);
     chThdCreateStatic(highgIMU_WA, sizeof(highgIMU_WA), NORMALPRIO,
                       highgIMU_THD, &sensor_pointers);
-    // chThdSleepMilliseconds(500);
     chThdCreateStatic(servo_WA, sizeof(servo_WA), NORMALPRIO, servo_THD,
                       &sensor_pointers);
     chThdCreateStatic(lowg_dataLogger_WA, sizeof(lowg_dataLogger_WA),
@@ -396,7 +395,6 @@ void emu_setup() {
     }
 
     lowGimu.setAccelScale(16);
-    lowGimu.setGyroScale(2000);
     lowGimu.setMagScale(16);
 
     // GPS Setup
