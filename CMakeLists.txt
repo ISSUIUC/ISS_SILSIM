@@ -8,11 +8,6 @@ set(SRC ${CMAKE_SOURCE_DIR}/src)
 set(LIB ${CMAKE_SOURCE_DIR}/lib)
 set(FLIGHT_SRC ${CMAKE_SOURCE_DIR}/flight_src/mcu)
 
-if(NOT EXISTS ${LIB}/spdlog/CMakeLists.txt
-   OR NOT EXISTS ${LIB}/eigen/CMakeLists.txt)
-    message(FATAL_ERROR "Missing submodule dependencies try\ngit submodule update --init --recursive\nto download dependencies")
-endif()
-
 # Add SILSIM source code "modules"
 add_subdirectory(${SRC}/SimulationCore)
 add_subdirectory(${SRC}/Rocket)
