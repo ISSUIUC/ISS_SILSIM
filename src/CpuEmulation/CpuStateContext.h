@@ -16,6 +16,7 @@
 
 #include "Flaps.h"
 #include "Sensor.h"
+#include <ostream>
 
 struct CpuStateContext {
     // function to add executable thread to the cpu
@@ -51,6 +52,7 @@ struct CpuStateContext {
     Thermometer* thermometer_pointer;
     Magnetometer* magnetometer_pointer;
     Flaps* flaps;
+    std::ostream telemetry_log;
 };
 
 #endif  // SILSIM_CPUSTATECONTEXT_H
