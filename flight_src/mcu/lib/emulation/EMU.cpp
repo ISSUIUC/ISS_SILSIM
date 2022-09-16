@@ -356,9 +356,10 @@ RH_RF95::RH_RF95(uint8_t cs, uint8_t in) {
 }
 bool RH_RF95::init() { return true; }
 bool RH_RF95::setFrequency(float centre) { return true; }
-void RH_RF95::setTxPower(uint8_t power, bool useRFO = false) {}
+void RH_RF95::setTxPower(uint8_t power, bool useRFO) {}
 bool RH_RF95::send(uint8_t *data, uint8_t len) {
-    global_context->telemetry_log.write((const char*) data, len);
+    global_context->telemetry_log -> write((const char*) data, len);
+    return true;
 };
 uint8_t RH_RF95::lastRssi() { return 0; }
 void RH_RF95::waitPacketSent() {}

@@ -9,6 +9,7 @@
 #include "Rocket.h"
 #include "Sensor.h"
 #include "Simulation.h"
+#include <fstream>
 
 // Shortening the typename for   a e s t h e t i c s
 typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
@@ -101,9 +102,9 @@ int main() {
     // Physics Engine Setup ----------------------------------------------------
     RungeKutta engine(rocket, motor, atmosphere, silsim_datalog_sink);
     // ForwardEuler engine(rocket, motor, atmosphere, silsim_datalog_sink);
-
+    std::ofstream telemetry = std::ofstream("telemetry.log", std::ios::binary);
     // CPU Emulation Setup -----------------------------------------------------
-    CpuState cpu(&accel1, &thermo1, &baro1, &gyro1, &gps1, &mag1, flaps.get());
+    CpuState cpu(&accel1, &thermo1, &baro1, &gyro1, &gps1, &mag1, flaps.get(), &telemetry);
 
     // Simulation Setup --------------------------------------------------------
     Simulation sim(0.001, &engine, atmosphere, rocket, motor, cpu,

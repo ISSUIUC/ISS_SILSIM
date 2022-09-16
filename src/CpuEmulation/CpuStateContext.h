@@ -52,7 +52,7 @@ struct CpuStateContext {
     Thermometer* thermometer_pointer;
     Magnetometer* magnetometer_pointer;
     Flaps* flaps;
-    std::ostream telemetry_log;
+    std::ostream* telemetry_log;
 };
 
 #endif  // SILSIM_CPUSTATECONTEXT_H

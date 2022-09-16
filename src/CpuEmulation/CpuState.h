@@ -15,14 +15,14 @@
 
 #include <memory>
 #include <vector>
-
+#include <fstream>
 #include "CpuThread.h"
 
 class CpuState {
    public:
     CpuState(Accelerometer* accelerometer, Thermometer* thermometer,
              Barometer* barometer, Gyroscope* gyroscope, GPSSensor* gps,
-             Magnetometer* mag, Flaps* flaps)
+             Magnetometer* mag, Flaps* flaps, std::ostream* telemetry)
         : context() {
         context.accelerometer_pointer = accelerometer;
         context.barometer_pointer = barometer;
@@ -35,6 +35,7 @@ class CpuState {
                 std::unique_ptr<CpuThread>(static_cast<CpuThread*>(thd_class)));
         };
         context.flaps = flaps;
+        context.telemetry_log = telemetry;
     }
 
     void add_thread(std::unique_ptr<CpuThread> thread);
