@@ -39,6 +39,7 @@
 #include "sensors.h"
 #include "kalmanFilter.h"
 #include "MadgwickAHRS.h"
+#include <RH_RF95.h>
 
 // emulation for global variables
 #include <CpuThread.h>
@@ -370,7 +371,8 @@ void emu_setup() {
 
     digitalWrite(LED_BLUE, HIGH);
     digitalWrite(LED_ORANGE, HIGH);
-
+    RH_RF95 a{1,2};
+    a.send((uint8_t*)"hi", 2);
     // TODO: Don't forget this
     Serial.println("------------------------------------------------");
 

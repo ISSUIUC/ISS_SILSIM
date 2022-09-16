@@ -13,10 +13,10 @@
 #include <dataLog.h>
 
 #include <functional>
+#include <ostream>
 
 #include "Flaps.h"
 #include "Sensor.h"
-#include <ostream>
 
 struct CpuStateContext {
     // function to add executable thread to the cpu
