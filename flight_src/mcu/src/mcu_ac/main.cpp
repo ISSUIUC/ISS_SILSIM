@@ -39,6 +39,7 @@
 #include "sensors.h"
 #include "kalmanFilter.h"
 #include "MadgwickAHRS.h"
+#include <RH_RF95.h>
 
 // emulation for global variables
 #include <CpuThread.h>

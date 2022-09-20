@@ -13,6 +13,7 @@
 #include <dataLog.h>
 
 #include <functional>
+#include <ostream>
 
 #include "Flaps.h"
 #include "Sensor.h"
@@ -51,6 +52,7 @@ struct CpuStateContext {
     Thermometer* thermometer_pointer;
     Magnetometer* magnetometer_pointer;
     Flaps* flaps;
+    std::ostream* telemetry_log;
 };
 
 #endif  // SILSIM_CPUSTATECONTEXT_H
