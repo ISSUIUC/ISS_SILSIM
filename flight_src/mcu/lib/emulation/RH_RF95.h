@@ -1,6 +1,8 @@
 
 #ifndef RH_RF95_H
 #define RH_RF95_H
+
+//  class for radio telemetry functionality.
 class RH_RF95 {
    public:
     RH_RF95(uint8_t cs, uint8_t in);

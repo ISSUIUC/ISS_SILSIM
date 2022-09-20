@@ -39,6 +39,7 @@
 #include "sensors.h"
 #include "kalmanFilter.h"
 #include "MadgwickAHRS.h"
+#include "RH_RF95.h"
 
 // emulation for global variables
 #include <CpuThread.h>
@@ -379,6 +380,10 @@ void emu_setup() {
     sensor_pointers.barometerPointer = &barometer;
     sensor_pointers.GPSPointer = &gps;
     sensor_pointers.sensorDataPointer = &sensorData;
+
+    RH_RF95 telemetry = RH_RF95(0, 0);
+    telemetry.send((uint8_t *)"Hello", 5);
+    
 
     SPI.begin();
 
