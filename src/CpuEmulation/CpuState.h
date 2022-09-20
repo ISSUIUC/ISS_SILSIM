@@ -13,9 +13,10 @@
 #ifndef SILSIM_CPUSTATE_H
 #define SILSIM_CPUSTATE_H
 
+#include <fstream>
 #include <memory>
 #include <vector>
-#include <fstream>
+
 #include "CpuThread.h"
 
 class CpuState {
