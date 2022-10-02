@@ -64,6 +64,7 @@ void Simulation::run(int steps) {
                            motor_.get_propellant_mass(tStamp_));
 
     update_sensors();
+    // Send sensor info to the serial stream and wait until everything is sent
 
     // An initial data log at timestamp 0.0
     log_simulation_state();
@@ -152,7 +153,7 @@ void Simulation::add_sensor(Sensor* sensor) { sensors_.push_back(sensor); }
  */
 void Simulation::update_sensors() {
     for (Sensor* sensor : sensors_) {
-        sensor->update_data(tStamp_);
+        sensor->update_data(tStamp_);        
     }
 }
 

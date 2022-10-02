@@ -18,6 +18,8 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include <string>
+#include <fstream>
+
 
 #include "Atmosphere.h"
 
@@ -46,6 +48,21 @@ double Sensor::get_data() {
         << std::endl;
     return 0;
 }
+
+/*****************************************************************************/
+/*                        SERIAL MEMBER FUNCTIONS                            */
+/*****************************************************************************/
+
+// std::ofstream SerialComm::serial_open(char* serial_port) {
+
+    // std::ofstream serial_file;
+    // serial_file.open(serial_port);
+
+// }
+
+// void SerialComm::serial_write(char* data, std::ofstream file) {
+
+// }
 
 /*****************************************************************************/
 /*                        GYROSCOPE MEMBER FUNCTIONS                         */
@@ -100,6 +117,18 @@ void Gyroscope::log_sensor_state(double tStamp) {
 
         sensor_logger_->info(datalog_ss.str());
         // clang-format on
+
+        // Send this data to serial if HILSIM is defined
+        #ifdef HILSIM
+        char* serial_port = "/dev/ttyACM0";
+
+        std::ofstream serial_file;
+        serial_file.open(serial_port);
+        serial_file.write("Hi", 2);
+
+        // std::ofstream serial_file = serial_open(serial_port);
+        // std::cout << "Gyroscope: " << "," << data_.x() << "," << data_.y() << "," << data_.z(); 
+        #endif
     }
 }
 

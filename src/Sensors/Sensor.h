@@ -18,6 +18,8 @@
 #ifndef _SENSOR_H_
 #define _SENSOR_H_
 
+#define HILSIM // Used to test HILSIM
+
 #include <Eigen/Dense>
 #include <random>
 #include <string>
@@ -77,6 +79,19 @@ class Sensor {
     bool inject_noise_ = false;
 
     std::shared_ptr<spdlog::logger> sensor_logger_;
+};
+
+/*****************************************************************************/
+/*                             SERIAL CLASS DEFINITION                       */
+/*****************************************************************************/
+
+class SerialComm {
+    public:
+
+    std::ofstream serial_open(char* serial_port); // Opens serial port for communication
+
+    void serial_write(char* data, std::ofstream file); // Writes data to the serial port
+    
 };
 
 /*****************************************************************************/
@@ -231,6 +246,8 @@ class GPSSensor : public Sensor {
     std::string datalog_format_string =
         "timestamp,lattitude,longitude,altitude";
 };
+
+
 
 /*****************************************************************************/
 /*                             UTILITY FUNCTIONS                             */
