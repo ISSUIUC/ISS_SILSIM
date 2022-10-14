@@ -24,6 +24,7 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <fstream>
 
 #include "Rocket.h"
 
@@ -86,11 +87,20 @@ class Sensor {
 /*****************************************************************************/
 
 class SerialComm {
+
     public:
+    SerialComm(std::string port) {
+        port_ = port;
+    }
 
-    std::ofstream serial_open(char* serial_port); // Opens serial port for communication
+    void serial_open(); // Opens serial port for communication
+    void serial_add_data(char* data); // Adds data to the buffer to be sent to the port
+    void serial_write(); // Writes data to the serial port
 
-    void serial_write(char* data, std::ofstream file); // Writes data to the serial port
+    private:
+    std::string port_;
+    char buffer_[1024];
+    std::ofstream serial_file_;
     
 };
 

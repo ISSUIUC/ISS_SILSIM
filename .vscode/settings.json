@@ -1,0 +1,11 @@
+{
+    "cmake.configureOnOpen": false,
+    "files.associations": {
+        "dense": "cpp",
+        "atomic": "cpp",
+        "*.tcc": "cpp",
+        "fstream": "cpp",
+        "sstream": "cpp",
+        "iosfwd": "cpp"
+    }
+}

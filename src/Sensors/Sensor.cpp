@@ -53,16 +53,24 @@ double Sensor::get_data() {
 /*                        SERIAL MEMBER FUNCTIONS                            */
 /*****************************************************************************/
 
-// std::ofstream SerialComm::serial_open(char* serial_port) {
+void SerialComm::serial_open() { 
+    this->serial_file_.open(this->port_);
+}
 
-    // std::ofstream serial_file;
-    // serial_file.open(serial_port);
+void SerialComm::serial_add_data(char* data) {
+    std::cout << strlen(data);
+    memcpy(this->buffer_, data, strlen(data));
+}
 
-// }
+void SerialComm::serial_write() { 
+    // Send data
+    this->serial_file_.write((this->buffer_), sizeof(this->buffer_));
 
-// void SerialComm::serial_write(char* data, std::ofstream file) {
+    //TODO: clear buffer
+    memset(this->buffer_, 0, sizeof(this->buffer_));
 
-// }
+    return;
+}
 
 /*****************************************************************************/
 /*                        GYROSCOPE MEMBER FUNCTIONS                         */
@@ -120,11 +128,17 @@ void Gyroscope::log_sensor_state(double tStamp) {
 
         // Send this data to serial if HILSIM is defined
         #ifdef HILSIM
-        char* serial_port = "/dev/ttyACM0";
+        std::string serial_port = "/dev/ttyACM0";
+        SerialComm comm = SerialComm(serial_port);
+        char data[1024];
+        sprintf(data, "%f,%f,%f", data_.x(), data_.y(), data_.z());
+        comm.serial_open();
+        comm.serial_add_data(data);
+        comm.serial_write();
 
-        std::ofstream serial_file;
-        serial_file.open(serial_port);
-        serial_file.write("Hi", 2);
+        // std::ofstream serial_file;
+        // serial_file.open(serial_port);
+        // serial_file.write("HI", 2);
 
         // std::ofstream serial_file = serial_open(serial_port);
         // std::cout << "Gyroscope: " << "," << data_.x() << "," << data_.y() << "," << data_.z(); 
@@ -156,6 +170,7 @@ void Accelerometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
         // Subtract the gravity vector from the rocket's total acceleration to
         // yield specific force
+
         Vector3d total_accel = rocket_.enu2r(rocket_.get_r_ddot());
         Vector3d gravity_rocket_frame = rocket_.gravity_vector_rf() * 9.81;
         Vector3d specific_force = total_accel - gravity_rocket_frame;
