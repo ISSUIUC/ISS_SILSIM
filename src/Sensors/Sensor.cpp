@@ -57,10 +57,13 @@ double Sensor::get_data() {
 /*****************************************************************************/
 
 void SerialComm::serial_open() { 
+
+    #ifdef linux
     this->serial_file_.open(this->port_);
+    #endif
 
     #ifdef _WIN32
-    this->serialPort = CreateFile(this->port, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+    this->serial_file_ = CreateFile(this->port, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
     // DCB serialParams = { 0 };
     // serialParams.DCBlength = sizeof(serialParams);
 
@@ -80,7 +83,6 @@ void SerialComm::serial_open() {
     // timeout.WriteTotalTimeoutMultiplier = 10;
 
     // SetCommTimeouts(serialHandle, &timeout);
-
     #endif
 }
 
@@ -92,7 +94,13 @@ void SerialComm::serial_add_data(char* data) {
 
 void SerialComm::serial_write() { 
     // Send data
+    #ifdef linux
     this->serial_file_.write((this->buffer_), sizeof(this->buffer_));
+    #endif
+
+    #ifdef _WIN32
+    WriteFile(this->serial_file_, this->buffer_,sizeof(buffer_))
+    #endif
 
     //clear buffer
     memset(this->buffer_, 0, sizeof(this->buffer_));

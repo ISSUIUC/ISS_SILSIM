@@ -111,7 +111,7 @@ class SerialComm {
     #endif
 
     #ifdef _WIN32
-    HANDLE serialPort;
+    HANDLE serial_file_;
     #endif
 
     
