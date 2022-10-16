@@ -26,6 +26,10 @@
 #include <vector>
 #include <fstream>
 
+#ifdef HILSIM
+#include <windows.h>
+#endif
+
 #include "Rocket.h"
 
 using Eigen::Vector3d;
@@ -100,7 +104,17 @@ class SerialComm {
     private:
     std::string port_;
     char buffer_[1024];
+
+    // Linux and Windows handle ports differently
+    #ifdef linux 
     std::ofstream serial_file_;
+    #endif
+
+    #ifdef _WIN32
+    HANDLE serialPort;
+    #endif
+
+    
     
 };
 

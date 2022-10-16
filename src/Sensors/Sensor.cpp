@@ -20,6 +20,9 @@
 #include <string>
 #include <fstream>
 
+#ifdef HILSIM
+#include <windows.h>
+#endif
 
 #include "Atmosphere.h"
 
@@ -55,18 +58,43 @@ double Sensor::get_data() {
 
 void SerialComm::serial_open() { 
     this->serial_file_.open(this->port_);
+
+    #ifdef _WIN32
+    this->serialPort = CreateFile(this->port, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+    // DCB serialParams = { 0 };
+    // serialParams.DCBlength = sizeof(serialParams);
+
+    // GetCommState(serialHandle, &serialParams);
+    // serialParams.BaudRate = CBR_9600;
+    // serialParams.ByteSize = 8;
+    // serialParams.StopBits = ONESTOPBIT;
+    // serialParams.Parity = NOPARITY;
+    // SetCommState(serialHandle, &serialParams);
+
+    // Set timeouts
+    // COMMTIMEOUTS timeout = { 0 };
+    // timeout.ReadIntervalTimeout = 50;
+    // timeout.ReadTotalTimeoutConstant = 50;
+    // timeout.ReadTotalTimeoutMultiplier = 50;
+    // timeout.WriteTotalTimeoutConstant = 50;
+    // timeout.WriteTotalTimeoutMultiplier = 10;
+
+    // SetCommTimeouts(serialHandle, &timeout);
+
+    #endif
 }
 
 void SerialComm::serial_add_data(char* data) {
-    std::cout << strlen(data);
-    memcpy(this->buffer_, data, strlen(data));
+    std::cout << "BUFFER LENGTH: " << strlen(this->buffer_);
+
+    memcpy(this->buffer_ + strlen(this->buffer_), data, strlen(data));
 }
 
 void SerialComm::serial_write() { 
     // Send data
     this->serial_file_.write((this->buffer_), sizeof(this->buffer_));
 
-    //TODO: clear buffer
+    //clear buffer
     memset(this->buffer_, 0, sizeof(this->buffer_));
 
     return;
