@@ -1,36 +1,42 @@
-#include "Eigen30.h"
-#include "Eigen/Core"
+#include <deque>
+
+#include "../EigenArduino-Eigen30/Eigen30.h"
 #include "ServoControl.h"
-#include "acShared.h"
 #include "dataLog.h"
-#include "sensors.h"
 #include "rk4.h"
-
-#include "GlobalVars.h"
-
-class KalmanFilter { 
-    public:
-
+#include "rocketFSM.h"
+#include "sensors.h"
+class KalmanFilter {
+   public:
     KalmanFilter(struct pointers* pointer_struct);
-    
-    void Initialize(float pos_f, float vel_f, float accel_f);
+
+    void Initialize();
     void Initialize(float pos_f, float vel_f);
-    void priori();
+    void UpdateF(float dt);
+    void UpdateQ(float dt, float spectral_density);
+    void priori(float dt, float spectral_density);
     void update();
 
-    void kfTickFunction();
-    
-    float getFieldAlt();
-    
-    // private:
+    void kfTickFunction(float dt, float spectral_density);
+    void tickBuffer();
 
-    float s_dt = 0.006;
+    float bufferAverage();
+    Eigen::Matrix<float, 3, 1> getStateData();
+    void setStateData(Eigen::Matrix<float, 3, 1> state_data);
 
+   private:
+    float s_dt = 0.050;
+
+    FifoBuffer<float, 15>
+        b_alt_buffer;  // 2400 is the max number of samples in 2min given a 50ms
+                       // delay between samples
+    DataLogBuffer* data_logger_;
     mutex_t* mutex_lowG_;
     mutex_t* mutex_highG_;
     mutex_t* dataMutex_barometer_;
     mutex_t* dataMutex_state_;
-    struct StateData* stateData_;
+    stateData* stateData_;
+    RocketFSM::FSM_State* current_state_;
     float* b_alt;
     float* gz_L;
     float* gz_H;
@@ -44,16 +50,7 @@ class KalmanFilter {
     Eigen::Matrix<float, 3, 3> P_priori = Eigen::Matrix<float, 3, 3>::Zero();
     Eigen::Matrix<float, 3, 1> x_priori = Eigen::Matrix<float, 3, 1>::Zero();
     Eigen::Matrix<float, 3, 2> K = Eigen::Matrix<float, 3, 2>::Zero();
-    Eigen::Matrix<float, 2, 2> temp = Eigen::Matrix<float, 2, 2>::Zero();
     Eigen::Matrix<float, 2, 1> y_k = Eigen::Matrix<float, 2, 1>::Zero();
-    Eigen::Matrix<float, 3, 3> identity = Eigen::Matrix<float, 3, 3>::Identity();
 
     Eigen::Matrix<float, 3, 2> B = Eigen::Matrix<float, 3, 2>::Zero();
-
-    // SILSIM Data Logging
-    void log_kf_state(double tStamp);
-    std::shared_ptr<spdlog::logger> kf_logger_;
-    std::string datalog_format_string = 
-        "timestamp,Pos,Vel,Accel,"
-        "invertboi_00,invertboi_01,invertboi_10,invertboi_11";
 };

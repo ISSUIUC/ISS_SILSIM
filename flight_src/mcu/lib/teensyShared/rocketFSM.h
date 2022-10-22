@@ -1,48 +1,53 @@
-/**
- * @file        rocketFSM.h
- * @authors     Anshuk Chigullapali
- * 		Ayberk Yaraneri
- * 		Colin Kinsey
- *
- *
- * @brief       The implementation of the finite state machine class that
- * governs state transitions.
- *
- * The rocketFSM class encapsulates the finite state machine that dictates which
- * state the rocket is in throughout the mission. The class implements the logic
- * necessary to reliably transition between states along with hysteresis to
- * avoid premature state transitions.
- *
- * This is a highly flight critical software module and should be tested
- * throughly in simulation and on hardware targets.
- *
- */
 
 #ifndef ROCKET_FSM_H
 #define ROCKET_FSM_H
 
-#include "GlobalVars.h"
+// #include "sensors.h"
+#include <ChRt.h>
+#include <stdint.h>
 
-#include "sensors.h"
+// forward declare pointers
+struct pointers;
 
-class rocketFSM {
+class RocketFSM {
    public:
-    rocketFSM(pointers *);
+    /**
+     * @brief Labels for each FSM state
+     */
+    enum class FSM_State {
+        STATE_INIT,
+        STATE_IDLE,
+        STATE_LAUNCH_DETECT,
+        STATE_BOOST,
+        STATE_BURNOUT_DETECT,
+        STATE_COAST_PREGNC,
+        STATE_COAST_GNC,
+        STATE_APOGEE_DETECT,
+        STATE_APOGEE,
+        STATE_DROGUE_DETECT,
+        STATE_DROGUE,
+        STATE_MAIN_DETECT,
+        STATE_MAIN,
+        STATE_LANDED_DETECT,
+        STATE_LANDED,
+        STATE_ABORT
+    };
 
-    void tickFSM();
-    
-    // SILSIM Data Logging
-    void log_FSM_state(double tStamp);
+    virtual void tickFSM() = 0;
 
-   private:
-    pointers *pointer_struct;
+    FSM_State getFSMState() const { return rocket_state_; }
 
-    FSM_State current_state_;
+   protected:
+    FSM_State rocket_state_ = FSM_State::STATE_INIT;
+};
 
-    // SILSIM Data Logging
-    std::shared_ptr<spdlog::logger> fsm_logger_;
-    std::string datalog_format_string = 
-        "timestamp,state";
+/**
+ * @brief Structure for all values related to rocket state
+ *
+ */
+struct rocketStateData {
+    RocketFSM::FSM_State rocketState = RocketFSM::FSM_State::STATE_INIT;
+    systime_t timeStamp_RS = 0;
 };
 
 #endif

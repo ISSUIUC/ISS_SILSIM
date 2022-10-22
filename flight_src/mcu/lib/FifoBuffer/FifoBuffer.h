@@ -8,9 +8,6 @@
 #include <cstdint>
 #include <cstring>
 
-#undef COMPILE_TARGET
-#define COMPILE_LOCAL
-
 #ifdef COMPILE_LOCAL
 #include <mutex>
 #endif
