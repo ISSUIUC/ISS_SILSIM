@@ -54,6 +54,11 @@ if draw_plots:
     plt.plot(timestamps, data['Rocket']['pos_z_enu'], label="altitude (ENU Frame)")
     plt.plot(timestamps, data['Rocket']['vel_z_enu'], label="vertical velocity (ENU Frame)")
     plt.plot(timestamps, data['Rocket']['accel_z_enu'], label="vertical acceleration (ENU Frame)")
+
+    plt.plot(timestamps, data['KalmanFilter']['Pos'], label="vertical Position (Estimate)")
+    plt.plot(timestamps, data['KalmanFilter']['Vel'], label="vertical velocity (Estimate)")
+    plt.plot(timestamps, data['KalmanFilter']['Accel'], label="vertical Acceleration (Estimate)")
+
     plt.plot(timestamps, data['Simulation']['roll'], label="roll")
     plt.plot(timestamps, data['Simulation']['pitch'], label="pitch")
     plt.plot(timestamps, data['Simulation']['yaw'], label="yaw")
