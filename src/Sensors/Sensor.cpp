@@ -21,7 +21,9 @@
 #include <fstream>
 
 #ifdef HILSIM
+#ifdef _WIN32
 #include <windows.h>
+#endif
 #endif
 
 #include "Atmosphere.h"
@@ -57,47 +59,68 @@ double Sensor::get_data() {
 /*****************************************************************************/
 
 void SerialComm::serial_open() { 
+
+    #ifdef linux
     this->serial_file_.open(this->port_);
+    #endif
 
     #ifdef _WIN32
-    this->serialPort = CreateFile(this->port, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-    // DCB serialParams = { 0 };
-    // serialParams.DCBlength = sizeof(serialParams);
-
-    // GetCommState(serialHandle, &serialParams);
-    // serialParams.BaudRate = CBR_9600;
-    // serialParams.ByteSize = 8;
-    // serialParams.StopBits = ONESTOPBIT;
-    // serialParams.Parity = NOPARITY;
-    // SetCommState(serialHandle, &serialParams);
-
-    // Set timeouts
-    // COMMTIMEOUTS timeout = { 0 };
-    // timeout.ReadIntervalTimeout = 50;
-    // timeout.ReadTotalTimeoutConstant = 50;
-    // timeout.ReadTotalTimeoutMultiplier = 50;
-    // timeout.WriteTotalTimeoutConstant = 50;
-    // timeout.WriteTotalTimeoutMultiplier = 10;
-
-    // SetCommTimeouts(serialHandle, &timeout);
-
+    this->serial_file_ = CreateFileA(com_path, 
+                                    GENERIC_READ | GENERIC_WRITE,
+                                    FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                    0, // No security
+                                    OPEN_EXISTING,
+                                    0, // No threads
+                                    NULL); //
+    if (this->serial_file_ == INVALID_HANDLE_VALUE) {
+        printf("Error Opening Serial Port");
+        printf("Error: %d", GetLastError());
+    }
     #endif
+
+    // Clear Buffer Memory
+    memset(this->buffer_, 0, sizeof(this->buffer_));
+
 }
 
 void SerialComm::serial_add_data(char* data) {
-    std::cout << "BUFFER LENGTH: " << strlen(this->buffer_);
-
     memcpy(this->buffer_ + strlen(this->buffer_), data, strlen(data));
+    // printf(this->buffer_);
+
 }
 
-void SerialComm::serial_write() { 
-    // Send data
+void SerialComm::serial_write() {
+    #ifdef linux 
+    // Send data and clear buffer
     this->serial_file_.write((this->buffer_), sizeof(this->buffer_));
+    #endif
 
-    //clear buffer
+    #ifdef _WIN32
+    DWORD bytes_written;
+    WriteFile(this->serial_file_, this->buffer_,sizeof(buffer_),&bytes_written,NULL);
+    #endif
+
     memset(this->buffer_, 0, sizeof(this->buffer_));
-
     return;
+}
+
+void SerialComm::serial_read() {
+
+    std::filebuf* inbuf = this->serial_file_.rdbuf();
+    char c = inbuf->sbumpc();
+    while (c != EOF) {
+        std::cout << c;
+    }
+}
+
+void SerialComm::serial_close() {
+    #ifdef linux
+    this->serial_file_.close();
+    #endif
+
+    #ifdef _WIN32
+    CloseHandle(this->serial_file_);
+    #endif
 }
 
 /*****************************************************************************/
@@ -140,7 +163,7 @@ void Gyroscope::get_data(Vector3d& data) {
     new_data_ = false;
 }
 
-void Gyroscope::log_sensor_state(double tStamp) {
+void Gyroscope::log_sensor_state(double tStamp, char* data_buff) {
     if (sensor_logger_) {
         // clang-format off
         std::stringstream datalog_ss;
@@ -155,24 +178,25 @@ void Gyroscope::log_sensor_state(double tStamp) {
         // clang-format on
 
         // Send this data to serial if HILSIM is defined
-        #ifdef HILSIM
-        std::string serial_port = "/dev/ttyACM0";
-        SerialComm comm = SerialComm(serial_port);
-        char data[1024];
-        sprintf(data, "%f,%f,%f", data_.x(), data_.y(), data_.z());
-        comm.serial_open();
-        comm.serial_add_data(data);
-        comm.serial_write();
-
-        // std::ofstream serial_file;
-        // serial_file.open(serial_port);
-        // serial_file.write("HI", 2);
-
-        // std::ofstream serial_file = serial_open(serial_port);
-        // std::cout << "Gyroscope: " << "," << data_.x() << "," << data_.y() << "," << data_.z(); 
-        #endif
+        if (data_buff) {
+            sprintf(data_buff + strlen(data_buff), "Gyroscope:%s %f,%f,%f\n", this->name_, data_.x(), data_.y(), data_.z());
+        }
+        // #ifdef HILSIM
+        // std::string serial_port = "/dev/ttyACM0";
+        // SerialComm comm = SerialComm(serial_port);
+        // char data[1024];
+        // sprintf(data, "Gyroscope: %f,%f,%f\n", data_.x(), data_.y(), data_.z());
+        // comm.serial_open();
+        // comm.serial_add_data(data);
+        // comm.serial_write();
+        // comm.serial_close();
+        // comm.serial_read();
+        // comm.serial_close();
+        // #endif
     }
 }
+
+
 
 /*****************************************************************************/
 /*                      ACCELEROMETER MEMBER FUNCTIONS                       */
@@ -222,7 +246,7 @@ void Accelerometer::get_data(Vector3d& data) {
     new_data_ = false;
 }
 
-void Accelerometer::log_sensor_state(double tStamp) {
+void Accelerometer::log_sensor_state(double tStamp, char* data_buff) {
     if (sensor_logger_) {
         // clang-format off
         std::stringstream datalog_ss;
@@ -235,6 +259,11 @@ void Accelerometer::log_sensor_state(double tStamp) {
 
         sensor_logger_->info(datalog_ss.str());
         // clang-format on
+
+        if (data_buff) {
+            sprintf(data_buff + strlen(data_buff), "Accelerometer: %f,%f,%f\n", data_.x(), data_.y(), data_.z());
+        }
+        
     }
 }
 
@@ -267,7 +296,7 @@ void Magnetometer::get_data(Vector3d& data) {
     new_data_ = false;
 }
 
-void Magnetometer::log_sensor_state(double tStamp) {
+void Magnetometer::log_sensor_state(double tStamp, char* data_buff) {
     if (sensor_logger_) {
         // clang-format off
         std::stringstream datalog_ss;
@@ -280,6 +309,10 @@ void Magnetometer::log_sensor_state(double tStamp) {
 
         sensor_logger_->info(datalog_ss.str());
         // clang-format on
+
+        if (data_buff) {
+            sprintf(data_buff + strlen(data_buff), "Magnetometer: %f,%f,%f\n", data_.x(), data_.y(), data_.z());
+        }
     }
 }
 
@@ -323,7 +356,7 @@ double Barometer::get_data() {
     return data_;
 }
 
-void Barometer::log_sensor_state(double tStamp) {
+void Barometer::log_sensor_state(double tStamp, char* data_buff) {
     if (sensor_logger_) {
         // clang-format off
         std::stringstream datalog_ss;
@@ -334,6 +367,10 @@ void Barometer::log_sensor_state(double tStamp) {
 
         sensor_logger_->info(datalog_ss.str());
         // clang-format on
+
+        if (data_buff) {
+            sprintf(data_buff + strlen(data_buff), "Barometer: %f\n", data_);
+        }
     }
 }
 
@@ -380,7 +417,7 @@ void Thermometer::update_data(double tStep) {
 
 double Thermometer::get_data() { return data_; }
 
-void Thermometer::log_sensor_state(double tStamp) {
+void Thermometer::log_sensor_state(double tStamp, char* data_buff) {
     if (sensor_logger_) {
         // clang-format off
         std::stringstream datalog_ss;
@@ -391,6 +428,10 @@ void Thermometer::log_sensor_state(double tStamp) {
 
         sensor_logger_->info(datalog_ss.str());
         // clang-format on
+
+        if (data_buff) {
+            sprintf(data_buff + strlen(data_buff), "Thermometer: %f\n", data_);
+        }
     }
 }
 
@@ -429,7 +470,7 @@ void GPSSensor::update_data(double tStep) {
 
 void GPSSensor::get_data(Vector3d& data) { data = data_; }
 
-void GPSSensor::log_sensor_state(double tStamp) {
+void GPSSensor::log_sensor_state(double tStamp, char* data_buff) {
     if (sensor_logger_) {
         // clang-format off
         std::stringstream datalog_ss;
@@ -442,5 +483,9 @@ void GPSSensor::log_sensor_state(double tStamp) {
 
         sensor_logger_->info(datalog_ss.str());
         // clang-format on
+
+        if (data_buff) {
+            sprintf(data_buff + strlen(data_buff), "GPS: %f,%f,%f\n", data_.x(), data_.y(), data_.z());
+        }
     }
 }

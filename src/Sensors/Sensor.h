@@ -27,7 +27,9 @@
 #include <fstream>
 
 #ifdef HILSIM
+#ifdef _WIN32
 #include <windows.h>
+#endif
 #endif
 
 #include "Rocket.h"
@@ -58,7 +60,7 @@ class Sensor {
     virtual void update_data(double tStep);
     virtual void get_data(Vector3d& data);
     virtual double get_data();
-    virtual void log_sensor_state(double tStamp) = 0;
+    virtual void log_sensor_state(double tStamp, char* data_buff = NULL) = 0;
 
     // Noise/bias injection control
     void enable_noise_injection() { inject_noise_ = true; };
@@ -94,24 +96,34 @@ class SerialComm {
 
     public:
     SerialComm(std::string port) {
-        port_ = port;
+        // #ifdef linux
+        port_ = port.c_str();
+        // #endif
+
+        // #ifdef _WIN32
+        // port_ = port.c_str();
+        // #endif
     }
 
     void serial_open(); // Opens serial port for communication
     void serial_add_data(char* data); // Adds data to the buffer to be sent to the port
     void serial_write(); // Writes data to the serial port
+    void serial_close(); // Closes serial port
+    void serial_read(); // Reads from serial port
 
     private:
-    std::string port_;
     char buffer_[1024];
+    // char* port_;
 
     // Linux and Windows handle ports differently
     #ifdef linux 
     std::ofstream serial_file_;
+    std::string port_;
     #endif
 
     #ifdef _WIN32
-    HANDLE serialPort;
+    HANDLE serial_file_;
+    LPCSTR port_;
     #endif
 
     
@@ -129,7 +141,7 @@ class Gyroscope : public Sensor {
               double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     void get_data(Vector3d& data) override;
-    void log_sensor_state(double tStamp) override;
+    void log_sensor_state(double tStamp, char* data_buff = NULL) override;
 
     void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
@@ -155,7 +167,7 @@ class Accelerometer : public Sensor {
                   double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     void get_data(Vector3d& data) override;
-    void log_sensor_state(double tStamp) override;
+    void log_sensor_state(double tStamp, char* data_buff = NULL) override;
 
     void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
@@ -181,7 +193,7 @@ class Magnetometer : public Sensor {
                  double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     void get_data(Vector3d& data) override;
-    void log_sensor_state(double tStamp) override;
+    void log_sensor_state(double tStamp, char* data_buff = NULL) override;
 
     void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
@@ -208,7 +220,7 @@ class Barometer : public Sensor {
               double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     double get_data() override;
-    void log_sensor_state(double tStamp) override;
+    void log_sensor_state(double tStamp, char* data_buff = NULL) override;
 
     void set_constant_bias(double bias) { bias_ = bias; };
 
@@ -233,7 +245,7 @@ class Thermometer : public Sensor {
                 double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     double get_data() override;
-    void log_sensor_state(double tStamp) override;
+    void log_sensor_state(double tStamp, char* data_buff = NULL) override;
 
    private:
     double data_;  // The sensor's current reading
@@ -256,7 +268,7 @@ class GPSSensor : public Sensor {
               double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     void get_data(Vector3d& data) override;
-    void log_sensor_state(double tStamp) override;
+    void log_sensor_state(double tStamp, char* data_buff = NULL) override;
 
     void set_constant_bias(Vector3d bias) { bias_ = bias; };
 

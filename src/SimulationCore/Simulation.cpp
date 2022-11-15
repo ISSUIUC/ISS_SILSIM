@@ -23,6 +23,7 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include <csignal>
 
 #include "Atmosphere.h"
 #include "CpuState.h"
@@ -66,10 +67,25 @@ void Simulation::run(int steps) {
     update_sensors();
     // Send sensor info to the serial stream and wait until everything is sent
 
+    // Initialize HILSIM Serial Communication 
+    #ifdef HILSIM
+    SerialComm serial_handle_ = SerialComm("/dev/ttyACM0");
+    serial_handle_.serial_open();
+    #endif
+
     // An initial data log at timestamp 0.0
     log_simulation_state();
     log_simulation_debug();
     log_sensors();
+
+    // Write Data to Serial for HILSIM
+    #ifdef HILSIM
+    // serial_handle_.serial_write();
+    // serial_handle_.serial_close();
+    // serial_handle_.serial_read();
+    // serial_handle_.serial_close();
+    #endif
+
     rocket_.log_rocket_state(tStamp_);
     rocket_.log_control_surfaces(tStamp_);
     motor_.log_motor_state(tStamp_);
@@ -162,9 +178,35 @@ void Simulation::update_sensors() {
  *
  */
 void Simulation::log_sensors() {
+    
+    #ifdef HILSIM
+    // Create buffer to hold sensor data
+    char sensor_data[2048];
+
+    // Write all sensor data to the buffer
+    for (Sensor* sensor : sensors_) {
+        sensor->log_sensor_state(tStamp_, sensor_data);
+    }
+
+    // std::cout << sensor_data << std::endl;
+
+    // Write out data to serial and close 
+    std::string serial_port = "/dev/ttyACM0";
+    SerialComm comm = SerialComm(serial_port);
+    comm.serial_open();
+    comm.serial_add_data(sensor_data);
+    comm.serial_write();
+    comm.serial_close();
+    // std::raise(SIGINT);
+    
+    #endif
+
+    #ifndef HILSIM
     for (Sensor* sensor : sensors_) {
         sensor->log_sensor_state(tStamp_);
     }
+    #endif
+    
 }
 
 /*****************************************************************************/
