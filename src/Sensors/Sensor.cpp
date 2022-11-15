@@ -61,7 +61,10 @@ double Sensor::get_data() {
 void SerialComm::serial_open() { 
 
     #ifdef linux
+
+    #ifdef linux
     this->serial_file_.open(this->port_);
+    #endif
     #endif
 
     #ifdef _WIN32
