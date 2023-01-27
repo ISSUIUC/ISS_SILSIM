@@ -16,8 +16,6 @@ output_directory = "output"
 headers = [("Mach Number", 0, 0), 
            ("Alpha (deg)", 4, 1), 
            ("Protuberance (%)", -1, -1),
-           ("CD Power-Off", 4, 3), 
-           ("CD Power-On", 5, 3), 
            ("CA Power-Off", 4, 5), 
            ("CA Power-On", 5, 5), 
            ("CN Total", 3, 2), 
@@ -63,6 +61,8 @@ def parse_file(directory, filename):
             
             if header[0] == "Protuberance (%)":
                 entry_dictionary[header[0]] = get_protuberance(filename)
+            elif header[0] == "Alpha (deg)":
+                entry_dictionary[header[0]] = int(filename.split("_")[0].strip(".txt"))/10
             else:
                 entry_dictionary[header[0]] = entry[header[1]][header[2]]
             

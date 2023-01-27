@@ -232,7 +232,7 @@ Barometer::Barometer(std::string name, Rocket& rocket, double refresh_rate,
 
 void Barometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
-        data_ = rocket_.get_r_vect().z();
+        data_ = Atmosphere::get_pressure(rocket_.get_r_vect().z());
         new_data_ = true;
 
         if (inject_noise_) {

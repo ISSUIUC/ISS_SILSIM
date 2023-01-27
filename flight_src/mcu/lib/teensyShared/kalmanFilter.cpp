@@ -32,7 +32,7 @@ void KalmanFilter::kfTickFunction() {
 
 void KalmanFilter::Initialize(float pos_f, float vel_f, float accel_f) {
     // set x_k
-    x_k(0,0) = pos_f;
+    x_k(0,0) = pos_f; 
     x_k(1,0) = vel_f;
     x_k(2,0) = accel_f;
     
@@ -127,9 +127,10 @@ void KalmanFilter::update() {
 
     chMtxLock(dataMutex_barometer_);
     y_k(0,0) = *b_alt;
-    // std::cout<< y_k(0,0) <<std::endl;
+
     chMtxUnlock(dataMutex_barometer_);
-    
+    // std::cout << y_k(0,0) << std::endl;
+    // std::cout << y_k(1,0) << std::endl;
     // # Posteriori Update
     x_k = x_priori + K * (y_k - (H * x_priori));
     P_k = (identity - K*H) * P_priori;
