@@ -7,6 +7,7 @@
 
 import os
 import pyautogui
+import numpy as np
 import time
 from pathlib import Path
 
@@ -22,7 +23,7 @@ def main():
 
     # define simulation parameters
     protuberances = []
-    alpha = 16
+    alpha = np.linspace(0,90, 91)
     nozzle_exit_diameter = 2.7
     ned_string = str(nozzle_exit_diameter).zfill(5)
 
@@ -83,13 +84,13 @@ def main():
         pyautogui.press('tab')
 
         # iterate through each angle of attack
-        for j in range(alpha):
+        for j in alpha:
 
             print(f"Running Alpha = {j}")
             pyautogui.PAUSE = 0.1
         
             # define output file name
-            output_path = (out_pth + "{}_{}.txt").format(str(j).zfill(2), str(protuberance).zfill(3))
+            output_path = (out_pth + ("{}_{}.txt").format(str(int(j*10)).zfill(3), str(protuberance).zfill(3)))
 
             # input angle of attack for iteration
             pyautogui.hotkey('ctrl', 'a')
