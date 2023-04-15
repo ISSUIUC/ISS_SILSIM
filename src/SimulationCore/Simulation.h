@@ -38,6 +38,8 @@ class Simulation {
     /************************* Sensor interface ***************************/
     void add_sensor(Sensor* sensor);
     void update_sensors();
+    //time in seconds
+    double get_time(){ return tStamp_;};
 
    private:
     double tStamp_;
