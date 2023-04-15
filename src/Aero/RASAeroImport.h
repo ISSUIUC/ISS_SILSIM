@@ -14,16 +14,9 @@
 #ifndef _RASAERO_IMPORT_H_
 #define _RASAERO_IMPORT_H_
 
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/spdlog.h>
-
 #include <Eigen/Dense>
 #include <string>
 #include <vector>
-
-// Shortening the typename for   a e s t h e t i c s
-typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
-    spdlog_basic_sink_ptr;
 
 struct RASAeroCoefficients {
     double cd_poweroff;
@@ -36,7 +29,7 @@ struct RASAeroCoefficients {
 
 class RASAeroImport {
    public:
-    RASAeroImport(spdlog_basic_sink_ptr silsim_sink, std::string file_path);
+    RASAeroImport(std::string file_path);
 
     /**************** Retrieve Aero Parameters of Rocket **********************/
     RASAeroCoefficients get_aero_coefficients(double mach, double alpha,
@@ -66,8 +59,6 @@ class RASAeroImport {
     static constexpr double kLargestAlpha = 15.00;
     static constexpr double kSmallestProtub = 0.00;
     static constexpr double kLargestProtub = 1.00;
-
-    std::shared_ptr<spdlog::logger> rasaero_logger_;
 
     /*************************** Set Parameters *******************************/
     void set_mach_number_params();

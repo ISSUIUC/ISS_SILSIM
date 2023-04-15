@@ -380,27 +380,3 @@ Vector3d Atmosphere::get_wind_vector(double tStamp) {
 
     return current_wind_direction_ * current_wind_magnitude_;
 }
-
-/**
- * @brief Logs the internal state of the Atmosphere class
- *
- * @param tStamp Current simulation timestamp
- */
-void Atmosphere::log_atmosphere_state(double tStamp) {
-    if (atmosphere_logger_) {
-        // clang-format off
-        std::stringstream datalog_ss;
-
-        Vector3d wind = get_wind_vector(tStamp);
-
-        datalog_ss << "DATA," 
-                   << tStamp << ","
-                   << wind.x() << ","
-                   << wind.y() << ","
-                   << wind.z() << ","
-                   << wind.norm();
-
-        atmosphere_logger_->info(datalog_ss.str());
-        // clang-format on
-    }
-}

@@ -16,22 +16,14 @@
 #ifndef _ATMOSPHERE_H_
 #define _ATMOSPHERE_H_
 
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/spdlog.h>
-
 #include <Eigen/Core>
 #include <random>
-
-// Shortening the typename for   a e s t h e t i c s
-typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
-    spdlog_basic_sink_ptr;
 
 using Eigen::Vector3d;
 
 class Atmosphere {
    public:
-    Atmosphere(spdlog_basic_sink_ptr silsim_sink,
-               double wind_direction_variance_mean = 0.0f,
+    Atmosphere(double wind_direction_variance_mean = 0.0f,
                double wind_direction_variance_stddev = 0.01f,
                double wind_magnitude_variance_mean = 0.0f,
                double wind_magnitude_variance_stddev = 0.5f)
@@ -39,11 +31,6 @@ class Atmosphere {
                                  wind_direction_variance_stddev),
           magnitude_normal_dist_(wind_magnitude_variance_mean,
                                  wind_magnitude_variance_stddev) {
-        if (silsim_sink) {
-            atmosphere_logger_ =
-                std::make_shared<spdlog::logger>("Atmosphere", silsim_sink);
-            atmosphere_logger_->info("DATALOG_FORMAT," + datalog_format_string);
-        }
     };
 
     // -------------------------- Get Parameters ---------------------------- //
@@ -74,8 +61,6 @@ class Atmosphere {
         enable_magnitude_variance_ = toggle;
     };
 
-    void log_atmosphere_state(double tStamp);
-
    private:
     // Nominal wind without any variance
     Vector3d nominal_wind_direction_{-1.0, 0.0, 0.0};
@@ -105,12 +90,6 @@ class Atmosphere {
     // The generated random wind variance before smoothing
     Vector3d generated_direction_variance_{0.0, 0.0, 0.0};
     double generated_magnitude_variance_{0.0};
-
-    // ----------------------------- Data Logging  -------------------------- //
-    std::shared_ptr<spdlog::logger> atmosphere_logger_;
-    const std::string datalog_format_string =
-        "timestamp,current_wind_x,current_wind_y,current_wind_z,current_wind_"
-        "magnitude";
 };
 
 #endif

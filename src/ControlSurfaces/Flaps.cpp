@@ -25,18 +25,3 @@ void Flaps::update(double dt) {
                                    real_extension_ - max_movement_rate_ * dt);
     }
 }
-
-void Flaps::log_flap_state(double tStamp) {
-    if (flaps_logger_) {
-        // clang-format off
-        std::stringstream datalog_ss;
-
-        datalog_ss << "DATA,"
-                   << tStamp << ","
-                   << target_extension_ << ","
-                   << real_extension_; 
-
-        flaps_logger_->info(datalog_ss.str());
-        // clang-format on
-    }
-}

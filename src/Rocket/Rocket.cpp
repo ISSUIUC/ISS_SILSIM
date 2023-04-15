@@ -13,7 +13,7 @@
 
 #include "Rocket.h"
 
-#include <Eigen/Dense>
+#include <EigenSILSIM/Dense>
 #include <cmath>
 #include <iostream>
 
@@ -123,10 +123,11 @@ Vector3d Rocket::position_enu2ecef(Vector3d pos_enu) {
     double lambda = get_launch_geod().y() * M_PI / 180;
     double lat = get_launch_geod().x() * M_PI / 180;
 
-    Eigen::Matrix3d transform{
-        {-sin(lambda), -sin(lat) * cos(lambda), cos(lat) * cos(lambda)},
-        {cos(lambda), -sin(lat) * sin(lambda), cos(lat) * sin(lambda)},
-        {0, cos(lat), sin(lat)}};
+    Eigen::Matrix3d transform {
+        { -sin(lambda), -sin(lat) * cos(lambda), cos(lat) * cos(lambda) },
+        { cos(lambda), -sin(lat) * sin(lambda), cos(lat) * sin(lambda) },
+        { 0.0, cos(lat), sin(lat) }
+    };
 
     return (transform * pos_enu) + get_launch_ecef();
 }
@@ -154,10 +155,11 @@ Vector3d Rocket::position_ecef2enu(Vector3d pos_ecef) {
     double lambda = get_launch_geod().y() * M_PI / 180;
     double lat = get_launch_geod().x() * M_PI / 180;
 
-    Eigen::Matrix3d transform{
+    Eigen::Matrix3d transform {
         {-sin(lambda), -sin(lat) * cos(lambda), cos(lat) * cos(lambda)},
         {cos(lambda), -sin(lat) * sin(lambda), cos(lat) * sin(lambda)},
-        {0, cos(lat), sin(lat)}};
+        {0, cos(lat), sin(lat)}
+    };
 
     return transform.transpose() * (pos_ecef - get_launch_ecef());
 }
@@ -318,88 +320,4 @@ Vector3d Rocket::gravity_vector_enu() {
 Vector3d Rocket::gravity_vector_rf() {
     Vector3d grav_enu = gravity_vector_enu();
     return enu2r(grav_enu);
-}
-
-/*****************************************************************************/
-/*                            LOGGING FUNCTIONS                              */
-/*****************************************************************************/
-
-void Rocket::log_rocket_state(double tStamp) {
-    if (rocket_logger_) {
-        std::stringstream datalog_ss;
-
-        datalog_ss << "DATA,";
-
-        datalog_ss << tStamp << ",";
-
-        // clang-format off
-        datalog_ss << r_vect_.x() << ","
-                   << r_vect_.y() << ","
-                   << r_vect_.z() << ",";
-
-        datalog_ss << r_dot_.x() << ","
-                   << r_dot_.y() << ","
-                   << r_dot_.z() << ",";
-
-        datalog_ss << r_ddot_.x() << ","
-                   << r_ddot_.y() << "," 
-                   << r_ddot_.z() << ",";
-
-        datalog_ss << w_vect_.x() << "," 
-                   << w_vect_.y() << "," 
-                   << w_vect_.z() << ",";
-
-        datalog_ss << w_dot_.x() << ","
-                   << w_dot_.y() << "," 
-                   << w_dot_.z() << ",";
-
-        Vector3d r_dot_rf = enu2r(r_dot_);
-        datalog_ss << r_dot_rf.x() << ","
-                   << r_dot_rf.y() << ","
-                   << r_dot_rf.z() << ",";
-
-        Vector3d r_ddot_rf = enu2r(r_ddot_);
-        datalog_ss << r_ddot_rf.x() << ","
-                   << r_ddot_rf.y() << "," 
-                   << r_ddot_rf.z() << ",";
-
-        Vector3d w_vect_rf = enu2r(w_vect_);
-        datalog_ss << w_vect_rf.x() << "," 
-                   << w_vect_rf.y() << "," 
-                   << w_vect_rf.z() << ",";
-
-        Vector3d w_dot_rf = enu2r(w_dot_);
-        datalog_ss << w_dot_rf.x() << ","
-                   << w_dot_rf.y() << "," 
-                   << w_dot_rf.z() << ",";
-
-        datalog_ss << f_net_.x() << "," 
-                   << f_net_.y() << "," 
-                   << f_net_.z() << ",";
-
-        datalog_ss << m_net_.x() << "," 
-                   << m_net_.y() << "," 
-                   << m_net_.z() << ",";
-
-        datalog_ss << q_ornt_.w() << "," 
-                   << q_ornt_.x() << "," 
-                   << q_ornt_.y() << ","
-                   << q_ornt_.z() << ",";
-
-        datalog_ss << structural_mass_ << ","
-                   << total_mass_ << ","
-                   << nose_to_cg_ << ","
-                   << nose_to_cp_ << ","
-                   << total_normal_force_coeff_ << ","
-                   << total_axial_force_coeff_ << ","
-                   << mach_ << "," 
-                   << alpha_;
-
-        rocket_logger_->info(datalog_ss.str());
-        // clang-format on
-    }
-}
-
-void Rocket::log_control_surfaces(double tStamp) {
-    flaps_->log_flap_state(tStamp);
 }
