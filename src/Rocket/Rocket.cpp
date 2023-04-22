@@ -13,7 +13,7 @@
 
 #include "Rocket.h"
 
-#include <EigenSILSIM/Dense>
+#include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
 

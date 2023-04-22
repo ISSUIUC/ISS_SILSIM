@@ -196,7 +196,7 @@ double Atmosphere::get_pressure(double altitude) {
     }
 
     else {
-//        std::cout << "Exceeding calculatable altitude!" << std::endl;
+//        std::cout << "Exceeding calculatable altitude! " << altitude_z << std::endl;
         pressure = -1.0;
     }
     // 86k to 1000k formula not sure yet

@@ -17,7 +17,7 @@
 #define _ROCKET_H_
 #define _USE_MATH_DEFINES
 
-#include <EigenSILSIM/Dense>
+#include <Eigen/Dense>
 #include <array>
 #include <memory>
 #include <string>

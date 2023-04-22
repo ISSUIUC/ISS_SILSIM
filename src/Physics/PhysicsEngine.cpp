@@ -325,8 +325,7 @@ void RungeKutta::march_step(double tStamp, double tStep) {
     pos_enu += tStep * vel_avg;
     vel_enu += tStep * accel_avg;
 
-    std::pair<Vector3d, Vector3d> force_and_moment =
-        calc_forces_and_moments(tStamp, pos_enu, vel_enu);
+    std::pair<Vector3d, Vector3d> force_and_moment = calc_forces_and_moments(tStamp, pos_enu, vel_enu);
     Vector3d net_force_rf = force_and_moment.first;
     Vector3d net_moment_rf = force_and_moment.second;
 
