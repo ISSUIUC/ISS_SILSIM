@@ -7,98 +7,47 @@ Non-linear 6DOF rocket trajectory simulation utility
 
 ## Installation and Setup Instructions
 
-First time setup (linux and mac only, windows users see windows specific instructions below)
+This repository acts as a library of sorts, and comes bundled with Flight Software. As such,
+there aren't really separate steps for installing ISS_SILSIM. However, the default method of cloning
+Flight Software will not *actually* install SILSIM. To do so, you'll need to run 
+`git submodule update --init --recursive` in the Flight Software directory (which should be called TARS-Software).
+Then running SILSIM is as easy as running the mcu_silsim environment of platformio, instead of mcu_main
+like one would normally do.
 
-```
-git clone https://github.com/ISSUIUC/ISS_SILSIM
-cd ISS_SILSIM
-git submodule update --init --recursive
-mkdir build
-cd build
-cmake ..
-cd ..
-make -C build ISS_SILSIM
-./build/ISS_SILSIM
-```
+### Windows Specific Steps
 
-Note that this will build the executable in the build directory
+Windows doesn't come with a C compiler, so we'll need a few more steps when trying to run SILSIM. (Arduino bundles a limited form of gcc
+so this isn't required when compiling to the real hardware)
+Platformio requires there to be some form of gcc on your Path. If you haven't already done this (if you don't know what I'm talking about, you
+bundles C++ compilers so this won't have come up before). Platformio only supports GCC, so we'll need to get
+probably haven't), you'll need to install MinGW. This is a special build of GCC that supports compilation
+on Windows. 
 
-After initial setup running
-`make -C build ISS_SILSIM`
-will rebuild the project
+To install MinGW, go to https://www.mingw-w64.org/downloads/, scroll down to MingW-W64-builds and click the Github link 
+(which will take you [here](https://github.com/niXman/mingw-builds-binaries/releases)). Download any of the assets
+prefixed with "x86_64", although I can confirm that `x86_64-13.1.0-release-win32-seh-ucrt-rt_v11-rev1.7z` specifically works.
+Then unzip the downloaded file (you might need to install [7Zip](https://www.7-zip.org/) if you haven't already).
 
-#### MacOS Installation
+The result of the unzipping should be a folder named something along the lines of `x86_64-13.1.0-release-win32-seh-ucrt-rt_v11-rev`.
+Inside this folder you should find a folder named `mingw64`. Copy the `mingw64` folder and put it somewhere more permanent
+than your `Downloads` folder. I suggest your user directory, your desktop, or perhaps your `Program Files` directory. In any case, 
+once you have placed the mingw64 folder there, navigate inside that folder to the `/bin` directory inside. Note that in 
+this directory, there'll be a lot of executables. One of them will be gcc. Copy the path to the `/bin` directory. For example, 
+I have placed my `mingw` directory in my user directory (which is named `magil`), so the path that I would copy is 
+`C:\Users\magil\mingw64\bin`.
 
-There are few extra steps to get your simulator runnning on your Mac.
+Now we'll have to edit your computer's Path Environment Variable so that it knows where the find the gcc executable.
+The easy way to do this is to open up the Windows search bar (pressing the windows key on your keyboard is a shortcut to opening
+the search bar) and type in "edit the system environment variables", and click the result which opens up the Control
+Panel. This will open up the System Properties dialog box. In this box, near the bottom right, is a button named
+"Environment Variables". Click it to open up the Environment Variables dialog box.
 
-Install the `g++` compiler through brew:
-
-```
-brew install gcc
-```
-
-Open `~/.bash_profile` in `nano`:
-
-```
-nano ~/.bash_profile
-```
-
-Add the following lines to the beginning of the file:
-
-```
-# Setting PATH for local executables
-export PATH=/usr/local/bin:$PATH
-```
-
-Add symbolic link from `g++-11` to `g++`:
-
-```
-ln -s /usr/local/bin/g++-11 /usr/local/bin/g++
-```
-#### Windows Installation
-
-On Windows it is recommended to use visual studio, but gcc and clang both work
-
-Visual Studio instructions:
-
-Get visual studio here: https://visualstudio.microsoft.com/
-
-When installing visual studio install the c++ desktop development package
-
-Once visual studio finishes installing clone the repo
-
-`git clone https://github.com/ISSUIUC/ISS_SILSIM`
-
-Download dependencies
-
-`cd ISS_SILSIM`
-
-`git submodule update --init --recursive`
-
-In visual studio choose "Open a local folder" and open the cloned repo
-
-After visual studio finishes loading the project go to "Select Startup Item" in the top center of the screen and select the dropdown arrow.
-
-In the submenu select show/hide debug targets, deselect all and turn just ISS_SILSIM.exe on from the list, the list may be very long
-
-Close that menu and open the select startup dropdown again, now ISS_SILSIM.exe should appear as a target, select it.
-
-By default visual studio will run the program in out/build/<build-type>. To make silsim run in the correct directory go to "Debug" > "Debug and launch settings for ISS_SILSIM".
-
-Add `"currentDir": "${workspaceRoot}"` to the json under the `"name"` property in configurations
-
-Build and run the project by clicking the run button or by pressing "F5"
-
-#### Python Dependencies
-
-Run the following command to include the dependencies for the Python simulator in your environment:
-
-```
-pip install -r requirements.txt
-```
-
-
-## Development Workflow
+In the top box, the one which says your username above it, scroll down to the Path variable, select it, and click
+"Edit...". Now click "New" on the right and paste in the path you copied up above. If everything has gone well,
+the path to the `bin` directory of mingw should now be a row on your Path. Press "OK" until you are out of all the dialog 
+boxes. Open up a new Command Prompt, Powershell, or Terminal instance (you'll need to close an application and reopen it
+for path changes to apply, including VSCode) and type in "gcc" and press enter. If all went well, you should get
+an error messages about having no input files and that compilation was terminated.
 
 ### Branch Naming Convention
 Please use the following naming conventions when creating branches while developing:
