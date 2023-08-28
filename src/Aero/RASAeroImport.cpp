@@ -118,6 +118,17 @@ void RASAeroImport::set_protuberance_params() {
     protuberance_fidelity_ = std::abs(vec[0] - vec[1]);
 }
 
+template <typename T>
+T clamp(T val, T low, T high) {
+    if (val < low) {
+        return low;
+    } else if (val > high) {
+        return high;
+    } else {
+        return val;
+    }
+}
+
 /** clang-format off
  *
  * @brief Performs a lookup and interpolates data using the Bilinear
@@ -158,9 +169,9 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
                                                          double alpha,
                                                          double protuberance) {
     // Sanitize input
-    mach = std::clamp(mach, kSmallestMach, kLargestMach);
-    alpha = std::clamp(alpha, kSmallestAlpha, kLargestAlpha);
-    protuberance = std::clamp(protuberance, kSmallestProtub, kLargestProtub);
+    mach = clamp(mach, kSmallestMach, kLargestMach);
+    alpha = clamp(alpha, kSmallestAlpha, kLargestAlpha);
+    protuberance = clamp(protuberance, kSmallestProtub, kLargestProtub);
 
     // Find closest mach number to passed mach value
     double mach_below =

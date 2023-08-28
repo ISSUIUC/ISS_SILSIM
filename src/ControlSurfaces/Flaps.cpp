@@ -13,7 +13,13 @@
 #include <sstream>
 
 void Flaps::write_extension(double extension) {
-    target_extension_ = std::clamp(extension, 0.0, 1.0);
+    if (extension > 1.0) {
+        target_extension_ = 1.0;
+    } else if (extension < 0.0) {
+        target_extension_ = 0.0;
+    } else {
+        target_extension_ = extension;
+    }
 }
 
 void Flaps::update(double dt) {
