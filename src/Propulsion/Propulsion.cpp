@@ -62,27 +62,6 @@ double RocketMotor::get_propellant_mass(double tStamp) const {
            (1.0 - ((tStamp - ignition_tStamp_) / max_burn_duration_));
 }
 
-void RocketMotor::log_motor_state(double tStamp) {
-    if (motor_logger_) {
-        // clang-format off
-        std::stringstream datalog_ss;
-
-        Vector3d thrust_vector_rf = get_thrust_vector(tStamp);
-
-        datalog_ss << "DATA," 
-                   << tStamp << ","
-                   << is_burning(tStamp) << ","
-                   << get_propellant_mass(tStamp) << ","
-                   << current_thrust(tStamp) << ","
-                   << thrust_vector_rf.x() << ","
-                   << thrust_vector_rf.y() << ","
-                   << thrust_vector_rf.z();
-
-        motor_logger_->info(datalog_ss.str());
-        // clang-format on
-    }
-}
-
 /*****************************************************************************/
 /* ConstantThrustSolidMotor Member Functions                                 */
 /*****************************************************************************/
@@ -99,16 +78,10 @@ void RocketMotor::log_motor_state(double tStamp) {
  */
 ConstantThrustSolidMotor::ConstantThrustSolidMotor(
     double max_burn_duration, double thrust_value,
-    double initial_propellant_mass, spdlog_basic_sink_ptr silsim_sink)
+    double initial_propellant_mass)
     : thrust_value_(thrust_value) {
     max_burn_duration_ = max_burn_duration;
     initial_propellant_mass_ = initial_propellant_mass;
-
-    if (silsim_sink) {
-        motor_logger_ = std::make_shared<spdlog::logger>(
-            "ConstantThrustSolidMotor", silsim_sink);
-        motor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
-    }
 }
 
 /**
@@ -149,15 +122,8 @@ Vector3d ConstantThrustSolidMotor::get_thrust_vector(double tStamp) const {
  * @param initial_propellant_mass The total mass of propellant before ignition
  * @param silsim_sink A pointer to SILSIM's data datlog sink. Can be nullptr!
  */
-ThrustCurveSolidMotor::ThrustCurveSolidMotor(
-    std::string filename, double initial_propellant_mass,
-    spdlog_basic_sink_ptr silsim_sink) {
-    if (silsim_sink) {
-        motor_logger_ = std::make_shared<spdlog::logger>(
-            "ThrustCurveSolidMotor", silsim_sink);
-        motor_logger_->info("DATALOG_FORMAT," + datalog_format_string);
-    }
-
+ThrustCurveSolidMotor::ThrustCurveSolidMotor(std::string filename,
+                                             double initial_propellant_mass) {
     rapidcsv::Document csv(filename);
     std::vector<double> time_vals = csv.GetColumn<double>("Time");
     std::vector<double> thrust_vals = csv.GetColumn<double>("Thrust");

@@ -15,8 +15,6 @@
 
 #include <Eigen/src/Core/Matrix.h>
 #include <rapidcsv.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/spdlog.h>
 
 #include <cmath>
 #include <iostream>
@@ -30,19 +28,7 @@
  * @oaram file_path The path where the RASAero .csv data is found
  *
  */
-RASAeroImport::RASAeroImport(spdlog_basic_sink_ptr silsim_sink,
-                             std::string file_path) {
-    if (silsim_sink) {
-        rasaero_logger_ =
-            std::make_shared<spdlog::logger>("RASAeroImport", silsim_sink);
-
-#ifdef RASAERO_DEBUG
-        rasaero_logger_->set_level(spdlog::level::debug);
-#else
-        rasaero_logger_->set_level(spdlog::level::info);
-#endif
-    }
-
+RASAeroImport::RASAeroImport(std::string file_path) {
     rapidcsv::Document csv(file_path);
 
     auto mach = csv.GetColumn<double>("Mach Number");
@@ -74,18 +60,6 @@ RASAeroImport::RASAeroImport(spdlog_basic_sink_ptr silsim_sink,
     set_mach_number_params();
     set_alpha_params();
     set_protuberance_params();
-
-    if (rasaero_logger_) {
-        rasaero_logger_->debug("[RASAeroImport ctor parsing metadata]:");
-        rasaero_logger_->debug("mach_instances = {}", mach_number_instances_);
-        rasaero_logger_->debug("mach_fidelity = {}", mach_number_fidelity_);
-        rasaero_logger_->debug("alpha_instances = {}", alpha_instances_);
-        rasaero_logger_->debug("alpha_fidelity = {}", alpha_fidelity_);
-        rasaero_logger_->debug("protuberance_instances = {}",
-                               protuberance_instances_);
-        rasaero_logger_->debug("protuberance_fidelity = {}",
-                               protuberance_fidelity_);
-    }
 }
 
 /**
@@ -99,9 +73,10 @@ RASAeroImport::RASAeroImport(spdlog_basic_sink_ptr silsim_sink,
  */
 void RASAeroImport::set_mach_number_params() {
     auto column = aero_table_.col(0);
-    auto vec = std::vector<double>(column.begin(), column.end());
+    auto vec =
+        std::vector<double>(column.data(), column.data() + column.size());
     std::sort(vec.begin(), vec.end());
-    vec.erase(unique(vec.begin(), vec.end()), vec.end());
+    vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
     mach_number_instances_ = vec.size();
     mach_number_fidelity_ = std::abs(vec[0] - vec[1]);
 }
@@ -119,9 +94,10 @@ void RASAeroImport::set_mach_number_params() {
  */
 void RASAeroImport::set_alpha_params() {
     auto column = aero_table_.col(1);
-    auto vec = std::vector<double>(column.begin(), column.end());
+    auto vec =
+        std::vector<double>(column.data(), column.data() + column.size());
     std::sort(vec.begin(), vec.end());
-    vec.erase(unique(vec.begin(), vec.end()), vec.end());
+    vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
     alpha_instances_ = vec.size();
     alpha_fidelity_ = std::abs(vec[0] - vec[1]);
 }
@@ -137,11 +113,23 @@ void RASAeroImport::set_alpha_params() {
  */
 void RASAeroImport::set_protuberance_params() {
     auto column = aero_table_.col(2);
-    auto vec = std::vector<double>(column.begin(), column.end());
+    auto vec =
+        std::vector<double>(column.data(), column.data() + column.size());
     std::sort(vec.begin(), vec.end());
-    vec.erase(unique(vec.begin(), vec.end()), vec.end());
+    vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
     protuberance_instances_ = vec.size();
     protuberance_fidelity_ = std::abs(vec[0] - vec[1]);
+}
+
+template <typename T>
+T clamp(T val, T low, T high) {
+    if (val < low) {
+        return low;
+    } else if (val > high) {
+        return high;
+    } else {
+        return val;
+    }
 }
 
 /** clang-format off
@@ -184,9 +172,9 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
                                                          double alpha,
                                                          double protuberance) {
     // Sanitize input
-    mach = std::clamp(mach, kSmallestMach, kLargestMach);
-    alpha = std::clamp(alpha, kSmallestAlpha, kLargestAlpha);
-    protuberance = std::clamp(protuberance, kSmallestProtub, kLargestProtub);
+    mach = clamp(mach, kSmallestMach, kLargestMach);
+    alpha = clamp(alpha, kSmallestAlpha, kLargestAlpha);
+    protuberance = clamp(protuberance, kSmallestProtub, kLargestProtub);
 
     // Find closest mach number to passed mach value
     double mach_below =
@@ -248,35 +236,6 @@ RASAeroCoefficients RASAeroImport::get_aero_coefficients(double mach,
     // Contemplate the meaning of life
     RASAeroCoefficients result{row_z(3), row_z(4), row_z(5),
                                row_z(6), row_z(7), row_z(8)};
-
-    if (rasaero_logger_) {
-        rasaero_logger_->debug(
-            "[RASAeroImport get_aero_coefficients() debug above/below "
-            "finding]:");
-        rasaero_logger_->debug("mach_below = {}", mach_below);
-        rasaero_logger_->debug("closest_mach = {}", closest_mach);
-        rasaero_logger_->debug("alpha_below = {}", alpha_below);
-        rasaero_logger_->debug("alpha_above = {}", alpha_above);
-        rasaero_logger_->debug("prot_below = {}", prot_below);
-        rasaero_logger_->debug("prot_above = {}", prot_above);
-
-        rasaero_logger_->debug(
-            "[RASAeroImport get_aero_coefficients() debug index finding]:");
-        rasaero_logger_->debug("mach_start_index = {}", mach_start_index);
-        rasaero_logger_->debug("row_a_offset = {}", row_a_offset);
-        rasaero_logger_->debug("row_b_offset = {}", row_b_offset);
-        rasaero_logger_->debug("row_c_offset = {}", row_c_offset);
-        rasaero_logger_->debug("row_d_offset = {}", row_d_offset);
-
-        rasaero_logger_->debug(
-            "[RASAeroImport get_aero_coefficients() debug result]:");
-        rasaero_logger_->debug("cd_poweroff = {}", result.cd_poweroff);
-        rasaero_logger_->debug("cd_poweron = {}", result.cd_poweron);
-        rasaero_logger_->debug("ca_poweroff = {}", result.ca_poweroff);
-        rasaero_logger_->debug("ca_poweron = {}", result.ca_poweron);
-        rasaero_logger_->debug("cn_total = {}", result.cn_total);
-        rasaero_logger_->debug("cp_total = {}", result.cp_total);
-    }
 
     return result;
 }

@@ -17,19 +17,12 @@
 #define _PHYSICS_ENGINE_H_
 #define _USE_MATH_DEFINES
 
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/spdlog.h>
-
 #include <string>
 #include <vector>
 
-#include "Atmosphere.h"
-#include "Propulsion.h"
-#include "Rocket.h"
-
-// Shortening the typename for   a e s t h e t i c s
-typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
-    spdlog_basic_sink_ptr;
+#include "Atmosphere/Atmosphere.h"
+#include "Propulsion/Propulsion.h"
+#include "Rocket/Rocket.h"
 
 /*****************************************************************************/
 /* PhysicsEngine Base Class and Derivatives */
@@ -64,8 +57,6 @@ class PhysicsEngine {
     Rocket& rocket_;
     RocketMotor& motor_;
     Atmosphere& atmosphere_;
-
-    std::shared_ptr<spdlog::logger> engine_logger_;
 };
 
 /** ForwardEuler Derived Class
@@ -78,15 +69,8 @@ class PhysicsEngine {
  */
 class ForwardEuler : public PhysicsEngine {
    public:
-    ForwardEuler(Rocket& rocket, RocketMotor& motor, Atmosphere& atmosphere,
-                 spdlog_basic_sink_ptr silsim_sink)
-        : PhysicsEngine(rocket, motor, atmosphere) {
-        if (silsim_sink) {
-            engine_logger_ =
-                std::make_shared<spdlog::logger>("ForwardEuler", silsim_sink);
-            engine_logger_->set_level(spdlog::level::debug);
-        }
-    };
+    ForwardEuler(Rocket& rocket, RocketMotor& motor, Atmosphere& atmosphere)
+        : PhysicsEngine(rocket, motor, atmosphere){};
 
     void march_step(double tStamp, double tStep) override;
 };
@@ -105,15 +89,8 @@ class ForwardEuler : public PhysicsEngine {
  */
 class RungeKutta : public PhysicsEngine {
    public:
-    RungeKutta(Rocket& rocket, RocketMotor& motor, Atmosphere& atmosphere,
-               spdlog_basic_sink_ptr silsim_sink)
-        : PhysicsEngine(rocket, motor, atmosphere) {
-        if (silsim_sink) {
-            engine_logger_ =
-                std::make_shared<spdlog::logger>("RungeKutta", silsim_sink);
-            engine_logger_->set_level(spdlog::level::debug);
-        }
-    };
+    RungeKutta(Rocket& rocket, RocketMotor& motor, Atmosphere& atmosphere)
+        : PhysicsEngine(rocket, motor, atmosphere){};
 
     void march_step(double tStamp, double tStep) override;
 

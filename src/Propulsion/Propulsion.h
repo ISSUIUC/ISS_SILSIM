@@ -15,18 +15,11 @@
 #ifndef _PROPULSION_H_
 #define _PROPULSION_H_
 
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/spdlog.h>
-
 #include <Eigen/Dense>
 #include <string>
 #include <vector>
 
 using Eigen::Vector3d;
-
-// Shortening the typename for   a e s t h e t i c s
-typedef std::shared_ptr<spdlog::sinks::basic_file_sink_mt>
-    spdlog_basic_sink_ptr;
 
 /*****************************************************************************/
 /* RocketMotor Base Class and Derivatives                                    */
@@ -52,18 +45,11 @@ class RocketMotor {
     virtual double current_thrust(double tStamp) const = 0;
     virtual Vector3d get_thrust_vector(double tStamp) const = 0;
 
-    virtual void log_motor_state(double tStamp);
-
    protected:
     bool ignition_ = false;
     double ignition_tStamp_{0.0};
     double max_burn_duration_{0.0};
     double initial_propellant_mass_{0.0};
-
-    std::shared_ptr<spdlog::logger> motor_logger_;
-    const std::string datalog_format_string =
-        "timestamp,is_burning,propellant_mass,thrust_magnitude,"
-        "thrust_vector_rf_x,thrust_vector_rf_y,thrust_vector_rf_z";
 };
 
 /** ConstantThrustSolidMotor Derived Class
@@ -76,8 +62,7 @@ class RocketMotor {
 class ConstantThrustSolidMotor : public RocketMotor {
    public:
     ConstantThrustSolidMotor(double max_burn_duration, double thrust_value,
-                             double initial_propellant_mass,
-                             spdlog_basic_sink_ptr silsim_sink);
+                             double initial_propellant_mass);
 
     double current_thrust(double tStamp) const override;
     Vector3d get_thrust_vector(double tStamp) const override;
@@ -98,8 +83,7 @@ class ConstantThrustSolidMotor : public RocketMotor {
  */
 class ThrustCurveSolidMotor : public RocketMotor {
    public:
-    ThrustCurveSolidMotor(std::string filename, double initial_propellant_mass,
-                          spdlog_basic_sink_ptr silsim_sink);
+    ThrustCurveSolidMotor(std::string filename, double initial_propellant_mass);
 
     double current_thrust(double tStamp) const override;
     Vector3d get_thrust_vector(double tStamp) const override;

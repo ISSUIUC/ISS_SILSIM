@@ -13,7 +13,13 @@
 #include <sstream>
 
 void Flaps::write_extension(double extension) {
-    target_extension_ = std::clamp(extension, 0.0, 1.0);
+    if (extension > 1.0) {
+        target_extension_ = 1.0;
+    } else if (extension < 0.0) {
+        target_extension_ = 0.0;
+    } else {
+        target_extension_ = extension;
+    }
 }
 
 void Flaps::update(double dt) {
@@ -23,20 +29,5 @@ void Flaps::update(double dt) {
     } else {
         real_extension_ = std::max(target_extension_,
                                    real_extension_ - max_movement_rate_ * dt);
-    }
-}
-
-void Flaps::log_flap_state(double tStamp) {
-    if (flaps_logger_) {
-        // clang-format off
-        std::stringstream datalog_ss;
-
-        datalog_ss << "DATA,"
-                   << tStamp << ","
-                   << target_extension_ << ","
-                   << real_extension_; 
-
-        flaps_logger_->info(datalog_ss.str());
-        // clang-format on
     }
 }

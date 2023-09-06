@@ -76,7 +76,7 @@ double Atmosphere::get_temperature(double altitude) {
             1000 - 640 * exp(-0.01875 * ((altitude_z - 120) * (6356.766 + 120) /
                                          (6356.766 + altitude_z)));
     } else {
-        std::cout << "Exceeding calculatable altitude!" << std::endl;
+        //        std::cout << "Exceeding calculatable altitude!" << std::endl;
         temperature = -1.0;
     }
     return temperature;
@@ -196,7 +196,8 @@ double Atmosphere::get_pressure(double altitude) {
     }
 
     else {
-        std::cout << "Exceeding calculatable altitude!" << std::endl;
+        //        std::cout << "Exceeding calculatable altitude! " << altitude_z
+        //        << std::endl;
         pressure = -1.0;
     }
     // 86k to 1000k formula not sure yet
@@ -284,7 +285,7 @@ double Atmosphere::get_density(double altitude) {
     }
 
     else {
-        std::cout << "Exceeding calculatable altitude!" << std::endl;
+        //        std::cout << "Exceeding calculatable altitude!" << std::endl;
         density = -1.0;
     }
 
@@ -379,28 +380,4 @@ Vector3d Atmosphere::get_wind_vector(double tStamp) {
     }
 
     return current_wind_direction_ * current_wind_magnitude_;
-}
-
-/**
- * @brief Logs the internal state of the Atmosphere class
- *
- * @param tStamp Current simulation timestamp
- */
-void Atmosphere::log_atmosphere_state(double tStamp) {
-    if (atmosphere_logger_) {
-        // clang-format off
-        std::stringstream datalog_ss;
-
-        Vector3d wind = get_wind_vector(tStamp);
-
-        datalog_ss << "DATA," 
-                   << tStamp << ","
-                   << wind.x() << ","
-                   << wind.y() << ","
-                   << wind.z() << ","
-                   << wind.norm();
-
-        atmosphere_logger_->info(datalog_ss.str());
-        // clang-format on
-    }
 }
