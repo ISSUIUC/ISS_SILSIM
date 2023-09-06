@@ -12,8 +12,7 @@
 
 class Flaps {
    public:
-    Flaps() {
-    }
+    Flaps() {}
 
     void write_extension(double extension);
     void update(double dt);

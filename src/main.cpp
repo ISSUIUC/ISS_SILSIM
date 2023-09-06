@@ -1,10 +1,10 @@
 #include <fstream>
 #include <iostream>
 
-#include "Atmosphere/Atmosphere.h"
 #include "Aero/RASAeroImport.h"
-#include "Rocket/Rocket.h"
+#include "Atmosphere/Atmosphere.h"
 #include "ControlSurfaces/Flaps.h"
+#include "Rocket/Rocket.h"
 #include "Sensors/Sensor.h"
 #include "SimulationCore/Simulation.h"
 
@@ -29,10 +29,12 @@ constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
 Rocket createRocket() {
     // RASAero Setup ----------------------------------------------------------
-    RASAeroImport rasaero_import = RASAeroImport("src/mcu_main/ISS_SILSIM/utils/RASAero_fetch/output/RASAero_Intrepid_5800_mk6.csv");
+    RASAeroImport rasaero_import = RASAeroImport(
+        "src/mcu_main/ISS_SILSIM/utils/RASAero_fetch/output/"
+        "RASAero_Intrepid_5800_mk6.csv");
 
     // Rocket Setup -----------------------------------------------------------
-    Rocket rocket { };
+    Rocket rocket{};
 
     rocket.set_structural_mass(kIntrepidDryMass);
 
@@ -43,7 +45,7 @@ Rocket createRocket() {
     double mass = rocket.get_structural_mass();
     std::array<double, 9> I_tensor{};
     I_tensor[0] =
-            (1.0 / 12.0) * mass * kIntrepidTotalLength * kIntrepidTotalLength;
+        (1.0 / 12.0) * mass * kIntrepidTotalLength * kIntrepidTotalLength;
     I_tensor[4] = I_tensor[0];
     I_tensor[8] = 0.5 * mass * kIntrepidRadius * kIntrepidRadius;
     rocket.set_I(I_tensor);
@@ -61,7 +63,7 @@ Rocket createRocket() {
 }
 
 Atmosphere createAtmosphere() {
-    Atmosphere atmosphere {};
+    Atmosphere atmosphere{};
     atmosphere.set_nominal_wind_magnitude(5.0);  // ~11.18 mph
     atmosphere.toggle_wind_direction_variance(true);
     atmosphere.toggle_wind_magnitude_variance(true);
@@ -71,20 +73,23 @@ Atmosphere createAtmosphere() {
 ThrustCurveSolidMotor createMotor() {
     // Cesaroni N5800, 3.49s burn, 5800N avg thrust, 9.021kg prop weight
     // ConstantThrustSolidMotor motor(3.49, 5800.0, 9.021, silsim_sink);
-    ThrustCurveSolidMotor motor("src/mcu_main/ISS_SILSIM/thrust_curves/cesaroni_n5800.csv", 9.425);
+    ThrustCurveSolidMotor motor(
+        "src/mcu_main/ISS_SILSIM/thrust_curves/cesaroni_n5800.csv", 9.425);
     return motor;
 }
 
-RungeKutta createPhysics(Rocket& rocket, ThrustCurveSolidMotor& motor, Atmosphere& atmosphere) {
+RungeKutta createPhysics(Rocket& rocket, ThrustCurveSolidMotor& motor,
+                         Atmosphere& atmosphere) {
     // Physics Engine Setup ----------------------------------------------------
     RungeKutta engine(rocket, motor, atmosphere);
     // ForwardEuler engine(rocket, motor, atmosphere, silsim_datalog_sink);
-//    std::ofstream telemetry = std::ofstream("telemetry.log", std::ios::binary);
+    //    std::ofstream telemetry = std::ofstream("telemetry.log",
+    //    std::ios::binary);
     return engine;
 }
 
-Simulation createSimulation(Rocket& rocket, ThrustCurveSolidMotor& motor, Atmosphere& atmosphere, PhysicsEngine* engine) {
-
+Simulation createSimulation(Rocket& rocket, ThrustCurveSolidMotor& motor,
+                            Atmosphere& atmosphere, PhysicsEngine* engine) {
     // Simulation Setup --------------------------------------------------------
     Simulation sim(0.001, engine, atmosphere, rocket, motor);
 

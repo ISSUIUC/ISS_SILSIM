@@ -73,7 +73,8 @@ RASAeroImport::RASAeroImport(std::string file_path) {
  */
 void RASAeroImport::set_mach_number_params() {
     auto column = aero_table_.col(0);
-    auto vec = std::vector<double>(column.data(), column.data() + column.size());
+    auto vec =
+        std::vector<double>(column.data(), column.data() + column.size());
     std::sort(vec.begin(), vec.end());
     vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
     mach_number_instances_ = vec.size();
@@ -93,7 +94,8 @@ void RASAeroImport::set_mach_number_params() {
  */
 void RASAeroImport::set_alpha_params() {
     auto column = aero_table_.col(1);
-    auto vec = std::vector<double>(column.data(), column.data() + column.size());
+    auto vec =
+        std::vector<double>(column.data(), column.data() + column.size());
     std::sort(vec.begin(), vec.end());
     vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
     alpha_instances_ = vec.size();
@@ -111,7 +113,8 @@ void RASAeroImport::set_alpha_params() {
  */
 void RASAeroImport::set_protuberance_params() {
     auto column = aero_table_.col(2);
-    auto vec = std::vector<double>(column.data(), column.data() + column.size());
+    auto vec =
+        std::vector<double>(column.data(), column.data() + column.size());
     std::sort(vec.begin(), vec.end());
     vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
     protuberance_instances_ = vec.size();

@@ -122,8 +122,8 @@ Vector3d ConstantThrustSolidMotor::get_thrust_vector(double tStamp) const {
  * @param initial_propellant_mass The total mass of propellant before ignition
  * @param silsim_sink A pointer to SILSIM's data datlog sink. Can be nullptr!
  */
-ThrustCurveSolidMotor::ThrustCurveSolidMotor(std::string filename, double initial_propellant_mass) {
-
+ThrustCurveSolidMotor::ThrustCurveSolidMotor(std::string filename,
+                                             double initial_propellant_mass) {
     rapidcsv::Document csv(filename);
     std::vector<double> time_vals = csv.GetColumn<double>("Time");
     std::vector<double> thrust_vals = csv.GetColumn<double>("Thrust");

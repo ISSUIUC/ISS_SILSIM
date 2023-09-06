@@ -70,8 +70,7 @@ class PhysicsEngine {
 class ForwardEuler : public PhysicsEngine {
    public:
     ForwardEuler(Rocket& rocket, RocketMotor& motor, Atmosphere& atmosphere)
-        : PhysicsEngine(rocket, motor, atmosphere) {
-    };
+        : PhysicsEngine(rocket, motor, atmosphere){};
 
     void march_step(double tStamp, double tStep) override;
 };
@@ -91,8 +90,7 @@ class ForwardEuler : public PhysicsEngine {
 class RungeKutta : public PhysicsEngine {
    public:
     RungeKutta(Rocket& rocket, RocketMotor& motor, Atmosphere& atmosphere)
-        : PhysicsEngine(rocket, motor, atmosphere) {
-    };
+        : PhysicsEngine(rocket, motor, atmosphere){};
 
     void march_step(double tStamp, double tStep) override;
 

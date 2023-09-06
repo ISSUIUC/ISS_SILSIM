@@ -25,7 +25,8 @@ using Eigen::Vector3d;
 /*                        GYROSCOPE MEMBER FUNCTIONS                         */
 /*****************************************************************************/
 
-GyroscopeSensor::GyroscopeSensor(Rocket& rocket, double refresh_rate, double noise_mean, double noise_stddev)
+GyroscopeSensor::GyroscopeSensor(Rocket& rocket, double refresh_rate,
+                                 double noise_mean, double noise_stddev)
     : Sensor(rocket, refresh_rate, noise_mean, noise_stddev) {
     data_ = {0, 0, 0};
     noise_ = {0, 0, 0};
@@ -57,7 +58,8 @@ Vector3d GyroscopeSensor::get_data() {
 /*                      ACCELEROMETER MEMBER FUNCTIONS                       */
 /*****************************************************************************/
 
-Accelerometer::Accelerometer(Rocket& rocket, double refresh_rate, double noise_mean, double noise_stddev)
+Accelerometer::Accelerometer(Rocket& rocket, double refresh_rate,
+                             double noise_mean, double noise_stddev)
     : Sensor(rocket, refresh_rate, noise_mean, noise_stddev) {
     data_ = {0, 0, 0};
     noise_ = {0, 0, 0};
@@ -97,8 +99,11 @@ Vector3d Accelerometer::get_data() {
 /*****************************************************************************/
 
 // TODO implement magnetometer
-EmulatedMagnetometerSensor::EmulatedMagnetometerSensor(Rocket& rocket, double refresh_rate, double noise_mean, double noise_stddev)
-    : Sensor(rocket, refresh_rate, noise_mean, noise_stddev) { }
+EmulatedMagnetometerSensor::EmulatedMagnetometerSensor(Rocket& rocket,
+                                                       double refresh_rate,
+                                                       double noise_mean,
+                                                       double noise_stddev)
+    : Sensor(rocket, refresh_rate, noise_mean, noise_stddev) {}
 
 void EmulatedMagnetometerSensor::update_data(double tStep) {
     Vector3d north_enu = {0.0, 1.0, 0.0};
@@ -116,7 +121,8 @@ Vector3d EmulatedMagnetometerSensor::get_data() {
 /*                        BAROMETER MEMBER FUNCTIONS                         */
 /*****************************************************************************/
 
-Barometer::Barometer(Rocket& rocket, double refresh_rate, double noise_mean, double noise_stddev)
+Barometer::Barometer(Rocket& rocket, double refresh_rate, double noise_mean,
+                     double noise_stddev)
     : Sensor(rocket, refresh_rate, noise_mean, noise_stddev) {
     data_ = rocket_.get_r_vect().x();
     bias_ = 0;
@@ -158,8 +164,9 @@ Vector3d randomize_vector(std::default_random_engine& generator,
 /*                      THERMOMOMETER MEMBER FUNCTIONS                       */
 /*****************************************************************************/
 
-Thermometer::Thermometer(Rocket& rocket, double refresh_rate, double noise_mean, double noise_stddev)
-    : Sensor(rocket, refresh_rate, noise_mean, noise_stddev) { }
+Thermometer::Thermometer(Rocket& rocket, double refresh_rate, double noise_mean,
+                         double noise_stddev)
+    : Sensor(rocket, refresh_rate, noise_mean, noise_stddev) {}
 
 void Thermometer::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
@@ -183,8 +190,9 @@ double Thermometer::get_data() { return data_; }
 /*                        GPS SENSOR MEMBER FUNCTIONS                        */
 /*****************************************************************************/
 
-EmulatedGPSSensor::EmulatedGPSSensor(Rocket& rocket, double refresh_rate, double noise_mean, double noise_stddev)
-    : Sensor(rocket, refresh_rate, noise_mean, noise_stddev) { }
+EmulatedGPSSensor::EmulatedGPSSensor(Rocket& rocket, double refresh_rate,
+                                     double noise_mean, double noise_stddev)
+    : Sensor(rocket, refresh_rate, noise_mean, noise_stddev) {}
 
 void EmulatedGPSSensor::update_data(double tStep) {
     if ((tStep - last_update_tStep_) >= (1 / refresh_rate_)) {
@@ -204,6 +212,4 @@ void EmulatedGPSSensor::update_data(double tStep) {
     }
 }
 
-Vector3d EmulatedGPSSensor::get_data() {
-    return data_;
-}
+Vector3d EmulatedGPSSensor::get_data() { return data_; }

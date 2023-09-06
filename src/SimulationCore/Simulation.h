@@ -28,7 +28,8 @@
 
 class Simulation {
    public:
-    Simulation(double tStep, PhysicsEngine* engine, Atmosphere& atmosphere, Rocket& rocket, RocketMotor& motor);
+    Simulation(double tStep, PhysicsEngine* engine, Atmosphere& atmosphere,
+               Rocket& rocket, RocketMotor& motor);
 
     void init();
     bool step();  // iterators at home

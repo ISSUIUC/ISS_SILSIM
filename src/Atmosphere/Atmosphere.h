@@ -30,8 +30,7 @@ class Atmosphere {
         : direction_normal_dist_(wind_direction_variance_mean,
                                  wind_direction_variance_stddev),
           magnitude_normal_dist_(wind_magnitude_variance_mean,
-                                 wind_magnitude_variance_stddev) {
-    };
+                                 wind_magnitude_variance_stddev){};
 
     // -------------------------- Get Parameters ---------------------------- //
     Vector3d get_nominal_wind_direction() { return nominal_wind_direction_; };

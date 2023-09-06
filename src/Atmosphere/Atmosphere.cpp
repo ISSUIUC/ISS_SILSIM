@@ -76,7 +76,7 @@ double Atmosphere::get_temperature(double altitude) {
             1000 - 640 * exp(-0.01875 * ((altitude_z - 120) * (6356.766 + 120) /
                                          (6356.766 + altitude_z)));
     } else {
-//        std::cout << "Exceeding calculatable altitude!" << std::endl;
+        //        std::cout << "Exceeding calculatable altitude!" << std::endl;
         temperature = -1.0;
     }
     return temperature;
@@ -196,7 +196,8 @@ double Atmosphere::get_pressure(double altitude) {
     }
 
     else {
-//        std::cout << "Exceeding calculatable altitude! " << altitude_z << std::endl;
+        //        std::cout << "Exceeding calculatable altitude! " << altitude_z
+        //        << std::endl;
         pressure = -1.0;
     }
     // 86k to 1000k formula not sure yet
@@ -284,7 +285,7 @@ double Atmosphere::get_density(double altitude) {
     }
 
     else {
-//        std::cout << "Exceeding calculatable altitude!" << std::endl;
+        //        std::cout << "Exceeding calculatable altitude!" << std::endl;
         density = -1.0;
     }
 

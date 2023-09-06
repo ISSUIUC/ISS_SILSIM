@@ -123,11 +123,10 @@ Vector3d Rocket::position_enu2ecef(Vector3d pos_enu) {
     double lambda = get_launch_geod().y() * M_PI / 180;
     double lat = get_launch_geod().x() * M_PI / 180;
 
-    Eigen::Matrix3d transform {
-        { -sin(lambda), -sin(lat) * cos(lambda), cos(lat) * cos(lambda) },
-        { cos(lambda), -sin(lat) * sin(lambda), cos(lat) * sin(lambda) },
-        { 0.0, cos(lat), sin(lat) }
-    };
+    Eigen::Matrix3d transform{
+        {-sin(lambda), -sin(lat) * cos(lambda), cos(lat) * cos(lambda)},
+        {cos(lambda), -sin(lat) * sin(lambda), cos(lat) * sin(lambda)},
+        {0.0, cos(lat), sin(lat)}};
 
     return (transform * pos_enu) + get_launch_ecef();
 }
@@ -155,11 +154,10 @@ Vector3d Rocket::position_ecef2enu(Vector3d pos_ecef) {
     double lambda = get_launch_geod().y() * M_PI / 180;
     double lat = get_launch_geod().x() * M_PI / 180;
 
-    Eigen::Matrix3d transform {
+    Eigen::Matrix3d transform{
         {-sin(lambda), -sin(lat) * cos(lambda), cos(lat) * cos(lambda)},
         {cos(lambda), -sin(lat) * sin(lambda), cos(lat) * sin(lambda)},
-        {0, cos(lat), sin(lat)}
-    };
+        {0, cos(lat), sin(lat)}};
 
     return transform.transpose() * (pos_ecef - get_launch_ecef());
 }

@@ -32,8 +32,7 @@ Simulation::Simulation(double tStep, PhysicsEngine* engine,
       engine_(engine),
       atmoshpere_(atmosphere),
       rocket_(rocket),
-      motor_(motor){
-}
+      motor_(motor) {}
 
 void Simulation::init() {
     // Update rocket's initial aerodynamic coefficients
@@ -76,7 +75,8 @@ bool Simulation::step() {
         rocket_.update_aero_coefficients(motor_.is_burning(tStamp_));
 
         // Update total mass to include new propellant mass
-        rocket_.set_total_mass(rocket_.get_structural_mass() + motor_.get_propellant_mass(tStamp_));
+        rocket_.set_total_mass(rocket_.get_structural_mass() +
+                               motor_.get_propellant_mass(tStamp_));
 
         // Perform physics magic to march simulation forward in time
         engine_->march_step(tStamp_, tStep_);
@@ -103,9 +103,7 @@ bool Simulation::step() {
  *
  * @param sensor A pointer to the new Sensor object to be added
  */
-void Simulation::add_sensor(Sensor* sensor) {
-    sensors_.push_back(sensor);
-}
+void Simulation::add_sensor(Sensor* sensor) { sensors_.push_back(sensor); }
 
 /**
  * @brief Updates all sensors' internal data

@@ -33,7 +33,8 @@ using Eigen::Vector3d;
 
 class Sensor {
    public:
-    Sensor(Rocket& rocket, double refresh_rate, double noise_mean = 0.0f, double noise_stddev = 0.1f)
+    Sensor(Rocket& rocket, double refresh_rate, double noise_mean = 0.0f,
+           double noise_stddev = 0.1f)
         : rocket_(rocket),
           refresh_rate_(refresh_rate),
           last_update_tStep_(0),
@@ -71,16 +72,17 @@ class Sensor {
 
 class GyroscopeSensor : public Sensor {
    public:
-    GyroscopeSensor(Rocket& rocket, double refresh_rate, double noise_mean = 0.0f, double noise_stddev = 0.1f);
+    GyroscopeSensor(Rocket& rocket, double refresh_rate,
+                    double noise_mean = 0.0f, double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     Vector3d get_data();
 
     void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
    private:
-    Vector3d data_;  // The sensor's current reading
+    Vector3d data_;   // The sensor's current reading
     Vector3d noise_;  // Noise vector to be added to measurement
-    Vector3d bias_;  // Constant bias vector to be added to measurement
+    Vector3d bias_;   // Constant bias vector to be added to measurement
 };
 
 /*****************************************************************************/
@@ -89,16 +91,17 @@ class GyroscopeSensor : public Sensor {
 
 class Accelerometer : public Sensor {
    public:
-    Accelerometer(Rocket& rocket, double refresh_rate, double noise_mean = 0.0f, double noise_stddev = 0.1f);
+    Accelerometer(Rocket& rocket, double refresh_rate, double noise_mean = 0.0f,
+                  double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     Vector3d get_data();
 
     void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
    private:
-    Vector3d data_;  // The sensor's current reading
+    Vector3d data_;   // The sensor's current reading
     Vector3d noise_;  // Noise vector to be added to measurement
-    Vector3d bias_;  // Constant bias vector to be added to measurement
+    Vector3d bias_;   // Constant bias vector to be added to measurement
 };
 
 /*****************************************************************************/
@@ -107,16 +110,18 @@ class Accelerometer : public Sensor {
 
 class EmulatedMagnetometerSensor : public Sensor {
    public:
-    EmulatedMagnetometerSensor(Rocket& rocket, double refresh_rate, double noise_mean = 0.0f, double noise_stddev = 0.1f);
+    EmulatedMagnetometerSensor(Rocket& rocket, double refresh_rate,
+                               double noise_mean = 0.0f,
+                               double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     Vector3d get_data();
 
     void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
    private:
-    Vector3d data_;  // The sensor's current reading
+    Vector3d data_;   // The sensor's current reading
     Vector3d noise_;  // Noise vector to be added to measurement
-    Vector3d bias_;  // Constant bias vector to be added to measurement
+    Vector3d bias_;   // Constant bias vector to be added to measurement
 };
 
 /*****************************************************************************/
@@ -127,16 +132,17 @@ class EmulatedMagnetometerSensor : public Sensor {
 // specify units)
 class Barometer : public Sensor {
    public:
-    Barometer(Rocket& rocket, double refresh_rate, double noise_mean = 0.0f, double noise_stddev = 0.1f);
+    Barometer(Rocket& rocket, double refresh_rate, double noise_mean = 0.0f,
+              double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     double get_data();
 
     void set_constant_bias(double bias) { bias_ = bias; };
 
    private:
-    double data_;  // The sensor's current reading
+    double data_;   // The sensor's current reading
     double noise_;  // Noise value to be added to measurement
-    double bias_;  // Constant bias value to be added to measurement
+    double bias_;   // Constant bias value to be added to measurement
 };
 
 /*****************************************************************************/
@@ -145,14 +151,15 @@ class Barometer : public Sensor {
 
 class Thermometer : public Sensor {
    public:
-    Thermometer(Rocket& rocket, double refresh_rate, double noise_mean = 0.0f, double noise_stddev = 0.1f);
+    Thermometer(Rocket& rocket, double refresh_rate, double noise_mean = 0.0f,
+                double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     double get_data();
 
    private:
-    double data_;  // The sensor's current reading
+    double data_;   // The sensor's current reading
     double noise_;  // Noise value to be added to measurement
-    double bias_;  // Constant bias value to be added to measurement
+    double bias_;   // Constant bias value to be added to measurement
 };
 
 /*****************************************************************************/
@@ -161,16 +168,17 @@ class Thermometer : public Sensor {
 
 class EmulatedGPSSensor : public Sensor {
    public:
-    EmulatedGPSSensor(Rocket& rocket, double refresh_rate, double noise_mean = 0.0f, double noise_stddev = 0.1f);
+    EmulatedGPSSensor(Rocket& rocket, double refresh_rate,
+                      double noise_mean = 0.0f, double noise_stddev = 0.1f);
     void update_data(double tStep) override;
     Vector3d get_data();
 
     void set_constant_bias(Vector3d bias) { bias_ = bias; };
 
    private:
-    Vector3d data_;  // The sensor's current reading
+    Vector3d data_;   // The sensor's current reading
     Vector3d noise_;  // Noise vector to be added to measurement
-    Vector3d bias_;  // Constant bias vector to be added to measurement
+    Vector3d bias_;   // Constant bias vector to be added to measurement
 };
 
 /*****************************************************************************/
