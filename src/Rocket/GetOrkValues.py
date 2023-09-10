@@ -7,9 +7,8 @@ and CSV output functionality.
 
 from components import *
 import xmltodict
-
-if __name__ == "__main__":
-    pass
+from pathlib import Path
+import json
 
 class Rocket:
     def __init__(self, name, xml_filename):
@@ -20,62 +19,39 @@ class Rocket:
         in_file.close()
         xml_dict = xmltodict.parse(xml_string)
 
-        self.mass = xml_dict["openrocket"]["simulations"]["simulation"][0]["flightdata"]["databranch"]["datapoint"][1]
-        print(self.mass, "this is the mass")
+        # for i, sub_component in xml_dict["openrocket"]["rocket"]["subcomponents"]['stage']['subcomponents']:
+        #     print(name, type(sub_component))
 
-        # Populating data
+        # print(xml_dict["openrocket"]["rocket"]["subcomponents"]['stage']['subcomponents'])
+        sub_c = xml_dict["openrocket"]["rocket"]["subcomponents"]['stage']['subcomponents']
 
-        nosecone_dict = xml_dict["openrocket"]["rocket"]["subcomponents"]["stage"]["subcomponents"]["nosecone"]
-        self.nosecone = Nosecone(float(nosecone_dict["length"]),
-                                       nosecone_dict["shape"],
-                                       nosecone_dict["material"]["#text"])
-        self.sims = []
-        sim_list = []
-        try:
-            sim_list = xml_dict["openrocket"]["simulations"]["simulation"]
-        except:
-            print('no sims')
+        json_object = json.dumps(sub_c, indent=4)
 
-        for sim in sim_list:
-            try:
-                self.sims.append(Simulation(sim["flightdata"]["@maxaltitude"],
-                                            sim["flightdata"]["@maxvelocity"],
-                                            sim["flightdata"]["@maxacceleration"],
-                                            sim["flightdata"]["@flighttime"]))
-            except:
-                print("unparsable sim")
-                pass
+        with open("sample.json", "w") as outfile:
+            outfile.write(json_object)
+        
+        print(type(sub_c["bodytube"]))
+        for t in sub_c["bodytube"]:
+            print(t["name"])
+        
+        # print(sub_c['nosecone'].keys())
 
-        tube_collection = xml_dict["openrocket"]["rocket"]["subcomponents"]["stage"]["subcomponents"]["bodytube"]
-        self.tubes = []
-        if isinstance(tube_collection, list):
-            for tube in tube_collection:
-                self.tubes.append(BodyTube(tube['name'],float(tube['length']), tube['material']['#text'], float(tube['thickness'])))
-                try:
-                    fin_dict = tube['subcomponents']['trapezoidfinset']
-                    self.finset = Finset('trapezoid', fin_dict["fincount"], fin_dict["material"]["#text"], float(fin_dict["height"]), float(fin_dict["rootchord"]), float(fin_dict["tipchord"]))
-                except:
-                    print("this tube has no trapezoid fins")
+        # for c in sub_c:
+        #     if 'subcomponents' in sub_c[c]:
+        #         print(sub_c[c], 'has subcomponents')
+        #     # print(sub_c[c])
+        loop_through(sub_c)
 
-                try:
-                    fin_dict = tube['subcomponents']['freeformfinset']
-                    self.finset = Finset("freeform", fin_dict['fincount'],fin_dict['material']['#text'])
-                except:
-                    print('this tube has no freeform fins')
-                # try:
-                #     recovery_dict =
-                #     self.RecoverySystem =
-                # SOMETHING TO HANDLE DUALITY OF DICT/LIST BETTER
+def loop_through(dict_in):
+    for a in dict_in:
+        if type(dict_in[a]) is dict:
+            loop_through(dict_in[a])
         else:
-            self.tubes.append(BodyTube(tube_collection['name'],float(tube_collection['length']), tube_collection['material']['#text'], float(tube_collection['thickness'])))
-            try:
-                fin_dict = tube_collection['subcomponents']['trapezoidfinset']
-                self.finset = Finset('trapezoid', fin_dict["fincount"], fin_dict["material"]["#text"], float(fin_dict["height"]), float(fin_dict["rootchord"]), float(fin_dict["tipchord"]))
-            except:
-                print("this tube has no trapezoid fins")
+            # print(a)
+            pass
 
-            try:
-                fin_dict = tube_collection['subcomponents']['freeformfinset']
-                self.finset = Finset("freeform", fin_dict['fincount'],fin_dict['material']['#text'])
-            except:
-                print('this tube has no freeform fins')
+if __name__ == "__main__":
+    p = Path(__file__).parents[2]
+    # print(p)
+
+    Rocket("bruh", str(p)+"/ork_files/rocket-1.ork")
