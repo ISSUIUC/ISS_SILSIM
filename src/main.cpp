@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include "json.hpp"
 
 #include "Aero/RASAeroImport.h"
 #include "Atmosphere/Atmosphere.h"
@@ -19,15 +20,31 @@ constexpr double kLbsToKg = 0.453592;
 constexpr double kInchToMeters = 0.0254;
 
 /***************** Intrepid MK6 Parameters *****************/
-constexpr double kIntrepidDryMass = 46.52 * kLbsToKg;
-constexpr double kIntrepidWetMass = 67.30 * kLbsToKg;
-constexpr double kIntrepidWetCGLocation = 82.79 * kInchToMeters;
-constexpr double kIntrepidDryCGLocation = 73.06 * kInchToMeters;
-constexpr double kIntrepidTotalLength = 130.0 * kInchToMeters;
-constexpr double kIntrepidDiameter = 4.02 * kInchToMeters;
-constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
+double kIntrepidDryMass = 46.52 * kLbsToKg;
+double kIntrepidWetMass = 67.30 * kLbsToKg;
+double kIntrepidWetCGLocation = 82.79 * kInchToMeters;
+double kIntrepidDryCGLocation = 73.06 * kInchToMeters;
+double kIntrepidTotalLength = 130.0 * kInchToMeters;
+double kIntrepidDiameter = 4.02 * kInchToMeters;
+double kIntrepidRadius = kIntrepidDiameter / 2.0;
+
+void load_values() {
+    using json = nlohmann::json;
+
+    std::ifstream f("sample.json");
+    json data = json::parse(f);
+    
+    kIntrepidDryMass = data["dry_mass"];
+    kIntrepidWetMass = data["wet_mass"];
+    kIntrepidWetCGLocation = data["wet_center_of_gravity"];
+    kIntrepidDryCGLocation = data["dry_center_of_gravity"];
+    kIntrepidTotalLength = data["length"];
+    kIntrepidDiameter = data["diameter"];
+    kIntrepidRadius = kIntrepidDiameter / 2.0;
+}
 
 Rocket createRocket() {
+    load_values();
     // RASAero Setup ----------------------------------------------------------
     RASAeroImport rasaero_import = RASAeroImport(
         "src/mcu_main/ISS_SILSIM/utils/RASAero_fetch/output/"
