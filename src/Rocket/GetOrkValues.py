@@ -5,53 +5,58 @@ An object to store all components of a rocket. Also contains all XML parsing
 and CSV output functionality.
 """
 
-from components import *
 import xmltodict
 from pathlib import Path
+import pandas as pd
 import json
 
-class Rocket:
-    def __init__(self, name, xml_filename):
-        self.name = name
-        self.xml_filename = xml_filename
-        in_file = open(xml_filename, 'r')
-        xml_string = in_file.read()
-        in_file.close()
-        xml_dict = xmltodict.parse(xml_string)
+out_dict = {}
 
-        # for i, sub_component in xml_dict["openrocket"]["rocket"]["subcomponents"]['stage']['subcomponents']:
-        #     print(name, type(sub_component))
+def get_length(xml_filename):
+    in_file = open(xml_filename, 'r')
+    xml_string = in_file.read()
+    in_file.close()
+    xml_dict = xmltodict.parse(xml_string)
 
-        # print(xml_dict["openrocket"]["rocket"]["subcomponents"]['stage']['subcomponents'])
-        sub_c = xml_dict["openrocket"]["rocket"]["subcomponents"]['stage']['subcomponents']
+    cur_len = 0
 
-        json_object = json.dumps(sub_c, indent=4)
+    all_subcomponents = xml_dict["openrocket"]["rocket"]["subcomponents"]["stage"]["subcomponents"]\
+    
+    for key in all_subcomponents:
+        cur_val = all_subcomponents[key]
 
-        with open("sample.json", "w") as outfile:
-            outfile.write(json_object)
-        
-        print(type(sub_c["bodytube"]))
-        for t in sub_c["bodytube"]:
-            print(t["name"])
-        
-        # print(sub_c['nosecone'].keys())
-
-        # for c in sub_c:
-        #     if 'subcomponents' in sub_c[c]:
-        #         print(sub_c[c], 'has subcomponents')
-        #     # print(sub_c[c])
-        loop_through(sub_c)
-
-def loop_through(dict_in):
-    for a in dict_in:
-        if type(dict_in[a]) is dict:
-            loop_through(dict_in[a])
+        if(type(cur_val) is dict):
+            cur_len += float(cur_val["length"])
         else:
-            # print(a)
-            pass
+            for component in cur_val:
+                cur_len += float(component["length"])
+    
+    out_dict["length"] = cur_len
+
+
+def get_other_values(csv_file_name):
+    csv_in = pd.read_csv(csv_file_name, comment="#",on_bad_lines='skip')
+    dry_cg = 0
+
+    for i in range(len(csv_in["CG location (cm)"])):
+        if(i<len(csv_in["CG location (cm)"])-1):
+            if(pd.isnull(csv_in["CG location (cm)"].iloc[i+1]) and dry_cg==0):
+                dry_cg = csv_in["CG location (cm)"].iloc[i]
+    
+    out_dict["dry_center_of_gravity"] = dry_cg/100
+
+    out_dict["wet_center_of_gravity"] = csv_in["CG location (cm)"].iloc[0]/100
+
+    out_dict["diameter"] = csv_in["Reference length (cm)"].iloc[0]/100
+
+    out_dict["wet_mass"] = csv_in["Mass (g)"].iloc[0]/1000
+
+    out_dict["dry_mass"] = (csv_in["Mass (g)"].iloc[0]-csv_in["Motor mass (g)"].iloc[0])/1000
 
 if __name__ == "__main__":
     p = Path(__file__).parents[2]
-    # print(p)
+    get_other_values(str(p)+"/ork_files/rocket_csv.csv")
+    get_length( str(p)+"/ork_files/rocket.ork")
 
-    Rocket("bruh", str(p)+"/ork_files/rocket-1.ork")
+    with open("sample.json", "w") as outfile:
+        json.dump(out_dict, outfile)
