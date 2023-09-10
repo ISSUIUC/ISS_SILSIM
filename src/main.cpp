@@ -31,9 +31,9 @@ double kIntrepidRadius = kIntrepidDiameter / 2.0;
 void load_values() {
     using json = nlohmann::json;
 
-    std::ifstream f("sample.json");
+    std::ifstream f("src/Rocket/values.json");
     json data = json::parse(f);
-    
+
     kIntrepidDryMass = data["dry_mass"];
     kIntrepidWetMass = data["wet_mass"];
     kIntrepidWetCGLocation = data["wet_center_of_gravity"];
