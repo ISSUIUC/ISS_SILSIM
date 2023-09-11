@@ -1,8 +1,4 @@
 """
-Rocket Object
-
-An object to store all components of a rocket. Also contains all XML parsing
-and CSV output functionality.
 """
 
 import xmltodict
@@ -54,13 +50,13 @@ def get_other_values(csv_file_name):
     out_dict["dry_mass"] = (csv_in["Mass (g)"].iloc[0]-csv_in["Motor mass (g)"].iloc[0])/1000
 
 if __name__ == "__main__":
-    p = Path(__file__).parents[2]
+    p = Path(__file__).parents[1]
     
     with open(str(p)+"/ork_files/rocket_csv.csv") as csv_file:
         data = csv_file.readlines()
 
     for i in range(len(data)):
-        if "Mass" in data[i]: 
+        if "Mass" in data[i] and data[i][0]=="#": 
             data[i] = data[i][1:]
     
     with open(str(p)+"/ork_files/rocket_csv.csv", "w") as csv_file:
