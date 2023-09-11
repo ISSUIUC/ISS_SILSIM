@@ -1,6 +1,5 @@
 #include <fstream>
 #include <iostream>
-#include "json.hpp"
 
 #include "Aero/RASAeroImport.h"
 #include "Atmosphere/Atmosphere.h"
@@ -8,6 +7,7 @@
 #include "Rocket/Rocket.h"
 #include "Sensors/Sensor.h"
 #include "SimulationCore/Simulation.h"
+#include "json.hpp"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -40,7 +40,7 @@ void load_values() {
     kIntrepidDryCGLocation = data["dry_center_of_gravity"];
     kIntrepidTotalLength = data["length"];
     kIntrepidDiameter = data["diameter"];
-    kIntrepidRadius = tatic_cast<double>(data["diameter"]) / 2.0;
+    kIntrepidRadius = static_cast<double>(data["diameter"]) / 2.0;
 }
 
 Rocket createRocket() {
