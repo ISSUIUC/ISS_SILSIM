@@ -55,6 +55,18 @@ def get_other_values(csv_file_name):
 
 if __name__ == "__main__":
     p = Path(__file__).parents[2]
+    
+    with open(str(p)+"/ork_files/rocket_csv.csv") as csv_file:
+        data = csv_file.readlines()
+
+    for i in range(len(data)):
+        if "Mass" in data[i]: 
+            data[i] = data[i][1:]
+    
+    with open(str(p)+"/ork_files/rocket_csv.csv", "w") as csv_file:
+        csv_file.writelines(data)
+
+            
     get_other_values(str(p)+"/ork_files/rocket_csv.csv")
     get_length( str(p)+"/ork_files/rocket.ork")
 
