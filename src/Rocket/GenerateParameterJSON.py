@@ -58,5 +58,5 @@ if __name__ == "__main__":
     get_other_values(str(p)+"/ork_files/rocket_csv.csv")
     get_length( str(p)+"/ork_files/rocket.ork")
 
-    with open("src/Rocket/values.json", "w") as outfile:
+    with open("src/Rocket/values.json", "w", encoding="utf8") as outfile:
         json.dump(out_dict, outfile)

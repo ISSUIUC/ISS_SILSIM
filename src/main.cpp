@@ -20,13 +20,13 @@ constexpr double kLbsToKg = 0.453592;
 constexpr double kInchToMeters = 0.0254;
 
 /***************** Intrepid MK6 Parameters *****************/
-double kIntrepidDryMass = 46.52 * kLbsToKg;
-double kIntrepidWetMass = 67.30 * kLbsToKg;
-double kIntrepidWetCGLocation = 82.79 * kInchToMeters;
-double kIntrepidDryCGLocation = 73.06 * kInchToMeters;
-double kIntrepidTotalLength = 130.0 * kInchToMeters;
-double kIntrepidDiameter = 4.02 * kInchToMeters;
-double kIntrepidRadius = kIntrepidDiameter / 2.0;
+double kIntrepidDryMass = 0;
+double kIntrepidWetMass = 0;
+double kIntrepidWetCGLocation = 0;
+double kIntrepidDryCGLocation = 0;
+double kIntrepidTotalLength = 0;
+double kIntrepidDiameter = 0;
+double kIntrepidRadius = 0;
 
 void load_values() {
     using json = nlohmann::json;
@@ -40,7 +40,7 @@ void load_values() {
     kIntrepidDryCGLocation = data["dry_center_of_gravity"];
     kIntrepidTotalLength = data["length"];
     kIntrepidDiameter = data["diameter"];
-    kIntrepidRadius = kIntrepidDiameter / 2.0;
+    kIntrepidRadius = tatic_cast<double>(data["diameter"]) / 2.0;
 }
 
 Rocket createRocket() {
