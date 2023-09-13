@@ -28,34 +28,34 @@ double kIntrepidDiameter = 0;
 double kIntrepidRadius = 0;
 
 void string_to_parameter(std::string parameter, double value) {
-    if(parameter=="dry_center_of_gravity") {
+    if (parameter == "dry_center_of_gravity") {
         kIntrepidDryCGLocation = value;
-    } else if (parameter=="wet_center_of_gravity") {
+    } else if (parameter == "wet_center_of_gravity") {
         kIntrepidWetCGLocation = value;
-    } else if (parameter=="diameter") {
+    } else if (parameter == "diameter") {
         kIntrepidDiameter = value;
-    } else if (parameter=="wet_mass") {
+    } else if (parameter == "wet_mass") {
         kIntrepidWetMass = value;
-    } else if (parameter=="dry_mass") {
+    } else if (parameter == "dry_mass") {
         kIntrepidDryMass = value;
-    } else if (parameter=="length") {
+    } else if (parameter == "length") {
         kIntrepidTotalLength = value;
     }
 
-    kIntrepidRadius = kIntrepidDiameter/2;
+    kIntrepidRadius = kIntrepidDiameter / 2;
 }
 
 void load_values() {
     using json = nlohmann::json;
 
     std::ifstream infile;
-    
+
     infile.open("src/Rocket/values.txt");
 
     std::string l;
     double d;
 
-    while(!infile.eof()) {
+    while (!infile.eof()) {
         infile >> l >> d;
         string_to_parameter(l, d);
     }
