@@ -1,11 +1,21 @@
 <?xml version='1.0' encoding='utf-8'?>
-<openrocket version="1.4" creator="OpenRocket 15.03">
+<openrocket version="1.8" creator="OpenRocket 22.02">
   <rocket>
     <name>Rocket</name>
-    <motorconfiguration configid="4329fb99-4952-4161-892b-e02b672fec49" default="true"/>
-    <motorconfiguration configid="66c8f7b9-68e7-46c6-a8e9-8b29e8acfcdd"/>
-    <motorconfiguration configid="62f43ef1-7326-432d-90d0-b49684b0cc68"/>
-    <motorconfiguration configid="ab10dd66-0f32-433d-afa8-736600b0a2d0"/>
+    <axialoffset method="absolute">0.0</axialoffset>
+    <position type="absolute">0.0</position>
+    <motorconfiguration configid="4329fb99-4952-4161-892b-e02b672fec49" default="true">
+      <stage number="0" active="true"/>
+    </motorconfiguration>
+    <motorconfiguration configid="66c8f7b9-68e7-46c6-a8e9-8b29e8acfcdd">
+      <stage number="0" active="true"/>
+    </motorconfiguration>
+    <motorconfiguration configid="62f43ef1-7326-432d-90d0-b49684b0cc68">
+      <stage number="0" active="true"/>
+    </motorconfiguration>
+    <motorconfiguration configid="ab10dd66-0f32-433d-afa8-736600b0a2d0">
+      <stage number="0" active="true"/>
+    </motorconfiguration>
     <referencetype>maximum</referencetype>
 
     <subcomponents>
@@ -27,10 +37,12 @@
             <aftshoulderlength>0.152</aftshoulderlength>
             <aftshoulderthickness>0.00216</aftshoulderthickness>
             <aftshouldercapped>false</aftshouldercapped>
+            <isflipped>false</isflipped>
 
             <subcomponents>
               <masscomponent>
                 <name>Metal Tip</name>
+                <axialoffset method="top">0.16</axialoffset>
                 <position type="top">0.16</position>
                 <packedlength>0.075</packedlength>
                 <packedradius>0.0225</packedradius>
@@ -42,6 +54,9 @@
 
               <bulkhead>
                 <name>Upper Bulkhead</name>
+                <instancecount>1</instancecount>
+                <instanceseparation>0.0</instanceseparation>
+                <axialoffset method="top">0.457</axialoffset>
                 <position type="top">0.457</position>
                 <material type="bulk" density="1850.0">Fiberglass</material>
                 <length>0.006350000000000001</length>
@@ -52,6 +67,7 @@
 
               <masscomponent>
                 <name>Nose cone AV</name>
+                <axialoffset method="top">0.483</axialoffset>
                 <position type="top">0.483</position>
                 <packedlength>0.152</packedlength>
                 <packedradius>0.051</packedradius>
@@ -63,6 +79,9 @@
 
               <bulkhead>
                 <name>Lower Bulkhead</name>
+                <instancecount>1</instancecount>
+                <instanceseparation>0.0</instanceseparation>
+                <axialoffset method="top">0.644</axialoffset>
                 <position type="top">0.644</position>
                 <material type="bulk" density="1850.0">Fiberglass</material>
                 <length>0.006350000000000001</length>
@@ -80,8 +99,8 @@
             <length>0.0127</length>
             <thickness>0.002</thickness>
             <shape>conical</shape>
-            <foreradius>auto</foreradius>
-            <aftradius>auto</aftradius>
+            <foreradius>auto 0.025</foreradius>
+            <aftradius>auto 0.025</aftradius>
             <foreshoulderradius>0.0</foreshoulderradius>
             <foreshoulderlength>0.0</foreshoulderlength>
             <foreshoulderthickness>0.0</foreshoulderthickness>
@@ -103,6 +122,7 @@
             <subcomponents>
               <masscomponent>
                 <name>Cuesat</name>
+                <axialoffset method="top">0.20319999999999994</axialoffset>
                 <position type="top">0.20319999999999994</position>
                 <packedlength>0.5</packedlength>
                 <packedradius>0.076</packedradius>
@@ -139,11 +159,12 @@
             <material type="bulk" density="1850.0">Fiberglass</material>
             <length>1.3716000000000002</length>
             <thickness>0.0020000000000000018</thickness>
-            <radius>auto</radius>
+            <radius>auto 0.025</radius>
 
             <subcomponents>
               <parachute>
                 <name>Main Parachute</name>
+                <axialoffset method="bottom">-0.34279999999999994</axialoffset>
                 <position type="bottom">-0.34279999999999994</position>
                 <packedlength>0.337</packedlength>
                 <packedradius>0.076</packedradius>
@@ -162,6 +183,7 @@
 
               <shockcord>
                 <name>Main Shock Cord</name>
+                <axialoffset method="bottom">-0.9651999999999997</axialoffset>
                 <position type="bottom">-0.9651999999999997</position>
                 <packedlength>0.26</packedlength>
                 <packedradius>0.076</packedradius>
@@ -173,6 +195,7 @@
 
               <parachute>
                 <name>Drogue</name>
+                <axialoffset method="bottom">-0.17779999999999996</axialoffset>
                 <position type="bottom">-0.17779999999999996</position>
                 <packedlength>0.152</packedlength>
                 <packedradius>0.076</packedradius>
@@ -191,6 +214,7 @@
 
               <shockcord>
                 <name>Drogue Shock cord</name>
+                <axialoffset method="top">0.4216000000000004</axialoffset>
                 <position type="top">0.4216000000000004</position>
                 <packedlength>0.26</packedlength>
                 <packedradius>0.076</packedradius>
@@ -208,11 +232,12 @@
             <material type="bulk" density="1850.0">Fiberglass</material>
             <length>0.050800000000000005</length>
             <thickness>0.002</thickness>
-            <radius>auto</radius>
+            <radius>auto 0.025</radius>
 
             <subcomponents>
               <tubecoupler>
                 <name>AV Bay</name>
+                <axialoffset method="middle">0.0</axialoffset>
                 <position type="middle">0.0</position>
                 <material type="bulk" density="1850.0">Fiberglass</material>
                 <length>0.35600000000000004</length>
@@ -224,7 +249,10 @@
                 <subcomponents>
                   <bulkhead>
                     <name>Bulkhead</name>
-                    <position type="bottom">0.0</position>
+                    <instancecount>1</instancecount>
+                    <instanceseparation>0.0</instanceseparation>
+                    <axialoffset method="absolute">3.2700500000000003</axialoffset>
+                    <position type="absolute">3.2700500000000003</position>
                     <material type="bulk" density="1850.0">Fiberglass</material>
                     <length>0.006350000000000001</length>
                     <radialposition>0.0</radialposition>
@@ -234,7 +262,8 @@
 
                   <masscomponent>
                     <name>Avionics</name>
-                    <position type="middle">0.0</position>
+                    <axialoffset method="absolute">2.9459000000000004</axialoffset>
+                    <position type="absolute">2.9459000000000004</position>
                     <packedlength>0.305</packedlength>
                     <packedradius>0.0635</packedradius>
                     <radialposition>0.0</radialposition>
@@ -245,7 +274,10 @@
 
                   <bulkhead>
                     <name>Bulkhead</name>
-                    <position type="top">0.34965</position>
+                    <instancecount>1</instancecount>
+                    <instanceseparation>0.0</instanceseparation>
+                    <axialoffset method="absolute">3.2700500000000003</axialoffset>
+                    <position type="absolute">3.2700500000000003</position>
                     <material type="bulk" density="1850.0">Fiberglass</material>
                     <length>0.006350000000000001</length>
                     <radialposition>0.0</radialposition>
@@ -263,50 +295,58 @@
             <material type="bulk" density="1850.0">Fiberglass</material>
             <length>1.9812</length>
             <thickness>0.002</thickness>
-            <radius>auto</radius>
+            <radius>auto 0.025</radius>
             <motormount>
               <ignitionevent>automatic</ignitionevent>
               <ignitiondelay>0.0</ignitiondelay>
               <overhang>0.0</overhang>
-              <motor configid="4329fb99-4952-4161-892b-e02b672fec49">
-                <manufacturer>ISS</manufacturer>
-                <digest>5723f3bc6a115c9ea817563a8b32fea7</digest>
-                <designation>Eugene_mk3</designation>
-                <diameter>0.14</diameter>
-                <length>1.7</length>
-                <delay>none</delay>
-              </motor>
               <motor configid="66c8f7b9-68e7-46c6-a8e9-8b29e8acfcdd">
                 <type>reload</type>
                 <manufacturer>Cesaroni Technology</manufacturer>
                 <digest>6b13f0da8b2f78fd77b59fb565cba664</digest>
-                <designation>N3800-BS</designation>
+                <designation>17631N3800-P</designation>
                 <diameter>0.098</diameter>
                 <length>1.239</length>
                 <delay>none</delay>
               </motor>
+              <ignitionconfiguration configid="66c8f7b9-68e7-46c6-a8e9-8b29e8acfcdd">
+                <ignitionevent>automatic</ignitionevent>
+                <ignitiondelay>0.0</ignitiondelay>
+              </ignitionconfiguration>
               <motor configid="62f43ef1-7326-432d-90d0-b49684b0cc68">
                 <type>reload</type>
                 <manufacturer>Cesaroni Technology</manufacturer>
                 <digest>1ec94da7a15b279aad9efa5e543379c0</digest>
-                <designation>N3400-SK</designation>
+                <designation>14263N3400-P</designation>
                 <diameter>0.098</diameter>
                 <length>1.239</length>
                 <delay>none</delay>
               </motor>
+              <ignitionconfiguration configid="62f43ef1-7326-432d-90d0-b49684b0cc68">
+                <ignitionevent>automatic</ignitionevent>
+                <ignitiondelay>0.0</ignitiondelay>
+              </ignitionconfiguration>
               <motor configid="ab10dd66-0f32-433d-afa8-736600b0a2d0">
+                <type>reload</type>
                 <manufacturer>AeroTech</manufacturer>
-                <digest>34e36ae27c91696bd41e6437dd0f7be9</digest>
-                <designation>N3300</designation>
+                <digest>135291720bee0f2bbd556ea49dd9a2ca</digest>
+                <designation>N3300R</designation>
                 <diameter>0.098</diameter>
                 <length>1.046</length>
                 <delay>none</delay>
               </motor>
+              <ignitionconfiguration configid="ab10dd66-0f32-433d-afa8-736600b0a2d0">
+                <ignitionevent>automatic</ignitionevent>
+                <ignitiondelay>0.0</ignitiondelay>
+              </ignitionconfiguration>
             </motormount>
 
             <subcomponents>
               <centeringring>
                 <name>Top Centering ring</name>
+                <instancecount>1</instancecount>
+                <instanceseparation>0.0</instanceseparation>
+                <axialoffset method="bottom">-0.813</axialoffset>
                 <position type="bottom">-0.813</position>
                 <material type="bulk" density="2700.0">Aluminum</material>
                 <length>0.006350000000000001</length>
@@ -318,6 +358,9 @@
 
               <centeringring>
                 <name>Bottom Centering ring</name>
+                <instancecount>1</instancecount>
+                <instanceseparation>0.0</instanceseparation>
+                <axialoffset method="bottom">-0.305</axialoffset>
                 <position type="bottom">-0.305</position>
                 <material type="bulk" density="2700.0">Aluminum</material>
                 <length>0.006350000000000001</length>
@@ -329,11 +372,15 @@
 
               <trapezoidfinset>
                 <name>Trapezoidal fin set</name>
+                <instancecount>3</instancecount>
+                <fincount>3</fincount>
+                <radiusoffset method="surface">0.0</radiusoffset>
+                <angleoffset method="relative">0.0</angleoffset>
+                <rotation>0.0</rotation>
+                <axialoffset method="bottom">0.0</axialoffset>
                 <position type="bottom">0.0</position>
                 <finish>normal</finish>
                 <material type="bulk" density="1850.0">Fiberglass</material>
-                <fincount>3</fincount>
-                <rotation>0.0</rotation>
                 <thickness>0.003</thickness>
                 <crosssection>square</crosssection>
                 <cant>0.0</cant>
@@ -347,6 +394,7 @@
 
               <masscomponent>
                 <name>Fin Can?</name>
+                <axialoffset method="bottom">-0.152</axialoffset>
                 <position type="bottom">-0.152</position>
                 <packedlength>0.025</packedlength>
                 <packedradius>0.0125</packedradius>
@@ -358,6 +406,7 @@
 
               <masscomponent>
                 <name>N Casing + Motor Adapter</name>
+                <axialoffset method="top">1.22</axialoffset>
                 <position type="top">1.22</position>
                 <packedlength>0.025</packedlength>
                 <packedradius>0.0125</packedradius>
@@ -369,6 +418,7 @@
 
               <masscomponent>
                 <name>Thrust Plate and Retainer</name>
+                <axialoffset method="bottom">0.0</axialoffset>
                 <position type="bottom">0.0</position>
                 <packedlength>0.025</packedlength>
                 <packedradius>0.076</packedradius>
@@ -380,6 +430,7 @@
 
               <engineblock>
                 <name>Engine block</name>
+                <axialoffset method="bottom">0.0</axialoffset>
                 <position type="bottom">0.0</position>
                 <material type="bulk" density="2700.0">Aluminum</material>
                 <length>0.005</length>
@@ -396,7 +447,7 @@
   </rocket>
 
   <simulations>
-    <simulation status="uptodate">
+    <simulation status="notsimulated">
       <name>Simulation 1</name>
       <simulator>RK4Simulator</simulator>
       <calculator>BarrowmanCalculator</calculator>
@@ -414,11 +465,9 @@
         <atmosphere model="isa"/>
         <timestep>0.05</timestep>
       </conditions>
-      <flightdata maxaltitude="3479.2" maxvelocity="286.85" maxacceleration="67.849" maxmach="0.8498" timetoapogee="27.031" flighttime="240.71" groundhitvelocity="7.5596" launchrodvelocity="26.328" deploymentvelocity="17.483">
-      </flightdata>
     </simulation>
 
-    <simulation status="uptodate">
+    <simulation status="notsimulated">
       <name>Simulation 2</name>
       <simulator>RK4Simulator</simulator>
       <calculator>BarrowmanCalculator</calculator>
@@ -436,8 +485,10 @@
         <atmosphere model="isa"/>
         <timestep>0.05</timestep>
       </conditions>
-      <flightdata maxaltitude="3258.9" maxvelocity="308.85" maxacceleration="103.1" maxmach="0.91444" timetoapogee="25.261" flighttime="266.94" groundhitvelocity="6.3045" launchrodvelocity="24.753" deploymentvelocity="14.632">
+      <flightdata maxaltitude="3436.174" maxvelocity="312.659" maxacceleration="87.254" maxmach="0.927" timetoapogee="25.886" flighttime="276.995" groundhitvelocity="6.318" launchrodvelocity="29.775" deploymentvelocity="14.683">
       </flightdata>
     </simulation>
   </simulations>
+  <photostudio>
+  </photostudio>
 </openrocket>

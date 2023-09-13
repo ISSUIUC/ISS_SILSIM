@@ -19,15 +19,50 @@ constexpr double kLbsToKg = 0.453592;
 constexpr double kInchToMeters = 0.0254;
 
 /***************** Intrepid MK6 Parameters *****************/
-constexpr double kIntrepidDryMass = 46.52 * kLbsToKg;
-constexpr double kIntrepidWetMass = 67.30 * kLbsToKg;
-constexpr double kIntrepidWetCGLocation = 82.79 * kInchToMeters;
-constexpr double kIntrepidDryCGLocation = 73.06 * kInchToMeters;
-constexpr double kIntrepidTotalLength = 130.0 * kInchToMeters;
-constexpr double kIntrepidDiameter = 4.02 * kInchToMeters;
-constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
+double kIntrepidDryMass = 0;
+double kIntrepidWetMass = 0;
+double kIntrepidWetCGLocation = 0;
+double kIntrepidDryCGLocation = 0;
+double kIntrepidTotalLength = 0;
+double kIntrepidDiameter = 0;
+double kIntrepidRadius = 0;
+
+void string_to_parameter(std::string parameter, double value) {
+    if (parameter == "dry_center_of_gravity") {
+        kIntrepidDryCGLocation = value;
+    } else if (parameter == "wet_center_of_gravity") {
+        kIntrepidWetCGLocation = value;
+    } else if (parameter == "diameter") {
+        kIntrepidDiameter = value;
+    } else if (parameter == "wet_mass") {
+        kIntrepidWetMass = value;
+    } else if (parameter == "dry_mass") {
+        kIntrepidDryMass = value;
+    } else if (parameter == "length") {
+        kIntrepidTotalLength = value;
+    }
+
+    kIntrepidRadius = kIntrepidDiameter / 2;
+}
+
+void load_values() {
+    using json = nlohmann::json;
+
+    std::ifstream infile;
+
+    infile.open("src/Rocket/values.txt");
+
+    std::string l;
+    double d;
+
+    while (!infile.eof()) {
+        infile >> l >> d;
+        string_to_parameter(l, d);
+    }
+}
 
 Rocket createRocket() {
+    load_values();
     // RASAero Setup ----------------------------------------------------------
     RASAeroImport rasaero_import = RASAeroImport(
         "src/mcu_main/ISS_SILSIM/utils/RASAero_fetch/output/"

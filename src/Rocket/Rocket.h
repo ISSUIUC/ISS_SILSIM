@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-#include "Aero/RASAeroImport.h"
+#include "./Aero/RASAeroImport.h"
 #include "ControlSurfaces/Flaps.h"
 
 using Eigen::Quaterniond;
