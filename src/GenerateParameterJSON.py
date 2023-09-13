@@ -66,5 +66,9 @@ if __name__ == "__main__":
     get_other_values(str(p)+"/ork_files/rocket_csv.csv")
     get_length( str(p)+"/ork_files/rocket.ork")
 
-    with open("src/Rocket/values.json", "w", encoding="utf8") as outfile:
-        json.dump(out_dict, outfile)
+    output_string = ""
+    for k,v in out_dict.items():
+        output_string += str(k) + " " + str(v) + "\n"
+    
+    with open('src/Rocket/values.txt', 'w') as f:
+        f.writelines(output_string)

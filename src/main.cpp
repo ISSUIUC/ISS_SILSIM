@@ -7,7 +7,6 @@
 #include "Rocket/Rocket.h"
 #include "Sensors/Sensor.h"
 #include "SimulationCore/Simulation.h"
-#include "json.hpp"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -28,19 +27,38 @@ double kIntrepidTotalLength = 0;
 double kIntrepidDiameter = 0;
 double kIntrepidRadius = 0;
 
+void string_to_parameter(std::string parameter, double value) {
+    if(parameter=="dry_center_of_gravity") {
+        kIntrepidDryCGLocation = value;
+    } else if (parameter=="wet_center_of_gravity") {
+        kIntrepidWetCGLocation = value;
+    } else if (parameter=="diameter") {
+        kIntrepidDiameter = value;
+    } else if (parameter=="wet_mass") {
+        kIntrepidWetMass = value;
+    } else if (parameter=="dry_mass") {
+        kIntrepidDryMass = value;
+    } else if (parameter=="length") {
+        kIntrepidTotalLength = value;
+    }
+
+    kIntrepidRadius = kIntrepidDiameter/2;
+}
+
 void load_values() {
     using json = nlohmann::json;
 
-    std::ifstream f("src/Rocket/values.json");
-    json data = json::parse(f);
+    std::ifstream infile;
+    
+    infile.open("src/Rocket/values.txt");
 
-    kIntrepidDryMass = data["dry_mass"];
-    kIntrepidWetMass = data["wet_mass"];
-    kIntrepidWetCGLocation = data["wet_center_of_gravity"];
-    kIntrepidDryCGLocation = data["dry_center_of_gravity"];
-    kIntrepidTotalLength = data["length"];
-    kIntrepidDiameter = data["diameter"];
-    kIntrepidRadius = static_cast<double>(data["diameter"]) / 2.0;
+    std::string l;
+    double d;
+
+    while(!infile.eof()) {
+        infile >> l >> d;
+        string_to_parameter(l, d);
+    }
 }
 
 Rocket createRocket() {
