@@ -28,7 +28,7 @@ def main():
 
     # RASAero application 
     rasaero_location = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\RASAero II\RASAero II"
-    print('Executing program at C:\ProgramData\Microsoft\Windows\Start Menu\Programs\RASAero II\RASAero II')
+    #print('Executing program at C:\ProgramData\Microsoft\Windows\Start Menu\Programs\RASAero II\RASAero II')
     os.startfile(rasaero_location)
     screenWidth, screenHeight = pyautogui.size()
  
@@ -85,7 +85,7 @@ def main():
         # iterate through each angle of attack
         for j in range(alpha):
 
-            print(f"Running Alpha = {j}")
+            #print(f"Running Alpha = {j}")
             pyautogui.PAUSE = 0.1
         
             # define output file name

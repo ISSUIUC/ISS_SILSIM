@@ -43,9 +43,9 @@ sensorZ = data['Accelerometer:LSM9_accel']['accel_z_rf']
 
 # print some stats:
 apogee = np.max(data['Rocket']['pos_z_enu']) 
-print(f"apogee altitude = {apogee} m\n\t\t= {apogee * 3.28} ft")
+#print(f"apogee altitude = {apogee} m\n\t\t= {apogee * 3.28} ft")
 max_vel = np.max(data['Rocket']['vel_z_enu'])
-print(f"max vertical velocity\t= {max_vel} m/s\n\t\t\t= {max_vel * 3.28} ft/s\n\t\t\t= {max_vel / 343} mach")
+#print(f"max vertical velocity\t= {max_vel} m/s\n\t\t\t= {max_vel * 3.28} ft/s\n\t\t\t= {max_vel / 343} mach")
 
 
 if draw_plots:
