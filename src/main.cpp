@@ -19,35 +19,34 @@ constexpr double kLbsToKg = 0.453592;
 constexpr double kInchToMeters = 0.0254;
 
 /***************** Intrepid MK6 Parameters *****************/
-constexpr double kIntrepidDryMass = 46.52 * kLbsToKg;
-constexpr double kIntrepidWetMass = 67.30 * kLbsToKg;
-constexpr double kIntrepidWetCGLocation = 82.79 * kInchToMeters;
-constexpr double kIntrepidDryCGLocation = 73.06 * kInchToMeters;
-constexpr double kIntrepidTotalLength = 130.0 * kInchToMeters;
-constexpr double kIntrepidDiameter = 4.02 * kInchToMeters;
-constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
+// constexpr double kIntrepidDryMass = 46.52 * kLbsToKg;
+// constexpr double kIntrepidWetMass = 67.30 * kLbsToKg;
+// constexpr double kIntrepidWetCGLocation = 82.79 * kInchToMeters;
+// constexpr double kIntrepidDryCGLocation = 73.06 * kInchToMeters;
+// constexpr double kIntrepidTotalLength = 130.0 * kInchToMeters;
+// constexpr double kIntrepidDiameter = 4.02 * kInchToMeters;
+// constexpr double kIntrepidRadius = kIntrepidDiameter / 2.0;
 
-Rocket createRocket() {
+Rocket createRocket(RocketParameters& params) {
     // RASAero Setup ----------------------------------------------------------
     RASAeroImport rasaero_import = RASAeroImport(
-        "src/mcu_main/ISS_SILSIM/utils/RASAero_fetch/output/"
-        "RASAero_Intrepid_5800_mk6.csv");
+        params.file_name);
 
     // Rocket Setup -----------------------------------------------------------
     Rocket rocket{};
 
-    rocket.set_structural_mass(kIntrepidDryMass);
+    rocket.set_structural_mass(params.kRocketDryMass);
 
-    double nose_to_cg = (((10.0 / 100.0) * kIntrepidWetCGLocation) +
-                         ((90.0 / 100.0) * kIntrepidDryCGLocation));
+    double nose_to_cg = (((10.0 / 100.0) * params.kRocketWetCGLocation) +
+                         ((90.0 / 100.0) * params.kRocketDryCGLocation));
     rocket.set_nose_to_cg(nose_to_cg);
 
     double mass = rocket.get_structural_mass();
     std::array<double, 9> I_tensor{};
     I_tensor[0] =
-        (1.0 / 12.0) * mass * kIntrepidTotalLength * kIntrepidTotalLength;
+        (1.0 / 12.0) * mass * params.kRocketTotalLength * params.kRocketTotalLength;
     I_tensor[4] = I_tensor[0];
-    I_tensor[8] = 0.5 * mass * kIntrepidRadius * kIntrepidRadius;
+    I_tensor[8] = 0.5 * mass * params.kRocketRadius * params.kRocketRadius;
     rocket.set_I(I_tensor);
 
     double angle = 3.0 * deg2rad;

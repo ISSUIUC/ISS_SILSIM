@@ -3,7 +3,19 @@
 #include "Rocket/Rocket.h"
 #include "SimulationCore/Simulation.h"
 
-Rocket createRocket();
+typedef struct {
+    std::string file_name;
+    double kRocketDryMass;
+    double kRocketWetMass;
+    double kRocketWetCGLocation;
+    double kRocketDryCGLocation;
+    double kRocketTotalLength;
+    double kRocketDiameter;
+    double kRocketRadius;
+} RocketParameters;
+
+
+Rocket createRocket(RocketParameters& params);
 Atmosphere createAtmosphere();
 ThrustCurveSolidMotor createMotor();
 RungeKutta createPhysics(Rocket& rocket, ThrustCurveSolidMotor& motor,
