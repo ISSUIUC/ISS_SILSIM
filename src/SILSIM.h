@@ -16,6 +16,7 @@ typedef struct {
 
 
 Rocket createRocket(RocketParameters& params);
+void configureRocket(Rocket& rocket);
 Atmosphere createAtmosphere();
 ThrustCurveSolidMotor createMotor();
 RungeKutta createPhysics(Rocket& rocket, ThrustCurveSolidMotor& motor,

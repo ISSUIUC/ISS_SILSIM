@@ -61,6 +61,24 @@ Rocket createRocket(RocketParameters& params) {
     return rocket;
 }
 
+void configureRocket(Rocket& rocket) {
+    Accelerometer accel1(rocket, 100);
+    accel1.enable_noise_injection();
+
+    GyroscopeSensor gyro1(rocket, 100, 0.001, 0.01);
+    gyro1.enable_noise_injection();
+    Thermometer thermo1(rocket, 100);
+    Barometer baro1(rocket, 100, 0, 150 / 1.645);
+    baro1.enable_noise_injection();
+    EmulatedGPSSensor gps1(rocket, 10);
+    EmulatedMagnetometerSensor mag1(rocket, 100);
+
+    Atmosphere atmo = createAtmosphere();
+    ThrustCurveSolidMotor motor = createMotor();
+    RungeKutta engine = createPhysics(rocket, motor, atmo);
+    Simulation sim = createSimulation(rocket, motor, atmo, &engine);
+}
+
 Atmosphere createAtmosphere() {
     Atmosphere atmosphere{};
     atmosphere.set_nominal_wind_magnitude(5.0);  // ~11.18 mph
