@@ -73,11 +73,6 @@ void configureRocket(Rocket& rocket) {
     baro1.enable_noise_injection();
     EmulatedGPSSensor gps1(rocket, 10);
     EmulatedMagnetometerSensor mag1(rocket, 100);
-
-    Atmosphere atmo = createAtmosphere();
-    ThrustCurveSolidMotor motor = createMotor();
-    RungeKutta engine = createPhysics(rocket, motor, atmo);
-    Simulation sim = createSimulation(rocket, motor, atmo, &engine);
 }
 
 Atmosphere createAtmosphere() {
