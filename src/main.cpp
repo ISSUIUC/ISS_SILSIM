@@ -7,6 +7,7 @@
 #include "Rocket/Rocket.h"
 #include "Sensors/Sensor.h"
 #include "SimulationCore/Simulation.h"
+#include "SILSIM.h"
 
 #ifdef _WIN32
 #include <windows.h>
